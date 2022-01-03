@@ -57,6 +57,7 @@ public class Interpreteur
 			if ( this.lectureVariable || this.lectureConstante )
 			{
 				// Alan c'est ton moment
+				this.creerDonnee(ligneAInterpreter);
 			}
 			else
 			{
@@ -134,7 +135,71 @@ public class Interpreteur
 
 		return res;
 	}
-
+	
+	public void creerDonnee(String ligne)
+	{
+		Donnee tmp;
+		if(this.lectureVariable)
+		{
+			
+			String nom;
+			String[] l = ligne.split(":");
+			l[0].replacceAll(" ", "");
+			String[] lSplit = l[0].split(",");
+			
+			for(int i=0; i<lSplit.length; i++)
+			{
+				nom = lSplit[i];
+				switch(this.getType(ligne))
+				{
+					case "entier"   : tmp = new Donnee<Integer>  (nom, "entier"             , null, false); break;
+					case "réel"     : tmp = new Donnee<Double>   (nom, "réel "              , null, false); break;
+					case "caractère": tmp = new Donnee<Character>(nom, "caractère"          , null, false); break;
+					case "booléen"  : tmp = new Donnee<Boolean>  (nom, "booléen"            , null, false); break;
+					default         : tmp = new Donnee<String>   (nom, "chaine de caractère", null, false); break;
+				}
+				this.lstDonnee.add(tmp);
+			}
+		}
+		if(this.lectureConstante)
+		{
+			switch(this.getTypeC(ligne))
+			{
+				case "entier" : 
+				{
+					Integer val = Integer.parseInt(this.getValeur(ligne));
+					tmp = new Donnee<Integer>   (nom, "entier"             , val, true);
+					break;
+				}
+				case "réel" :
+				{
+					Double val = Double.ParseDouble(this.getValeur(ligne));
+					tmp = new Donnee<Double>    (nom, "réel "              , val, true);
+					break;
+				}
+				case "caractère" :
+				{
+					Character val = this.getValeur(ligne);
+					tmp = new Donnee<Character>(nom, "caractère"          , val, true);
+					break;
+				}
+				case "booléen" :
+				{
+					Boolean val = this.getValeur(ligne).equals("true");
+					tmp = new Donnee<Boolean>   (nom, "booléen"            , val, true);
+					break;
+				}
+				default :
+				{
+					String valeur[] = ligne.split("=");
+					val = valeur[1];
+					tmp = new Donnee<String>   (nom, "chaine de caractère", val, true); 
+					break;
+				}
+			}
+			this.lstDonnee.add(tmp);
+		}
+	}
 	/**
 	 * Créer une variable
 	 * @param ligne
@@ -162,9 +227,32 @@ public class Interpreteur
 	 */
 	private String getType(String ligne)
 	{
-		String[] decomp = ligne.split(":");
-		String type = decomp[1].replaceAll(" ", "");
+		if(this.lectureVariable)
+		{
+			String[] decomp = ligne.split(":");
+			String type = decomp[1].replaceAll(" ", "");
+		}
+		else //this.lectureConstante
+		{
+			val = this.getValeur(ligne);
+			String type = "entier";
+			if(val.matches("\"(.*)\"")) type = "chaine de caractères";
+			if(val.matches("\'.\'")   ) type = "caractère";
+			if(val.equals("true") || val.equals("false")) type = "booléen";
+			if(val.matches("(\d*),(\d*)") type = "réel";
+		}
 		return type;
+	}
+	
+	public String getValeur(String ligne)
+	{
+		if(this.lectureConstante)
+		{
+			String valeur[] = ligne.split("=");
+			val = valeur[1].replaceAll(" ", "");
+			return val;
+		}
+		return "null";
 	}
 
 	/**
