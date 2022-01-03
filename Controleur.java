@@ -31,7 +31,7 @@ public class Controleur
 		return this.metier.getFichier(n);
 	}
 
-	public String getDonnee()
+	public String getDonnees()
 	{
 		return this.metier.getDonnees();
 	}
@@ -68,6 +68,11 @@ public class Controleur
 			}
 			input.close();
 		} catch (Exception e) {System.out.println("Erreur 002 : Deplacement ligne par ligne"); e.printStackTrace();}
+	}
+
+	public String getTraceDexecution()
+	{
+		return this.metier.getTraceDexecution();
 	}
 
 	/**

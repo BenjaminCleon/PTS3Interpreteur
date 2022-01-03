@@ -1,47 +1,32 @@
 ALGORITHME Essais
-
+constante:
+	STRING   <-- "ma chaine"
+	DOUBLE   <-- 25.01
+	ENTIER   <-- 456
+	BOOLEAN  <-- true
+	CHAR     <-- 'C'
+variable:
+    v: chaine de caractères
+	w: caractère
+	x: entier
+	y: réel
+	z: booléen
 DEBUT
-	ecrire("Bonjour)
+	v <-- "Salut"
+	w <-- 'C'
+	x <-- 25
+	y <-- 56.23
+	z <-- true
+
+	ecrire(STRING)
+	ecrire(DOUBLE)
+	ecrire(ENTIER)
+	ecrire(BOOLEAN)
+	ecrire(CHAR)
+
+	ecrire(v)
+	ecrire(w)
+	ecrire(x)
+	ecrire(y)
+	ecrire(z)
 FIN
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-faeve
-
-
-vzvz
-
-
-
-vzevz
-
-
-
-
-
-
-
-
-vzvzv
-
-
-
-
-

@@ -1,12 +1,14 @@
 package AlgoPars.Metier;
 
-import AlgoPars.Controleur;
-import AlgoPars.Metier.EntreeSortie;
+import AlgoPars.Controleur          ;
+import AlgoPars.Metier.Donnee       ;
+import AlgoPars.Metier.EntreeSortie ;
+import AlgoPars.Metier.GestionDonnee;
 
-import java.util.List     ;
+import java.util.List         ;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Scanner  ;
+import java.util.ArrayList    ;
+import java.util.Scanner      ;
 
 /**
  * Classe principale liée au modèle de l'architecture MVC
@@ -26,6 +28,8 @@ public class Interpreteur
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
 
+	private GestionDonnee gestionDonnee; // permet de gérer les données souhaitant être traiter
+
 	/**
 	 * Constructeur principale
 	 */
@@ -42,6 +46,7 @@ public class Interpreteur
 		this.lectureConstante = false;
 
 		this.lectureFichier();
+		this.gestionDonnee = new GestionDonnee(nomFichier, this);
 	}
 
 	/**
@@ -54,26 +59,37 @@ public class Interpreteur
 		{
 			String ligneAInterpreter = this.lstContenu.get(n);
 
-			if ( this.lectureVariable || this.lectureConstante )
+			if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;
+			
+			if ( ligneAInterpreter.equals("variable:" ) )
+			{
+				this.lectureConstante = false;
+				this.lectureVariable  = true ;
+			}
+			if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
+
+			if ( (this.lectureVariable || this.lectureConstante) && 
+			    !(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
 			{
 				// Alan c'est ton moment
 				this.creerDonnee(ligneAInterpreter);
 			}
 			else
 			{
-				if ( ligneAInterpreter.equals("variable:" ) )
-				{
-					this.lectureConstante = false;
-					this.lectureVariable  = true ;
-				}
-				if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
-
-				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution += EntreeSortie.ecrire(ligneAInterpreter, this);
+				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution += EntreeSortie.ecrire(ligneAInterpreter, this) + "\n";
 				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
+				if ( ligneAInterpreter.contains("lire"  ) )EntreeSortie.lire(ligneAInterpreter, this);
 			}
-
-			if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;	
 		}
+	}
+
+	/**
+	 * Retourne la trace d'execution actuelle
+	 * @return
+	 */
+	public String getTraceDexecution()
+	{
+		return this.traceDexecution;
 	}
 
 	/**
@@ -84,11 +100,11 @@ public class Interpreteur
 		String line = "";
 		try
 		{
-			Scanner sc = new Scanner (new FileInputStream(nomFichier));
+			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"));
 			while(sc.hasNextLine())
 			{
 				line = sc.nextLine();
-				this.lstContenu.add(line);
+				this.lstContenu.add(line.replaceAll("\t", "    "));
 			}
 			sc.close();
 		}catch (Exception e) {System.out.println("Erreur 001 : Lecture du fichier .algo"); e.printStackTrace();}
@@ -107,6 +123,13 @@ public class Interpreteur
 		
 		return null;
 	}
+
+	/**
+	 * retourne le nombre de données
+	 * @return
+	 *    nombre de données
+	 */
+	public int getNbDonnee(){ return this.lstDonnee.size(); }
 
 	/**
 	 * Retourne le contenu avec + ou - 40 lignes
@@ -128,28 +151,35 @@ public class Interpreteur
 
 		res = "";
 		for(i=n;i<40+n && size>i ;i++)
-			res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
+			res += String.format("%3d %-79s", i, this.lstContenu.get(i)) + "\n";
 		
 		if ( i < 40+n)
 			for (int j=0;j<40+n-i;j++)
-				res += String.format("%-80s", "") + "\n";
+				res += String.format("%-83s", "") + "\n";
 
 		return res;
 	}
 	
+	/**
+	 * permet de creer une donnee
+	 * constante ou variable
+	 * @param ligne
+	 *   la ligne à traiter
+	 */
 	public void creerDonnee(String ligne)
 	{
 		Donnee tmp;
-		
+		String nom;
 		if(this.lectureVariable)
 		{
+
 			String[] l = ligne.split(":");
 			l[0].replaceAll(" ", "");
 			String[] lSplit = l[0].split(",");
 			
 			for(int i=0; i<lSplit.length; i++)
 			{
-				nom = lSplit[i];
+				nom = lSplit[i].replaceAll(" |\t", "");
 				switch(this.getType(ligne))
 				{
 					case "entier"   : tmp = new Donnee<Integer>  (nom, "entier"             , null, false); break;
@@ -163,42 +193,41 @@ public class Interpreteur
 		}
 		if(this.lectureConstante)
 		{
+			String[] l = ligne.split("<--");
+			nom = l[0].replaceAll(" |\t", "");
+
+			String valeur[] = ligne.split("<--");
+			String val = valeur[1];
+			
 			switch(this.getType(ligne))
 			{
-				case "entier" : 
-				{
-					Integer val = Integer.parseInt(this.getValeur(ligne));
-					tmp = new Donnee<Integer>   (nom, "entier"             , val, true);
-					break;
-				}
-				case "réel" :
-				{
-					Double val = Double.ParseDouble(this.getValeur(ligne));
-					tmp = new Donnee<Double>    (nom, "réel "              , val, true);
-					break;
-				}
-				case "caractère" :
-				{
-					Character val = this.getValeur(ligne);
-					tmp = new Donnee<Character>(nom, "caractère"          , val, true);
-					break;
-				}
-				case "booléen" :
-				{
-					Boolean val = this.getValeur(ligne).equals("true");
-					tmp = new Donnee<Boolean>   (nom, "booléen"            , val, true);
-					break;
-				}
-				default :
-				{
-					String valeur[] = ligne.split("=");
-					val = valeur[1];
-					tmp = new Donnee<String>   (nom, "chaine de caractère", val, true); 
-					break;
-				}
+				case "entier"    -> tmp = new Donnee<Integer>   (nom, "entier"   , Integer.parseInt(val)    , true);
+				case "réel"      -> tmp = new Donnee<Double>    (nom, "réel "    , Double.parseDouble(val)  , true);
+				case "caractère" -> tmp = new Donnee<Character> (nom, "caractère", val.charAt(0)            , true);
+				case "booléen"   -> tmp = new Donnee<Boolean>   (nom, "booléen"  , Boolean.parseBoolean(val), true);
+				default           -> tmp = new Donnee<String>   (nom, "chaine de caractères",           val , true); 
 			}
 			this.lstDonnee.add(tmp);
 		}
+	}
+
+	/**
+	 * Permet d'affecter une valeur à une ligne
+	 * @param ligne
+	 */
+	private void affecter(String ligne)
+	{
+		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
+		String value  = ligne.substring(ligne.indexOf("<--")+3);
+
+		value = value.replaceAll(" |\t", "");
+
+		Donnee tmp = null;
+
+		for ( Donnee data: this.lstDonnee )
+			if ( data.getNom().equals(nomVar) )tmp = data;
+
+		Util.setValeurBySwitch(tmp, value);
 	}
 
 	/**
@@ -215,43 +244,15 @@ public class Interpreteur
 	 */
 	private String getType(String ligne)
 	{
-		if(this.lectureVariable)
-		{
-			String[] decomp = ligne.split(":");
-			String type = decomp[1].replaceAll(" ", "");
-		}
-		else //this.lectureConstante
-		{
-			val = this.getValeur(ligne);
-			String type = "entier";
-			if(val.matches("\"(.*)\"")) type = "chaine de caractères";
-			if(val.matches("\'.\'")   ) type = "caractère";
-			if(val.equals("true") || val.equals("false")) type = "booléen";
-			if(val.matches("(\d*),(\d*)")) type = "réel";
-		}
-		return type;
-	}
-	
-	public String getValeur(String ligne)
-	{
-		if(this.lectureConstante)
-		{
-			String valeur[] = ligne.split("=");
-			val = valeur[1].replaceAll(" ", "");
-			return val;
-		}
-		return "null";
+		return Util.getType(ligne, this.lectureConstante);
 	}
 
 	/**
-	 * Retourne l'affichage des données
+	 * Retourne l'affichage des données séléctionnés
 	 * @return
 	 */
 	public String getDonnees()
 	{
-		String res = "";
-
-
-		return res;
+		return this.gestionDonnee.getDonneeString();
 	}
 }
