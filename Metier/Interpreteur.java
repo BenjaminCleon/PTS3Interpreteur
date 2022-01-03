@@ -127,7 +127,7 @@ public class Interpreteur
 
 		res = "";
 		for(i=n;i<40+n && size>i ;i++)
-			res += String.format("%-80s", this.lstContenu.get(i)) + "\n";
+			res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
 		
 		if ( i < 40+n)
 			for (int j=0;j<40+n-i;j++)
@@ -200,6 +200,13 @@ public class Interpreteur
 			this.lstDonnee.add(tmp);
 		}
 	}
+	/**
+	 * Retourne le nombre de ligne du fichier
+	 * @return
+	 * 	nombre de ligne
+	 */
+	public int getSizeContenu(){ return this.lstContenu.size(); }
+
 	/**
 	 * Créer une variable
 	 * @param ligne

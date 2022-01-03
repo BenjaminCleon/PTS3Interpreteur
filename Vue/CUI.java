@@ -30,10 +30,10 @@ public class CUI
 		String[] tabFichier, tabData;
 
 		fichier = this.controleur.getFichier(n);
-		data    = this.controleur.getDonnee ( );
+		data    = this.controleur.getFichier(n);
 
 		tabFichier = fichier.split("\n");
-		tabData    = fichier.split("\n");
+		tabData    = data.split("\n");
 
 		res = "\n";
 		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";

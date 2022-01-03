@@ -1,5 +1,7 @@
 package AlgoPars;
 
+import java.util.Scanner;
+
 import AlgoPars.Metier.Interpreteur;
 import AlgoPars.Vue.CUI;
 
@@ -13,8 +15,6 @@ public class Controleur
 	private CUI          ihm   ; // Partie visuelle
 	private Interpreteur metier; // Partie métier
 
-	private ArrayList<String> alLigne;
-
 	/**
 	 * Constructeur de la classe Controleur
 	 */
@@ -23,7 +23,7 @@ public class Controleur
 		this.ihm    = new CUI         (this);
 		this.metier = new Interpreteur(this, nomFic);
 
-		this.ihm.afficher(0);
+		this.lectureUtilisateur();
 	}
 
 	public String getFichier(int n)
@@ -33,20 +33,24 @@ public class Controleur
 
 	public String getDonnee()
 	{
-		return this.metier.getDonnee();
+		return "";
+		//return this.metier.getDonnee();
 	}
 
 	/*
 	 * Lecture de l'utilisateur pour se deplacer dans le code
 	*/ 
-	public lectureUtilisateur()
+	public void lectureUtilisateur()
 	{
+		String line;
+
 		try
 		{
 			Scanner input = new Scanner(System.in);
 			int numLigne = 0;
-			while(numLigne<this.alLigne.size())
+			while(numLigne<this.metier.getSizeContenu())
 			{
+				this.ihm.afficher(numLigne);
 				line = input.nextLine();
 				switch(line.toUpperCase())
 				{
@@ -61,7 +65,7 @@ public class Controleur
 						}
 					}
 				}
-				interpreter(numLigne);
+				this.metier.interpreter(numLigne);
 			}
 			input.close();
 		} catch (Exception e) {System.out.println("Erreur 002 : Deplacement ligne par ligne"); e.printStackTrace();}
