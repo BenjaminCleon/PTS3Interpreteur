@@ -33,8 +33,7 @@ public class Controleur
 
 	public String getDonnee()
 	{
-		return "";
-		//return this.metier.getDonnee();
+		return this.metier.getDonnees();
 	}
 
 	/*

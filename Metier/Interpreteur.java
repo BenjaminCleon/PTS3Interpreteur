@@ -178,5 +178,11 @@ public class Interpreteur
 	 * Retourne l'affichage des données
 	 * @return
 	 */
-	public String getDonnees(){ return ""; }
+	public String getDonnees()
+	{
+		String res = "";
+
+
+		return res;
+	}
 }
