@@ -1,7 +1,5 @@
 package AlgoPars;
 
-import java.net.CacheRequest;
-
 import AlgoPars.Metier.Interpreteur;
 import AlgoPars.Vue.CUI;
 
@@ -26,8 +24,17 @@ public class Controleur
 		this.ihm.afficher(0);
 	}
 
+	public String getFichier(int n)
+	{
+		return this.metier.getFichier(n);
+	}
+
+	public String getDonnee()
+	{
+		return this.metier.getDonnee();
+	}
+
 	/**
-	 * 
 	 * @param args
 	 *     arguments passé au lancement du programme
 	 */
