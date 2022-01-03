@@ -13,6 +13,8 @@ public class Controleur
 	private CUI          ihm   ; // Partie visuelle
 	private Interpreteur metier; // Partie métier
 
+	private ArrayList<String> alLigne;
+
 	/**
 	 * Constructeur de la classe Controleur
 	 */
@@ -32,6 +34,37 @@ public class Controleur
 	public String getDonnee()
 	{
 		return this.metier.getDonnee();
+	}
+
+	/*
+	 * Lecture de l'utilisateur pour se deplacer dans le code
+	*/ 
+	public lectureUtilisateur()
+	{
+		try
+		{
+			Scanner input = new Scanner(System.in);
+			int numLigne = 0;
+			while(numLigne<this.alLigne.size())
+			{
+				line = input.nextLine();
+				switch(line.toUpperCase())
+				{
+					case ""  -> {numLigne++;}
+					case "B" -> {numLigne--;}
+					default ->
+					{
+						switch((line.charAt(0) + "").toUpperCase())
+						{
+							case "L" -> {numLigne = Integer.parseInt(line.substring(1))-1;}
+							case "I" -> {/*S'arreter dans une itération */}
+						}
+					}
+				}
+				interpreter(numLigne);
+			}
+			input.close();
+		} catch (Exception e) {System.out.println("Erreur 002 : Deplacement ligne par ligne"); e.printStackTrace();}
 	}
 
 	/**
