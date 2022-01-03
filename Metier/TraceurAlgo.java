@@ -4,23 +4,6 @@ import java.util.Scanner;
 
 public class TraceurAlgo
 {
-	private String lien = "Essais.algo";
-	private ArrayList<String> alLigne = new ArrayList<String>();
-
-	public void lectureFichier(String lien)
-	{
-		String line = "";
-		try
-		{
-			Scanner sc = new Scanner (new FileInputStream(lien));
-			while(sc.hasNextLine())
-			{
-				line = sc.nextLine();
-				this.alLigne.add(line);
-			}
-			sc.close();
-		}catch (Exception e) {System.out.println("Erreur 001 : Lecture du fichier .algo"); e.printStackTrace();}
-	}
 	public static void main(String[] args)
 	{
 		lectureFichier("Essais.algo");
@@ -58,9 +41,6 @@ public class TraceurAlgo
 
 			}
 			input.close();
-		} catch (Exception e) {System.out.println("Erreur 002 : Avancement ligne par ligne"); e.printStackTrace();}
-		
-
-		
+		} catch (Exception e) {System.out.println("Erreur 002 : Avancement ligne par ligne"); e.printStackTrace();}	
 	}
 }

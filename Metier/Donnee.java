@@ -1,3 +1,5 @@
+package AlgoPars.Metier;
+
 /**
  * Permet pour une donnee écrite en pseudo-code
  * d'être stockée ici avec son type ( en pseudo-code )
