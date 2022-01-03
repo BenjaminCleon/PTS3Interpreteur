@@ -30,14 +30,15 @@ public class EntreeSortie
 	 * @param ligne
 	 *   ligne a interprété
 	 */
-	public static void ecrire(String ligne, Interpreteur interpret)
+	public static String ecrire(String ligne, Interpreteur interpret)
 	{
 		ligne = ligne.substring(ligne.indexOf("(")+1, ligne.indexOf(")"));
-		EntreeSortie.ecrireRec(ligne.replaceAll(" ", ""), interpret);
+		return EntreeSortie.ecrireRec(ligne.replaceAll(" ", ""), interpret);
 	}
 
-	private static void ecrireRec(String ligne, Interpreteur interpret)
+	private static String ecrireRec(String ligne, Interpreteur interpret)
 	{
 		Donnee data = interpret.getDonnee(ligne);
+		return data.getValeur() + "";
 	}
 }

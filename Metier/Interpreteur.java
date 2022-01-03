@@ -1,6 +1,7 @@
 package AlgoPars.Metier;
 
 import AlgoPars.Controleur;
+import AlgoPars.Metier.EntreeSortie;
 
 import java.util.List     ;
 import java.io.FileInputStream;
@@ -15,9 +16,10 @@ public class Interpreteur
 {
 	private Controleur  controleur; // controleur associé
 
-	private List<Donnee> lstDonnee      ; // liste des données
-	private List<String> lstContenu     ; // contenu du fichier
-	private List<String> traceDexecution; // trace d'éxécution du code
+	private List<Donnee> lstDonnee ; // liste des données
+	private List<String> lstContenu; // contenu du fichier
+	
+	private String traceDexecution ; // trace d'éxécution du code
 
 	private String nomFichier; // nom du fichier à lire
 	
@@ -34,7 +36,7 @@ public class Interpreteur
 
 		this.lstContenu      = new ArrayList<String>();
 		this.lstDonnee       = new ArrayList<Donnee>();
-		this.traceDexecution = new ArrayList<String>();
+		this.traceDexecution = "";
 
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
@@ -56,14 +58,19 @@ public class Interpreteur
 			{
 				// Alan c'est ton moment
 			}
-
-			if ( ligneAInterpreter.equals("variable:" ) )
+			else
 			{
-				this.lectureConstante = false;
-				this.lectureVariable  = true ;
+				if ( ligneAInterpreter.equals("variable:" ) )
+				{
+					this.lectureConstante = false;
+					this.lectureVariable  = true ;
+				}
+				if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
+
+				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution += EntreeSortie.ecrire(ligneAInterpreter, this);
 			}
-			if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
-			
+
+			if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;	
 		}
 	}
 
