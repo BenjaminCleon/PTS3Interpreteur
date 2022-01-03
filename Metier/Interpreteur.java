@@ -139,10 +139,11 @@ public class Interpreteur
 	public void creerDonnee(String ligne)
 	{
 		Donnee tmp;
+		String nom;
 		if(this.lectureVariable)
 		{
 			
-			String nom;
+			
 			String[] l = ligne.split(":");
 			l[0].replacceAll(" ", "");
 			String[] lSplit = l[0].split(",");
@@ -163,7 +164,9 @@ public class Interpreteur
 		}
 		if(this.lectureConstante)
 		{
-			switch(this.getTypeC(ligne))
+			String[] l = ligne.split("=");
+			nom = l[0].replaceAll(" ", "");
+			switch(this.getType(ligne))
 			{
 				case "entier" : 
 				{
@@ -192,7 +195,7 @@ public class Interpreteur
 				default :
 				{
 					String valeur[] = ligne.split("=");
-					val = valeur[1];
+					String val = valeur[1];
 					tmp = new Donnee<String>   (nom, "chaine de caractère", val, true); 
 					break;
 				}
@@ -246,7 +249,7 @@ public class Interpreteur
 			if(val.matches("\"(.*)\"")) type = "chaine de caractères";
 			if(val.matches("\'.\'")   ) type = "caractère";
 			if(val.equals("true") || val.equals("false")) type = "booléen";
-			if(val.matches("(\d*),(\d*)") type = "réel";
+			if(val.matches("(\\d*),(\\d*)") type = "réel";
 		}
 		return type;
 	}
