@@ -69,6 +69,7 @@ public class Interpreteur
 				if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
 
 				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution += EntreeSortie.ecrire(ligneAInterpreter, this);
+				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
 			}
 
 			if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;	
@@ -139,12 +140,11 @@ public class Interpreteur
 	public void creerDonnee(String ligne)
 	{
 		Donnee tmp;
+		
 		if(this.lectureVariable)
 		{
-			
-			String nom;
 			String[] l = ligne.split(":");
-			l[0].replacceAll(" ", "");
+			l[0].replaceAll(" ", "");
 			String[] lSplit = l[0].split(",");
 			
 			for(int i=0; i<lSplit.length; i++)
@@ -163,7 +163,7 @@ public class Interpreteur
 		}
 		if(this.lectureConstante)
 		{
-			switch(this.getTypeC(ligne))
+			switch(this.getType(ligne))
 			{
 				case "entier" : 
 				{
@@ -200,32 +200,13 @@ public class Interpreteur
 			this.lstDonnee.add(tmp);
 		}
 	}
+
 	/**
 	 * Retourne le nombre de ligne du fichier
 	 * @return
 	 * 	nombre de ligne
 	 */
 	public int getSizeContenu(){ return this.lstContenu.size(); }
-
-	/**
-	 * Créer une variable
-	 * @param ligne
-	 * @param nom
-	 */
-	public void creerVariable(String ligne, String nom)
-	{
-		Donnee tmp;
-		
-		switch(this.getType(ligne))
-		{
-			case "entier"   : tmp = new Donnee<Integer>  (nom, "entier"             , null, !this.lectureVariable); break;
-			case "réel"     : tmp = new Donnee<Double>   (nom, "réel "              , null, false); break;
-			case "caractère": tmp = new Donnee<Character>(nom, "caractère"          , null, false); break;
-			case "booléen"  : tmp = new Donnee<Boolean>  (nom, "booléen"            , null, false); break;
-			default         : tmp = new Donnee<String>   (nom, "chaine de caractère", null, false); break;
-		}
-		this.lstDonnee.add(tmp);
-	}
 
 	/**
 	 * Retourne la ligne des données
@@ -245,8 +226,8 @@ public class Interpreteur
 			String type = "entier";
 			if(val.matches("\"(.*)\"")) type = "chaine de caractères";
 			if(val.matches("\'.\'")   ) type = "caractère";
-			if(val.equals("true") || val.equals("false")) type = "booléen";
-			if(val.matches("(\d*),(\d*)") type = "réel";
+			if(val.equals("true") || val.equals("false")) type = "booléen";
+			if(val.matches("(\d*),(\d*)")) type = "réel";
 		}
 		return type;
 	}
