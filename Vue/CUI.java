@@ -50,7 +50,7 @@ public class CUI
 		document = null;
 		try
 		{
-			document = sxb.build(new File("../coloration.xml"));	
+			document = sxb.build(new File("./coloration.xml"));	
 		}catch(Exception e){e.printStackTrace();}
 
 		//Balise france
