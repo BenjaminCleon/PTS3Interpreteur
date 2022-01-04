@@ -1,9 +1,10 @@
 package AlgoPars.Metier;
 
 import java.io.File;
-
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List     ;
+import java.util.Locale;
 import java.util.Scanner  ;
 
 public class GestionDonnee
@@ -66,7 +67,7 @@ public class GestionDonnee
 				}
 			}
 			// à fixer quand c'est un nombre
-			sRet += String.format("  %-15s", var) + "|" + String.format("%23s", valVar) + " \n";
+			sRet += String.format(" %-16s|%22s \n", var, valVar);
 		}
 
 		for(int i=this.lstVar.size();i<41;i++)sRet += String.format("%-41s", "") + "\n";
