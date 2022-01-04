@@ -140,7 +140,7 @@ public class Interpreteur
 	{
 		Donnee tmp;
 		String nom;
-		if(this.lectureVariable)
+		if(this.lectureVariable) 
 		{
 			
 			
@@ -237,15 +237,16 @@ public class Interpreteur
 	 */
 	private String getType(String ligne)
 	{
+		String type;
 		if(this.lectureVariable)
 		{
 			String[] decomp = ligne.split(":");
-			String type = decomp[1].replaceAll(" ", "");
+			type = decomp[1].replaceAll(" ", "");
 		}
 		else //this.lectureConstante
 		{
 			val = this.getValeur(ligne);
-			String type = "entier";
+			type = "entier";
 			if(val.matches("\"(.*)\"")) type = "chaine de caractères";
 			if(val.matches("\'.\'")   ) type = "caractère";
 			if(val.equals("true") || val.equals("false")) type = "booléen";
@@ -262,7 +263,7 @@ public class Interpreteur
 			val = valeur[1].replaceAll(" ", "");
 			return val;
 		}
-		return "null";
+		return null;
 	}
 
 	/**
