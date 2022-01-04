@@ -68,35 +68,32 @@ public class Interpreteur
 	 */
 	public void interpreter(int n)
 	{
-		
-			if ( n < this.lstContenu.size() && n >= 0 )
+		if ( n < this.lstContenu.size() && n >= 0 )
+		{
+			String ligneAInterpreter = this.lstContenu.get(n);
+
+			if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;
+			
+			if ( ligneAInterpreter.equals("variable:" ) )
 			{
-				String ligneAInterpreter = this.lstContenu.get(n);
-
-				if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;
-				
-				if ( ligneAInterpreter.equals("variable:" ) )
-				{
-					this.lectureConstante = false;
-					this.lectureVariable  = true ;
-				}
-				if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
-
-				if ( (this.lectureVariable || this.lectureConstante) && 
-					!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
-				{
-					// Alan c'est ton moment
-					this.creerDonnee(ligneAInterpreter);
-				}
-				else
-				{
-					if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution += EntreeSortie.ecrire(ligneAInterpreter, this) + "\n";
-					if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-					if ( ligneAInterpreter.contains("lire"  ) )EntreeSortie.lire(ligneAInterpreter, this);
-				}
+				this.lectureConstante = false;
+				this.lectureVariable  = true ;
 			}
-		
-		
+			if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
+
+			if ( (this.lectureVariable || this.lectureConstante) && 
+			    !(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
+			{
+				// Alan c'est ton moment
+				this.creerDonnee(ligneAInterpreter);
+			}
+			else
+			{
+				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution += EntreeSortie.ecrire(ligneAInterpreter, this) + "\n";
+				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
+				if ( ligneAInterpreter.contains("lire"  ) )EntreeSortie.lire(ligneAInterpreter, this);
+			}
+		}
 	}
 
 	/**
@@ -221,11 +218,11 @@ public class Interpreteur
 	{
 		Donnee tmp;
 		String nom;
-		if(this.lectureVariable)
+		if(this.lectureVariable) 
 		{
 
 			String[] l = ligne.split(":");
-			l[0].replaceAll(" ", "");
+			l[0].replaceAll(" |\t", "");
 			String[] lSplit = l[0].split(",");
 			
 			for(int i=0; i<lSplit.length; i++)
@@ -233,11 +230,11 @@ public class Interpreteur
 				nom = lSplit[i].replaceAll(" |\t", "");
 				switch(this.getType(ligne))
 				{
-					case "entier"   : tmp = new Donnee<Integer>  (nom, "entier"             , null, false); break;
-					case "réel"     : tmp = new Donnee<Double>   (nom, "réel "              , null, false); break;
-					case "caractère": tmp = new Donnee<Character>(nom, "caractère"          , null, false); break;
-					case "booléen"  : tmp = new Donnee<Boolean>  (nom, "booléen"            , null, false); break;
-					default         : tmp = new Donnee<String>   (nom, "chaine de caractère", null, false); break;
+					case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , null, false);
+					case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , null, false);
+					case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , null, false);
+					case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, null, false);
+					default           -> tmp = new Donnee<String>   (nom, Type.CHAINE , null, false);
 				}
 				this.lstDonnee.add(tmp);
 			}
@@ -246,17 +243,14 @@ public class Interpreteur
 		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
-
-			String valeur[] = ligne.split("<--");
-			String val = valeur[1];
-			
+			String val = Util.getValeur(ligne);			
 			switch(this.getType(ligne))
 			{
-				case "entier"    -> tmp = new Donnee<Integer>   (nom, "entier"   , Integer.parseInt(val)    , true);
-				case "réel"      -> tmp = new Donnee<Double>    (nom, "réel "    , Double.parseDouble(val)  , true);
-				case "caractère" -> tmp = new Donnee<Character> (nom, "caractère", val.charAt(0)            , true);
-				case "booléen"   -> tmp = new Donnee<Boolean>   (nom, "booléen"  , Boolean.parseBoolean(val), true);
-				default           -> tmp = new Donnee<String>   (nom, "chaine de caractères",           val , true); 
+				case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , Integer.parseInt(val)    , true);
+				case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , Double.parseDouble(val)  , true);
+				case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , val.charAt(0)            , true);
+				case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, Boolean.parseBoolean(val), true);
+				default           -> tmp = new Donnee<String>   (nom, Type.CHAINE ,                       val, true); 
 			}
 			this.lstDonnee.add(tmp);
 		}
@@ -269,9 +263,9 @@ public class Interpreteur
 	private void affecter(String ligne)
 	{
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
-		String value  = ligne.substring(ligne.indexOf("<--")+3);
+		String value  = Util.getValeur(ligne);
 
-		value = value.replaceAll(" |\t", "");
+		System.out.println(nomVar + " |" + value + "|");
 
 		Donnee tmp = null;
 
