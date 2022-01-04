@@ -12,7 +12,7 @@ variable:
 	y: réel
 	z: booléen
 DEBUT
-	v <-- "Salut"
+	v <-- "Salut er"
 	w <-- 'C'
 	x <-- 25
 	y <-- 56.23

@@ -1,5 +1,7 @@
 package AlgoPars.Metier;
 
+import AlgoPars.Metier.Type;
+
 /**
  * Classe Util avec des méthodes utiles dans diverses fichier
  */
@@ -23,12 +25,21 @@ public class Util
 		else
 		{
 			String val  = Util.getValeur(ligne);
-			type = "entier";
-			if(val.matches("\"(.*)\"")) type = "chaine de caractères";
-			if(val.matches("\'.\'")   ) type = "caractère";
-			if(val.equals("true") || val.equals("false")) type = "booléen";
-			if(val.matches("(\\d*),(\\d*)")) type = "réel";
+			type = getTypeAfterValue(val);
 		}
+
+		return type;
+	}
+
+	public static String getTypeAfterValue(String val)
+	{
+		String type = "";
+
+		if(val.equals("true") || val.equals("false")) type = Type.BOOLEEN;
+		if(val.matches("^\\d+$")                    ) type = Type.ENTIER ;
+		if(val.matches("(\\d*)\\.(\\d*)")           ) type = Type.REEL   ;
+		if(val.matches("\'.\'")                     ) type = Type.CHAR   ;
+		if(type.equals("")                          ) type = Type.CHAINE ;
 
 		return type;
 	}
@@ -41,19 +52,21 @@ public class Util
 	public static String getValeur(String ligne)
 	{
 		String valeur[] = ligne.split("<--");
-		String val = valeur[1].replaceAll(" |\t", "");
-		return val;
+		if ( valeur[1].indexOf("\"") == -1 )valeur[1] = valeur[1].replaceAll(" ", "");
+		valeur[1] = valeur[1].replaceAll(" \"|\t|\"|'|" ,"");
+
+		return valeur[1];
 	}
 
 	public static void setValeurBySwitch(Donnee data, String value)
 	{
 		switch(data.getType())
 		{
-			case "entier"    -> data.setValeur(Integer.parseInt    (value));
-			case "caractère" -> data.setValeur(value.charAt(0))            ;
-			case "réel"      -> data.setValeur(Double.parseDouble  (value));
-			case "booléen"   -> data.setValeur(Boolean.parseBoolean(value));
-			default          -> data.setValeur(                     value) ;
+			case Type.ENTIER  -> data.setValeur(Integer.parseInt    (value));
+			case Type.REEL    -> data.setValeur(Double.parseDouble  (value));
+			case Type.CHAR    -> data.setValeur(value.charAt(0))            ;
+			case Type.BOOLEEN -> data.setValeur(Boolean.parseBoolean(value));
+			default           -> data.setValeur(                     value) ;
 		}
 	}
 }

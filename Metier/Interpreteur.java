@@ -182,11 +182,11 @@ public class Interpreteur
 				nom = lSplit[i].replaceAll(" |\t", "");
 				switch(this.getType(ligne))
 				{
-					case "entier"   -> tmp = new Donnee<Integer>  (nom, "entier"             , null, false);
-					case "réel"     -> tmp = new Donnee<Double>   (nom, "réel "              , null, false);
-					case "caractère"-> tmp = new Donnee<Character>(nom, "caractère"          , null, false);
-					case "booléen"  -> tmp = new Donnee<Boolean>  (nom, "booléen"            , null, false);
-					default         -> tmp = new Donnee<String>   (nom, "chaine de caractère", null, false);
+					case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , null, false);
+					case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , null, false);
+					case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , null, false);
+					case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, null, false);
+					default           -> tmp = new Donnee<String>   (nom, Type.CHAINE , null, false);
 				}
 				this.lstDonnee.add(tmp);
 			}
@@ -195,18 +195,14 @@ public class Interpreteur
 		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
-			l[1].replaceAll("\"|\'", "");
-			String val = l[1].replaceAll(" |\t", ""); // pour tout sauf la chaine
-			
-			
-			
+			String val = Util.getValeur(ligne);			
 			switch(this.getType(ligne))
 			{
-				case "entier"    -> tmp = new Donnee<Integer>   (nom, "entier"   , Integer.parseInt(val)    , true);
-				case "réel"      -> tmp = new Donnee<Double>    (nom, "réel "    , Double.parseDouble(val)  , true);
-				case "caractère" -> tmp = new Donnee<Character> (nom, "caractère", val.charAt(0)            , true);
-				case "booléen"   -> tmp = new Donnee<Boolean>   (nom, "booléen"  , Boolean.parseBoolean(val), true);
-				default          -> tmp = new Donnee<String>    (nom, "chaine de caractères", l[1].replaceFirst(" |\t", ""), true); 
+				case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , Integer.parseInt(val)    , true);
+				case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , Double.parseDouble(val)  , true);
+				case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , val.charAt(0)            , true);
+				case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, Boolean.parseBoolean(val), true);
+				default           -> tmp = new Donnee<String>   (nom, Type.CHAINE ,                       val, true); 
 			}
 			this.lstDonnee.add(tmp);
 		}
@@ -219,9 +215,9 @@ public class Interpreteur
 	private void affecter(String ligne)
 	{
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
-		String value  = ligne.substring(ligne.indexOf("<--")+3);
+		String value  = Util.getValeur(ligne);
 
-		value = value.replaceAll(" |\t", "");
+		System.out.println(nomVar + " |" + value + "|");
 
 		Donnee tmp = null;
 

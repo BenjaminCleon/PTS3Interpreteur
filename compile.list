@@ -6,4 +6,5 @@
 ./Metier/GestionDonnee.java
 ./Metier/EntreeSortie.java
 ./Metier/Util.java
+./Metier/Type.java
 ./Metier/Interpreteur.java
