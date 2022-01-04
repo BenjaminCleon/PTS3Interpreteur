@@ -3,5 +3,7 @@
 ./Vue/CUI.java
 
 ./Metier/Donnee.java
+./Metier/GestionDonnee.java
 ./Metier/EntreeSortie.java
+./Metier/Util.java
 ./Metier/Interpreteur.java
