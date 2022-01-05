@@ -59,7 +59,7 @@ public class Controleur
 					{
 						switch((line.charAt(0) + "").toUpperCase())
 						{
-							case "L" -> {numLigne = Integer.parseInt(line.substring(1))-1;}
+							case "L" -> {numLigne = Integer.parseInt(line.substring(1));}
 							case "I" -> {/*S'arreter dans une itération */}
 						}
 					}

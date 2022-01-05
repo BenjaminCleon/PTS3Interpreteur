@@ -1,1 +1,1 @@
-javac @compile.list -d ./
+javac @compile.list -d ./ -encoding utf8

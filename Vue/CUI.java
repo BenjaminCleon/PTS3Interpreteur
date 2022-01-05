@@ -2,6 +2,7 @@ package AlgoPars.Vue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
 import java.util.HashMap;
 import java.io.File;
 
@@ -10,6 +11,9 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 
 import AlgoPars.Controleur;
+
+import iut.algo.Console;
+import iut.algo.CouleurConsole;
 
 
 /**
@@ -30,6 +34,7 @@ public class CUI
 		this.controleur = controleur;
 		this.lstMotsColoration = new ArrayList<String>();
 		this.hashMap = new HashMap<String, ArrayList<String>>();
+		Console.normal();
 		lectureXML();
 	}
 
@@ -92,8 +97,8 @@ public class CUI
 
 		tabFichier = fichier.split("\n");//le divise par ligne
 		tabData    = data.split("\n");
-
-		res = "\n";
+		Console.normal();
+		res = putColor("defaut") + CouleurConsole.NOIR.getFond() + "\n";
 		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
 		res += "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |\n";
 		for ( int i=0;i<84;i++)res+="¨";
@@ -102,53 +107,48 @@ public class CUI
 
 		res += "\n";
 
-		res += "|" + tabFichier[0] + "|     NOM         |          VALEUR       |\n";
+		res += "|" + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |\n";
 		
 		for (int i=1;i<40;i++)
 		{
-			int caractere = 0;
-			System.out.println( i + " " + tabFichier[i].length());
-			
-				String numLig = tabFichier[i].substring(0,2);
-				String ligne = tabFichier[i].substring(2);
-
-				Boolean bOk = false;
-				for(char c : ligne.toCharArray())
-					if (c != ' ') bOk = true;
-
-				if(bOk)//Si c'est pas que des espaces
-				{
-					while(ligne.charAt(caractere) == ' ' && caractere < ligne.length())
-						caractere++;
-					
-					String[] tabSplit = tabFichier[i].substring(caractere).split(" ");
-					
-					for(String mot : tabSplit)
-					{
-						if(this.hashMap.containsValue(mot))//Si le mot appartient a la liste des mots qui doivent etre coloriés
-							mot = this.hashMap.get(mot) + mot + this.hashMap.get("defaut");//Ici on colori
-					}
-				
-					String nouvelleLigne = "";
-					for(int str=0; str<caractere; str++)
-						nouvelleLigne += " ";
-					
-					for(int cpt=0; cpt<tabSplit.length; cpt++)
-						nouvelleLigne += tabSplit[cpt] + " ";
-					
-
-					res += "|" + nouvelleLigne + "|" + tabData[i-1] + "|\n";
-				}
-				else
-				{
-					res += "|" + tabFichier[i] + "|" + tabData[i-1] + "|\n";
-				}
-			
-			
-			
-		}
-			
 		
+			int caractere = 0;
+						
+			String numLig = tabFichier[i].substring(0,2);
+			String ligne = tabFichier[i].substring(2);
+
+			Boolean bOk = false;
+			for(char c : ligne.toCharArray())
+				if (c != ' ') bOk = true;
+			if(bOk)//Si c'est pas que des espaces
+			{	
+				
+				while(ligne.charAt(caractere) == ' ' && caractere < ligne.length())
+					caractere++;
+			
+				String[] tabSplit = ligne.substring(caractere).split(" ");
+							
+				String nouvelleLigne = numLig;
+				//Replacement des espaces
+				for(int str=0; str<caractere; str++)
+					nouvelleLigne += " ";
+
+				//Replacement des mots
+				for(int cpt=0; cpt<tabSplit.length; cpt++)
+				{
+					if(this.estDansListe(tabSplit[cpt]))
+						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + putColor("defaut") + " ";
+					else
+						nouvelleLigne += tabSplit[cpt] + " ";
+
+				}
+				res += "|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|\n";
+			}
+			else // Si c'est que des espaces
+			{
+				res += "|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|\n";
+			}
+		}
 		for ( int i=0;i<127;i++)res+="¨";	
 
 		res += "\n\n¨¨¨¨¨¨¨¨¨¨¨\n" + "| CONSOLE |\n";
@@ -158,7 +158,44 @@ public class CUI
 
 		for ( int i=0;i<127;i++)res+="¨";
 
-		System.out.println(res);
+		Console.println(res);
 	}
 
-} 
+	public ArrayList<String> getListeMot()
+	{
+		ArrayList<String> alRetour = new ArrayList<String>();
+		for(String key : this.hashMap.keySet())
+		{
+			ArrayList<String> alTemp = this.hashMap.get(key);
+			for(String s : alTemp)
+				alRetour.add(s);
+		}
+
+		return alRetour;
+	}
+
+	public boolean estDansListe(String mot)
+	{
+		for(String s : this.getListeMot())
+			if(s.equals(mot)) return true;
+		return false;
+	}
+
+	public String putColor(String mot)
+	{
+		String sCoul = "";
+		for(String couleur : this.hashMap.keySet())
+		{
+			if(this.hashMap.get(couleur).contains(mot))
+				sCoul = couleur;
+		}
+		switch(sCoul)
+		{
+			case "CYAN" -> sCoul = CouleurConsole.CYAN .getFont();
+			case "ROUGE"-> sCoul = CouleurConsole.ROUGE.getFont();
+			case "BLEU" -> sCoul = CouleurConsole.BLEU .getFont();
+			default     -> sCoul = CouleurConsole.BLANC.getFont();
+		}
+		return sCoul;
+	}
+}

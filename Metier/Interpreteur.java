@@ -10,6 +10,10 @@ import java.io.FileInputStream;
 import java.util.ArrayList    ;
 import java.util.Scanner      ;
 
+import iut.algo.Console;
+import iut.algo.CouleurConsole;
+
+
 /**
  * Classe principale liée au modèle de l'architecture MVC
  * @author LHEAD
@@ -151,7 +155,7 @@ public class Interpreteur
 	 * @param n
 	 *     la ligne ou se fait l'interprétation
 	 * @return
-	 *    contenu du fichier
+	 *    contenu du fichier sous forme de chaine
 	 */
 	public String getFichier(int n)
 	{
@@ -168,20 +172,28 @@ public class Interpreteur
 		{
 			for(l=0; l<size; l++)
 			{
+				//System.out.println(CouleurConsole.ROUGE.getFont());
 				if (this.numeroLigne == l)
+<<<<<<< HEAD
 					res += ">" ;
 				res += String.format("%2d", l) + String.format("%-80s", this.lstContenu.get(l)) + "\n";
+=======
+					res += CouleurConsole.MAUVE.getFond();
+				res+= String.format("%2d %-80s",l, this.lstContenu.get(l))+ CouleurConsole.NOIR.getFond() + "\n";
+				
+>>>>>>> e8986ebbf3cee436640df6e5fae06d87b3f4672c
 			}
 
 			for(int a = l; a<40; a++)
 				res += String.format("%-80s", " ") + "\n";
 		}
-		else
+		else//A debug
 		{
+			
 			int move = 0;
-			//Affichage des 40 premieres lignes
-			for(i = 0+move; i<40+move; i++)
+			if( this.numeroLigne < 20)
 			{
+<<<<<<< HEAD
 				if (this.numeroLigne == i)
 					res += "<" + String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
 				else
@@ -189,23 +201,37 @@ public class Interpreteur
 				
 				//Quand n est à 20, on commence a tout descendre, ça affiche de la L1 à L41
 				if( i >= 20 && (40+move)<size) move++;			
+=======
+					//Affichage des 40 premieres lignes
+				for(i = 0+move; i<40+move; i++)
+				{
+					if (this.numeroLigne == i)
+						res += CouleurConsole.MAUVE.getFond();
+					res+= String.format("%2d %-80s",i, this.lstContenu.get(i))+ CouleurConsole.NOIR.getFond() + "\n";
+				}
 			}
+			else
+			{
+				move = this.numeroLigne-20;
+				for(int j = 0+move; j<size; j++)
+				{
+					if (this.numeroLigne == j)
+					{
+						res += String.format("%2d %-80s", j, CouleurConsole.MAUVE.getFond() + this.lstContenu.get(j)) + CouleurConsole.NOIR.getFond() + "\n";
+					}
+					else
+						res += String.format("%2d %-80s", j, this.lstContenu.get(j)) + "\n";
+				}
+>>>>>>> e8986ebbf3cee436640df6e5fae06d87b3f4672c
+			}
+
+			//Ajout des lignes vides en fin de programme
+			for(i=n;i<40+n && size>i ;i++)
+				if ( i < 40+n)
+					for (int j=0;j<40+n-i;j++)
+						res += String.format("%-80s", "") + "\n";
 		
 		}
-		
-		
-		/*
-		if ( size <= 40 )n=0;
-
-		res = "";
-		for(i=n;i<40+n && size>i ;i++)
-			res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
-		
-		if ( i < 40+n)
-			for (int j=0;j<40+n-i;j++)
-				res += String.format("%-80s", "") + "\n";
-				*/
-
 		return res;
 	}
 	
