@@ -10,6 +10,10 @@ import java.io.FileInputStream;
 import java.util.ArrayList    ;
 import java.util.Scanner      ;
 
+import iut.algo.Console;
+import iut.algo.CouleurConsole;
+
+
 /**
  * Classe principale liée au modèle de l'architecture MVC
  * @author LHEAD
@@ -113,7 +117,7 @@ public class Interpreteur
 		String line = "";
 		try
 		{
-			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"), "UTF-8");
+			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"));
 			while(sc.hasNextLine())
 			{
 				line = sc.nextLine();
@@ -149,7 +153,7 @@ public class Interpreteur
 	 * @param n
 	 *     la ligne ou se fait l'interprétation
 	 * @return
-	 *    contenu du fichier
+	 *    contenu du fichier sous forme de chaine
 	 */
 	public String getFichier(int n)
 	{
@@ -166,45 +170,53 @@ public class Interpreteur
 		{
 			for(l=0; l<size; l++)
 			{
+				//System.out.println(CouleurConsole.ROUGE.getFont());
 				if (this.numeroLigne == l)
-					res += "X" + String.format("%2d %-80s", l, this.lstContenu.get(l)) + "\n";
-				else
-					res += String.format("%2d %-80s", l, this.lstContenu.get(l)) + "\n";
+					res += ">";
+				res+= String.format("%2d %-80s",l, this.lstContenu.get(l))+ "\n";
+				
 			}
 
 			for(int a = l; a<40; a++)
 				res += String.format("%-80s", " ") + "\n";
 		}
-		else
+		else//A debug
 		{
+			
 			int move = 0;
-			//Affichage des 40 premieres lignes
-			for(i = 0+move; i<40+move; i++)
+			if( this.numeroLigne < 20)
 			{
-				if (this.numeroLigne == i)
-					res += "X " + String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
-				else
-					res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
-				
-				//Quand n est à 20, on commence a tout descendre, ça affiche de la L1 à L41
-				if( i >= 20 && (40+move)<size) move++;			
+					//Affichage des 40 premieres lignes
+				for(i = 0+move; i<40+move; i++)
+				{
+					if (this.numeroLigne == i)
+						res += String.format("%2d %-80s", i, CouleurConsole.MAUVE.getFond() + this.lstContenu.get(i)) + CouleurConsole.NOIR.getFond() + "\n";
+					else
+						res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
+					
+				}
 			}
+			else
+			{
+				move = this.numeroLigne-20;
+				for(int j = 0+move; j<size; j++)
+				{
+					if (this.numeroLigne == j)
+					{
+						res += String.format("%2d %-80s", j, CouleurConsole.MAUVE.getFond() + this.lstContenu.get(j)) + CouleurConsole.NOIR.getFond() + "\n";
+					}
+					else
+						res += String.format("%2d %-80s", j, this.lstContenu.get(j)) + "\n";
+				}
+			}
+
+			//Ajout des lignes vides en fin de programme
+			for(i=n;i<40+n && size>i ;i++)
+				if ( i < 40+n)
+					for (int j=0;j<40+n-i;j++)
+						res += String.format("%-80s", "") + "\n";
 		
 		}
-		
-		
-		/*
-		if ( size <= 40 )n=0;
-
-		res = "";
-		for(i=n;i<40+n && size>i ;i++)
-			res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
-		
-		if ( i < 40+n)
-			for (int j=0;j<40+n-i;j++)
-				res += String.format("%-80s", "") + "\n";
-				*/
-
 		return res;
 	}
 	
@@ -243,7 +255,7 @@ public class Interpreteur
 		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
-			String val = Util.getValeur(ligne, true, null);			
+			String val = Util.getValeur(ligne);			
 			switch(this.getType(ligne))
 			{
 				case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , Integer.parseInt(val)    , true);
@@ -263,7 +275,9 @@ public class Interpreteur
 	private void affecter(String ligne)
 	{
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
-		String value  = Util.getValeur(ligne, false, this);
+		String value  = Util.getValeur(ligne);
+
+		System.out.println(nomVar + " |" + value + "|");
 
 		Donnee tmp = null;
 
@@ -297,20 +311,5 @@ public class Interpreteur
 	public String getDonnees()
 	{
 		return this.gestionDonnee.getDonneeString();
-	}
-	
-	public void trace()
-	{
-		this.gestionDonnee.traceCopie();
-	}
-	
-	public String getTraceVariable(String var)
-	{
-		return this.gestionDonnee.traceVar(var);
-	}
-	
-	public void traceVariableCopie(String var)
-	{
-		this.gestionDonnee.traceVariableCopie(var);
 	}
 }
