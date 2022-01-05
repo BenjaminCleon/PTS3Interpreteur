@@ -100,7 +100,7 @@ public class Interpreteur
 		String line = "";
 		try
 		{
-			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"));
+			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"), "UTF-8");
 			while(sc.hasNextLine())
 			{
 				line = sc.nextLine();
@@ -195,7 +195,7 @@ public class Interpreteur
 		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
-			String val = Util.getValeur(ligne);			
+			String val = Util.getValeur(ligne, true, null);			
 			switch(this.getType(ligne))
 			{
 				case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , Integer.parseInt(val)    , true);
@@ -215,9 +215,7 @@ public class Interpreteur
 	private void affecter(String ligne)
 	{
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
-		String value  = Util.getValeur(ligne);
-
-		System.out.println(nomVar + " |" + value + "|");
+		String value  = Util.getValeur(ligne, false, this);
 
 		Donnee tmp = null;
 
