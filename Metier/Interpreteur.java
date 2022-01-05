@@ -4,6 +4,7 @@ import AlgoPars.Controleur          ;
 import AlgoPars.Metier.Donnee       ;
 import AlgoPars.Metier.EntreeSortie ;
 import AlgoPars.Metier.GestionDonnee;
+import AlgoPars.Metier.Tableau      ;
 
 import java.util.List         ;
 import java.io.FileInputStream;
@@ -52,7 +53,7 @@ public class Interpreteur
 
 		this.lstContenu      = new ArrayList<String>();
 		this.lstDonnee       = new ArrayList<Donnee>();
-		this.lstTableau      = new ArraysList<Tableau>();
+		this.lstTableau      = new ArrayList<Tableau>();
 		this.traceDexecution = "";
 
 		this.lectureVariable  = false;
@@ -174,14 +175,8 @@ public class Interpreteur
 			{
 				//System.out.println(CouleurConsole.ROUGE.getFont());
 				if (this.numeroLigne == l)
-<<<<<<< HEAD
-					res += ">" ;
-				res += String.format("%2d", l) + String.format("%-80s", this.lstContenu.get(l)) + "\n";
-=======
 					res += CouleurConsole.MAUVE.getFond();
 				res+= String.format("%2d %-80s",l, this.lstContenu.get(l))+ CouleurConsole.NOIR.getFond() + "\n";
-				
->>>>>>> e8986ebbf3cee436640df6e5fae06d87b3f4672c
 			}
 
 			for(int a = l; a<40; a++)
@@ -193,15 +188,6 @@ public class Interpreteur
 			int move = 0;
 			if( this.numeroLigne < 20)
 			{
-<<<<<<< HEAD
-				if (this.numeroLigne == i)
-					res += "<" + String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
-				else
-					res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
-				
-				//Quand n est à 20, on commence a tout descendre, ça affiche de la L1 à L41
-				if( i >= 20 && (40+move)<size) move++;			
-=======
 					//Affichage des 40 premieres lignes
 				for(i = 0+move; i<40+move; i++)
 				{
@@ -222,7 +208,6 @@ public class Interpreteur
 					else
 						res += String.format("%2d %-80s", j, this.lstContenu.get(j)) + "\n";
 				}
->>>>>>> e8986ebbf3cee436640df6e5fae06d87b3f4672c
 			}
 
 			//Ajout des lignes vides en fin de programme
@@ -246,6 +231,8 @@ public class Interpreteur
 		Donnee tmp;
 		String nom;
 		Tableau tab;
+		
+		tmp = null;
 		if(this.lectureVariable) 
 		{
 
@@ -256,7 +243,7 @@ public class Interpreteur
 			for(int i=0; i<lSplit.length; i++)
 			{
 				nom = lSplit[i].replaceAll(" |\t", "");
-				if(l[1].matches("(.*)tableau(.*)")
+				if(l[1].matches("(.*)tableau(.*)"))
 				{
 					String type = "";
 					if(l[1].matches("(.*)tableau(.*)"))
@@ -264,7 +251,7 @@ public class Interpreteur
 						String[] lig = l[1].split("de|d'",2);
 						type = lig[1].replaceFirst(" ","");
 					}
-					int taille = l[1].split("\\[|\\]")[1]).replaceAll(" ", ""));
+					int taille = Integer.parseInt((l[1].split("\\[|\\]"))[1].replaceAll(" ", ""));
 					switch(type)
 					{
 						case "entiers"   -> tab = new Tableau<Integer>  (nom, type, taille);
@@ -294,7 +281,7 @@ public class Interpreteur
 		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
-			String val = Util.getValeur(ligne);			
+			String val = Util.getValeur(ligne, true, null);			
 			switch(this.getType(ligne))
 			{
 				case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , Integer.parseInt(val)    , true);
@@ -314,7 +301,7 @@ public class Interpreteur
 	private void affecter(String ligne)
 	{
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
-		String value  = Util.getValeur(ligne);
+		String value  = Util.getValeur(ligne, false, this);
 
 		System.out.println(nomVar + " |" + value + "|");
 
