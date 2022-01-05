@@ -107,7 +107,7 @@ public class CUI
 
 		res += "\n";
 
-		res += "|" + tabFichier[0] + "|     NOM         |          VALEUR       |\n";
+		res += "|" + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |\n";
 		
 		for (int i=1;i<40;i++)
 		{
@@ -140,8 +140,9 @@ public class CUI
 						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + putColor("defaut") + " ";
 					else
 						nouvelleLigne += tabSplit[cpt] + " ";
+
 				}
-				res += "|" + String.format("%-83s", nouvelleLigne) + nouvelleLigne.length() + "|" + tabData[i-1] + "|\n";
+				res += "|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|\n";
 			}
 			else // Si c'est que des espaces
 			{

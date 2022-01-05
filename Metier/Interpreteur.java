@@ -172,8 +172,8 @@ public class Interpreteur
 			{
 				//System.out.println(CouleurConsole.ROUGE.getFont());
 				if (this.numeroLigne == l)
-					res += ">";
-				res+= String.format("%2d %-80s",l, this.lstContenu.get(l))+ "\n";
+					res += CouleurConsole.MAUVE.getFond();
+				res+= String.format("%2d %-80s",l, this.lstContenu.get(l))+ CouleurConsole.NOIR.getFond() + "\n";
 				
 			}
 
@@ -190,10 +190,8 @@ public class Interpreteur
 				for(i = 0+move; i<40+move; i++)
 				{
 					if (this.numeroLigne == i)
-						res += String.format("%2d %-80s", i, CouleurConsole.MAUVE.getFond() + this.lstContenu.get(i)) + CouleurConsole.NOIR.getFond() + "\n";
-					else
-						res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
-					
+						res += CouleurConsole.MAUVE.getFond();
+					res+= String.format("%2d %-80s",i, this.lstContenu.get(i))+ CouleurConsole.NOIR.getFond() + "\n";
 				}
 			}
 			else
