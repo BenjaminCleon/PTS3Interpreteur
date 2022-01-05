@@ -1,5 +1,7 @@
 package AlgoPars;
 
+import iut.algo.Console;
+
 import java.util.Scanner;
 
 import AlgoPars.Metier.Interpreteur;
@@ -24,6 +26,8 @@ public class Controleur
 		this.metier = new Interpreteur(this, nomFic);
 
 		this.lectureUtilisateur();
+		
+		Console.normal();
 	}
 
 	public String getFichier(int n)
