@@ -21,8 +21,9 @@ public class Interpreteur
 
 	private Controleur  controleur; // controleur associé
 
-	private List<Donnee> lstDonnee ; // liste des données
-	private List<String> lstContenu; // contenu du fichier
+	private List<Donnee>  lstDonnee ; // liste des données
+	private List<Tableau> lstTableau; // liste des tableaux
+	private List<String>  lstContenu; // contenu du fichier
 	
 	private String traceDexecution ; // trace d'éxécution du code
 
@@ -47,6 +48,7 @@ public class Interpreteur
 
 		this.lstContenu      = new ArrayList<String>();
 		this.lstDonnee       = new ArrayList<Donnee>();
+		this.lstTableau      = new ArraysList<Tableau>();
 		this.traceDexecution = "";
 
 		this.lectureVariable  = false;
@@ -167,9 +169,8 @@ public class Interpreteur
 			for(l=0; l<size; l++)
 			{
 				if (this.numeroLigne == l)
-					res += "X" + String.format("%2d %-80s", l, this.lstContenu.get(l)) + "\n";
-				else
-					res += String.format("%2d %-80s", l, this.lstContenu.get(l)) + "\n";
+					res += ">" ;
+				res += String.format("%2d", l) + String.format("%-80s", this.lstContenu.get(l)) + "\n";
 			}
 
 			for(int a = l; a<40; a++)
@@ -182,7 +183,7 @@ public class Interpreteur
 			for(i = 0+move; i<40+move; i++)
 			{
 				if (this.numeroLigne == i)
-					res += "X " + String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
+					res += "<" + String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
 				else
 					res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
 				
@@ -218,6 +219,7 @@ public class Interpreteur
 	{
 		Donnee tmp;
 		String nom;
+		Tableau tab;
 		if(this.lectureVariable) 
 		{
 
@@ -228,13 +230,36 @@ public class Interpreteur
 			for(int i=0; i<lSplit.length; i++)
 			{
 				nom = lSplit[i].replaceAll(" |\t", "");
-				switch(this.getType(ligne))
+				if(l[1].matches("(.*)tableau(.*)")
 				{
-					case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , null, false);
-					case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , null, false);
-					case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , null, false);
-					case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, null, false);
-					default           -> tmp = new Donnee<String>   (nom, Type.CHAINE , null, false);
+					String type = "";
+					if(l[1].matches("(.*)tableau(.*)"))
+					{
+						String[] lig = l[1].split("de|d'",2);
+						type = lig[1].replaceFirst(" ","");
+					}
+					int taille = l[1].split("\\[|\\]")[1]).replaceAll(" ", ""));
+					switch(type)
+					{
+						case "entiers"   -> tab = new Tableau<Integer>  (nom, type, taille);
+						case "réels"     -> tab = new Tableau<Double>   (nom, type, taille);
+						case "booléen"   -> tab = new Tableau<Boolean>  (nom, type, taille);
+						case "caractère" -> tab = new Tableau<Character>(nom, type, taille);
+						default          -> tab = new Tableau<String>   (nom, type, taille);
+					}
+					this.lstTableau.add(tab);
+					
+				}
+				else
+				{
+					switch(this.getType(ligne))
+					{
+						case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , null, false);
+						case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , null, false);
+						case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , null, false);
+						case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, null, false);
+						default           -> tmp = new Donnee<String>   (nom, Type.CHAINE , null, false);
+					}
 				}
 				this.lstDonnee.add(tmp);
 			}
