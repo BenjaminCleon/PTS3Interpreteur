@@ -7,4 +7,5 @@
 ./Metier/EntreeSortie.java
 ./Metier/Util.java
 ./Metier/Type.java
+./Metier/Tableau.java
 ./Metier/Interpreteur.java
