@@ -300,4 +300,19 @@ public class Interpreteur
 	{
 		return this.gestionDonnee.getDonneeString();
 	}
+	
+	public void trace()
+	{
+		this.gestionDonnee.traceCopie();
+	}
+	
+	public String getTraceVariable(String var)
+	{
+		return this.gestionDonnee.traceVar(var);
+	}
+	
+	public void traceVariableCopie(String var)
+	{
+		this.gestionDonnee.traceVariableCopie(var);
+	}
 }
