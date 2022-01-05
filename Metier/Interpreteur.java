@@ -16,6 +16,9 @@ import java.util.Scanner      ;
  */
 public class Interpreteur
 {
+	private static final String BG_ROUGE = "\u001b[41m";
+	private static final String BG_RESET = "\u001b[40m";
+
 	private Controleur  controleur; // controleur associé
 
 	private List<Donnee> lstDonnee ; // liste des données
@@ -24,7 +27,9 @@ public class Interpreteur
 	private String traceDexecution ; // trace d'éxécution du code
 
 	private String nomFichier; // nom du fichier à lire
-	
+	private int    numeroLigne; // Numéro de la ligne en cours
+	private int    move;
+
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
 
@@ -37,6 +42,8 @@ public class Interpreteur
 	{
 		this.controleur = controleur;
 		this.nomFichier = nomFichier;
+		this.numeroLigne = 0;
+		this.move = 0;
 
 		this.lstContenu      = new ArrayList<String>();
 		this.lstDonnee       = new ArrayList<Donnee>();
@@ -48,6 +55,12 @@ public class Interpreteur
 		this.lectureFichier();
 		this.gestionDonnee = new GestionDonnee(nomFichier, this);
 	}
+
+	/**
+	 * Définit le numéro de la ligne en cours
+	 */
+	public void setNumeroLigne(int numeroLigne){this.numeroLigne = numeroLigne;}
+
 
 	/**
 	 * Interprete la ligne n en partant du principe que ce qui est au-dessus est interpréter
@@ -144,18 +157,53 @@ public class Interpreteur
 		int    size;
 		
 		int i;
-
+		int l;
+		res = "";
 		size = this.lstContenu.size();
+		this.setNumeroLigne(n);
+
+		if( size <= 40)
+		{
+			for(l=0; l<size; l++)
+			{
+				if (this.numeroLigne == l)
+					res += "X" + String.format("%2d %-80s", l, this.lstContenu.get(l)) + "\n";
+				else
+					res += String.format("%2d %-80s", l, this.lstContenu.get(l)) + "\n";
+			}
+
+			for(int a = l; a<40; a++)
+				res += String.format("%-80s", " ") + "\n";
+		}
+		else
+		{
+			int move = 0;
+			//Affichage des 40 premieres lignes
+			for(i = 0+move; i<40+move; i++)
+			{
+				if (this.numeroLigne == i)
+					res += "X " + String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
+				else
+					res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
+				
+				//Quand n est à 20, on commence a tout descendre, ça affiche de la L1 à L41
+				if( i >= 20 && (40+move)<size) move++;			
+			}
 		
+		}
+		
+		
+		/*
 		if ( size <= 40 )n=0;
 
 		res = "";
 		for(i=n;i<40+n && size>i ;i++)
-			res += String.format("%3d %-79s", i, this.lstContenu.get(i)) + "\n";
+			res += String.format("%2d %-80s", i, this.lstContenu.get(i)) + "\n";
 		
 		if ( i < 40+n)
 			for (int j=0;j<40+n-i;j++)
-				res += String.format("%-83s", "") + "\n";
+				res += String.format("%-80s", "") + "\n";
+				*/
 
 		return res;
 	}
@@ -249,5 +297,20 @@ public class Interpreteur
 	public String getDonnees()
 	{
 		return this.gestionDonnee.getDonneeString();
+	}
+	
+	public void trace()
+	{
+		this.gestionDonnee.traceCopie();
+	}
+	
+	public String getTraceVariable(String var)
+	{
+		return this.gestionDonnee.traceVar(var);
+	}
+	
+	public void traceVariableCopie(String var)
+	{
+		this.gestionDonnee.traceVariableCopie(var);
 	}
 }
