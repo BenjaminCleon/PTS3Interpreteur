@@ -86,15 +86,15 @@ public class Util
 		return valeur[1];
 	}
 
-	public static void setValeurBySwitch(Donnee data, String value)
+	public static void setValeurBySwitch(Donnee data, String value, int ind)
 	{
 		switch(data.getType())
 		{
-			case Type.ENTIER  -> data.setValeur((int)(Double.parseDouble  (value)));
-			case Type.REEL    -> data.setValeur(Double.parseDouble  (value))       ;
-			case Type.CHAR    -> data.setValeur(value.charAt(0))                   ;
-			case Type.BOOLEEN -> data.setValeur(Boolean.parseBoolean(value))       ;
-			default           -> data.setValeur(                     value)        ;
+			case Type.ENTIER  -> data.setValeur((int)(Double.parseDouble  (value)), ind);
+			case Type.REEL    -> data.setValeur(Double.parseDouble  (value)       , ind);
+			case Type.CHAR    -> data.setValeur(value.charAt(0)                   , ind);
+			case Type.BOOLEEN -> data.setValeur(Boolean.parseBoolean(value)       , ind);
+			default           -> data.setValeur(                     value        , ind);
 		}
 	}
 
