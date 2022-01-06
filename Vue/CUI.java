@@ -86,42 +86,50 @@ public class CUI
 	 */
 	public void afficher(int n)
 	{
+		String delta;
 		String res;
 
 		String fichier, data;
 		String[] tabFichier, tabData;
 
-		fichier = this.controleur.getFichier(n);
-		data    = this.controleur.getDonnees();
+		List<String>  execution;
+		List<Integer> traceLire;
+
+		fichier   = this.controleur.getFichier(n);
+		data      = this.controleur.getDonnees() ;
+		execution = this.controleur.getTraceDexecution();
 
 		tabFichier = fichier.split("\n");//le divise par ligne
 		tabData    = data.split("\n");
-		Console.normal();
+		Console.effacerEcran();
 		res = putColor("defaut") + CouleurConsole.NOIR.getFond() + "\n";
-		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
-		res += "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |\n";
+		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
+		res += "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|Execution|\n";
 		for ( int i=0;i<84;i++)res+="¨";
 		res += " ";
-		for ( int i=0;i<42;i++)res+="¨";
-
+		for ( int i=0;i<41;i++)res+="¨";
+		res += " ";
+		for ( int i=0;i<43;i++)res+="¨";
 		res += "\n";
 
-		res += "|" + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |\n";
+		res += "|" + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
 		
+		this.afficher(res, -1);
+		this.afficher(String.format(" %-42s|",this.getValueInExec(execution, 0)), 0);
+		Console.println("");
+
 		for (int i=1;i<40;i++)
 		{
-		
 			int caractere = 0;
 						
 			String numLig = tabFichier[i].substring(0,2);
 			String ligne = tabFichier[i].substring(2);
 
 			Boolean bOk = false;
-			for(char c : ligne.toCharArray())
-				if (c != ' ') bOk = true;
+			for(char c : ligne.toCharArray())if (c != ' ') bOk = true;
+
 			if(bOk)//Si c'est pas que des espaces
-			{	
-				
+			{		
 				while(ligne.charAt(caractere) == ' ' && caractere < ligne.length())
 					caractere++;
 			
@@ -141,23 +149,28 @@ public class CUI
 						nouvelleLigne += tabSplit[cpt] + " ";
 
 				}
-				res += "|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|\n";
+				String tmp = this.getValueInExec(execution, i);
+
+				Console.print("|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|");
+				delta = String.valueOf(42-tmp.length());
+				this.afficher(" ", -1);
+				this.afficher(tmp, i);
+				this.afficher(String.format(" %-" + delta + "s", "") + "|\n", -1);
 			}
 			else // Si c'est que des espaces
 			{
-				res += "|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|\n";
+				String tmp = this.getValueInExec(execution, i);
+
+				Console.print("|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|");
+				delta = String.valueOf(42-tmp.length());
+				this.afficher(" ", -1);
+				this.afficher(tmp, i);
+				this.afficher(String.format(" %-" + delta + "s", "") + "|\n", -1);
 			}
 		}
-		for ( int i=0;i<127;i++)res+="¨";	
-
-		res += "\n\n¨¨¨¨¨¨¨¨¨¨¨\n" + "| CONSOLE |\n";
-		for ( int i=0;i<127;i++)res+="¨";
-		
-		res += "\n" + this.controleur.getTraceDexecution() + "\n";
-
-		for ( int i=0;i<127;i++)res+="¨";
-
-		System.out.println(res);
+		res = "";
+		for ( int i=0;i<170;i++)res+="¨";
+		Console.println(res);
 	}
 
 	public ArrayList<String> getListeMot()
@@ -196,5 +209,25 @@ public class CUI
 			default     -> sCoul = CouleurConsole.BLANC.getFont();
 		}
 		return sCoul;
+	}
+
+	public void afficher(String ligne, int n)
+	{
+		if ( this.controleur.getTraceLire().contains(n) )
+		{
+			Console.souligner();
+			Console.print(ligne);
+			Console.normal();
+		}
+		else
+		{
+			Console.print(ligne);
+		}
+	}
+
+	public String getValueInExec(List<String> execution, int i)
+	{
+		if ( execution != null )return (execution.size()>i)?execution.get(i):"";
+		return "";
 	}
 }
