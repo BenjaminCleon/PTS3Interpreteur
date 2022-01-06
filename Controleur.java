@@ -2,6 +2,7 @@ package AlgoPars;
 
 import iut.algo.Console;
 
+import java.util.List;
 import java.util.Scanner;
 
 import AlgoPars.Metier.Interpreteur;
@@ -77,21 +78,30 @@ public class Controleur
 	}
 
 	/**
-	 * Retourne la trace d'éxécution
-	 * @return
-	 */
-	public String getTraceDexecution()
-	{
-		return this.metier.getTraceDexecution();
-	}
-
-	/**
 	 * 
 	 * @param args
 	 */
 	public void actualiser()
 	{
 		this.ihm.afficher(this.numLigne);
+	}
+
+	/**
+	 * 
+	 * @return la trace d'éxécuton
+	 */
+	public List<String> getTraceDexecution()
+	{
+		return this.metier.getTraceDexecution();
+	}
+
+	/**
+	 * 
+	 * @return la trace des numéros ou il y a eu un lire
+	 */
+	public List<Integer> getTraceLire()
+	{
+		return this.metier.getTraceLire();
 	}
 
 	/**

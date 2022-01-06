@@ -27,7 +27,8 @@ public class Interpreteur
 	//private List<Tableau> lstTableau; // liste des tableaux
 	private List<String>  lstContenu; // contenu du fichier
 	
-	private String traceDexecution ; // trace d'éxécution du code
+	private List<String>  traceDexecution; // trace d'éxécution du code
+	private List<Integer> traceLire      ; // retient les numéros de ligne où il y a eu un lire
 
 	private String nomFichier; // nom du fichier à lire
 	private int    numeroLigne; // Numéro de la ligne en cours
@@ -50,8 +51,8 @@ public class Interpreteur
 
 		this.lstContenu      = new ArrayList<String>();
 		this.lstDonnee       = new ArrayList<Donnee>();
-		//this.lstTableau      = new ArrayList<Tableau>();
-		this.traceDexecution = "";
+		this.traceDexecution = new ArrayList<String> ();
+		this.traceLire       = new ArrayList<Integer>();
 
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
@@ -93,9 +94,9 @@ public class Interpreteur
 			}
 			else
 			{
-				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution += EntreeSortie.ecrire(ligneAInterpreter, this) + "\n";
+				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
 				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-				if ( ligneAInterpreter.contains("lire"  ) )EntreeSortie.lire(ligneAInterpreter, this);
+				if ( ligneAInterpreter.contains("lire"  ) ){ this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, this));this.traceLire.add(this.traceLire.size()+1); }
 			}
 		}
 	}
@@ -104,9 +105,18 @@ public class Interpreteur
 	 * Retourne la trace d'execution actuelle
 	 * @return
 	 */
-	public String getTraceDexecution()
+	public List<String> getTraceDexecution()
 	{
 		return this.traceDexecution;
+	}
+
+	/**
+	 * Retourne la trace des numéros de ligne lu
+	 * @return
+	 */
+	public List<Integer> getTraceLire()
+	{
+		return this.traceLire;
 	}
 
 	/**

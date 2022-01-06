@@ -9,17 +9,17 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.plaf.synth.SynthScrollPaneUI;
-
 import AlgoPars.Metier.Type;
+import iut.algo.Console;
 
 /**
  * Classe Util avec des méthodes utiles dans diverses fichier
  */
 public class Util
 {
-	private static final String REGEX_OP = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|\\/){1}";
-
+	private static final String REGEX_OP  = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|\\/){1}";
+	private static final String TRUE  = "true" ;
+	private static final String FALSE = "false";
 	/**
 	 * 
 	 * @param ligne
@@ -75,7 +75,7 @@ public class Util
 		{
 			type = interpreteur.getDonnee(valeur[0].replaceAll(" |\t", "")).getType();
 
-			if ( type.equals(Type.ENTIER) || type.equals(Type.REEL) )
+			if ( type.equals(Type.ENTIER) || type.equals(Type.REEL) || type.equals(Type.BOOLEEN) )
 				valeur[1] = String.valueOf(Util.expression(valeur[1].replaceAll(" ", "")));
 			
 			if ( type.equals(Type.CHAR) || type.equals(Type.BOOLEEN) )valeur[1] = valeur[1].replaceAll(" ", "");
@@ -99,7 +99,7 @@ public class Util
 	}
 
 	   
-	public static double expression(String ligne)
+	public static String expression(String ligne)
 	{
 		int taille   ;
 		int dernierOp;
@@ -170,15 +170,15 @@ public class Util
 
 		for ( String val: file)if ( !val.equals(""))fileRet.add(val);
 
+		System.out.println(fileRet);
 		return Util.evaluerEPO(fileRet);
 	}
 
-	private static double evaluerEPO(Queue<String> file)
+	private static String evaluerEPO(Queue<String> file)
 	{
-		Stack<Double> pile = new Stack<Double>();
-		double val1, val2;
+		Stack<String> pile    = new Stack<String>();
+		String val1, val2;
 
-		System.out.println(file);
 		for ( String val : file )
 		{
 			if ( val.matches(Util.REGEX_OP) )
@@ -186,22 +186,37 @@ public class Util
 				val1 = pile.pop();
 				val2 = pile.pop();
 
+				Console.println(val2 + val + val1);
+
 				switch(val)
 				{
-					case "+"   -> pile.add(val2 + val1);
-					case "-"   -> pile.add(val2 - val1);
-					case "×"   -> pile.add(val2 * val1);
-					case "/"   -> pile.add(val2 / val1);
-					case "div" -> pile.add((double)((int)(val2 / val1)));
-					case "mod" -> pile.add(val2%val1);
-					case "^"   -> pile.add(Math.pow(val2,val1));
+					case "-"   -> pile.add(String.valueOf(Double.parseDouble(val2) - Double.parseDouble(val1)));
+					case "+"   -> pile.add(String.valueOf(Double.parseDouble(val2) + Double.parseDouble(val1)));
+					case "×"   -> pile.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
+					case "/"   -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
+					case "div" -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
+					case "mod" -> pile.add(String.valueOf(Double.valueOf(val2)%Double.valueOf(val1)));
+					case "^"   -> pile.add(String.valueOf(Math.pow(Double.valueOf(val2),Double.valueOf(val1))));
+					case ">"   -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)> Double.parseDouble(val1))));
+					case "<"   -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)< Double.parseDouble(val1))));
+					case "<="  -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)<=Double.parseDouble(val1))));
+					case ">="  -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)>=Double.parseDouble(val1))));
+					case "et"  -> pile.add(String.valueOf(Boolean.parseBoolean(val2)&&Boolean.parseBoolean(val1)));
+					case "ou"  -> pile.add(String.valueOf(Boolean.parseBoolean(val2)||Boolean.parseBoolean(val1)));
 				}
 			}
 			else
-				pile.add(Double.parseDouble(val));
+				pile.add(val);
 		}
 
+		Console.println(pile);
 		return pile.pop();
+	}
+
+	public static String convert(boolean bOk)
+	{
+		if ( bOk )return Util.TRUE ;
+		else      return Util.FALSE;
 	}
 
 	private static boolean prioSupEgal(String st1, String st2)

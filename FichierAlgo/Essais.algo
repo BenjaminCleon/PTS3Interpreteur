@@ -6,13 +6,16 @@ constante:
 	BOOLEAN  <-- false
 	CHAR     <-- 'C'
 variable:
-    t, u,v: chaine de caractères
+    t : booléen
+	u,v: chaine de caractères
 	w: caractère
 	x: entier
 	y: réel
 	z: booléen
 DEBUT
-	lire ( u )
+	ecrire ( "Salut", " Paul" © "comment ça va" );
+	lire( x, z, y )
+	t <-- true
 	u <-- "Yo"
 	v <-- "Salut er"
 	w <-- 'C'
