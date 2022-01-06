@@ -19,7 +19,10 @@ public class EntreeSortie
 	{
 		String saisie;
 		String var   ;
+		String nomVar;
 		Donnee tmp   ;
+		
+		int ind = -1;
 
 		interpreteur.actualiser();
 
@@ -30,10 +33,20 @@ public class EntreeSortie
 			if ( ligne.contains(",") )var = ligne.substring(0, ligne.indexOf(",") );
 			else                      var = ligne.substring(0);
 
-			tmp = interpreteur.getDonnee(var);
+			if ( var.contains("[") )
+			{
+				nomVar = var.substring(0, var.indexOf("["));
+				ind    = Integer.parseInt(var.substring(var.indexOf("[")+1, var.indexOf("]")));
+			}
+			else
+			{
+				nomVar = var;
+			}
+			
+			tmp = interpreteur.getDonnee(nomVar);
 			//Scanner sc = new Scanner(System.in);
 			saisie = Console.lireString();//sc.next(); 
-			Util.setValeurBySwitch(tmp, saisie);
+			Util.setValeurBySwitch(tmp, saisie, ind);
 			//sc.close();
 			if ( ligne.contains(",") )EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), interpreteur);
 		}catch(Exception e)
