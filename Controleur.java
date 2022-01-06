@@ -17,6 +17,8 @@ public class Controleur
 	private CUI          ihm   ; // Partie visuelle
 	private Interpreteur metier; // Partie métier
 
+	private int numLigne       ; // numéro de la ligne actuelle
+
 	/**
 	 * Constructeur de la classe Controleur
 	 */
@@ -25,9 +27,9 @@ public class Controleur
 		this.ihm    = new CUI         (this);
 		this.metier = new Interpreteur(this, nomFic);
 
+		this.numLigne = 0;
+
 		this.lectureUtilisateur();
-		
-		Console.normal();
 	}
 
 	public String getFichier(int n)
@@ -49,34 +51,47 @@ public class Controleur
 
 		try
 		{
-			Scanner input = new Scanner(System.in);
-			int numLigne = 0;
-			while(numLigne<this.metier.getSizeContenu())
+			//Scanner input = new Scanner(System.in);
+			while(this.numLigne<this.metier.getSizeContenu())
 			{
-				this.ihm.afficher(numLigne);
-				line = input.nextLine();
+				this.ihm.afficher(this.numLigne);
+				
+				line = Console.lireString();//input.nextLine();
 				switch(line.toUpperCase())
 				{
-					case ""  -> {numLigne++;}
-					case "B" -> {numLigne--;}
+					case ""  -> {this.numLigne++;}
+					case "B" -> {this.numLigne--;}
 					default ->
 					{
 						switch((line.charAt(0) + "").toUpperCase())
 						{
-							case "L" -> {numLigne = Integer.parseInt(line.substring(1));}
+							case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
 							case "I" -> {/*S'arreter dans une itération */}
 						}
 					}
 				}
-				this.metier.interpreter(numLigne);
+				this.metier.interpreter(this.numLigne);
 			}
-			input.close();
+			//input.close();
 		} catch (Exception e) {System.out.println("Erreur 002 : Deplacement ligne par ligne"); e.printStackTrace();}
 	}
 
+	/**
+	 * Retourne la trace d'éxécution
+	 * @return
+	 */
 	public String getTraceDexecution()
 	{
 		return this.metier.getTraceDexecution();
+	}
+
+	/**
+	 * 
+	 * @param args
+	 */
+	public void actualiser()
+	{
+		this.ihm.afficher(this.numLigne);
 	}
 
 	/**

@@ -18,7 +18,7 @@ import AlgoPars.Metier.Type;
  */
 public class Util
 {
-	private static final String REGEX_OP = "(\\(|\\)|<=|>=|!=|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|\\/){1}";
+	private static final String REGEX_OP = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|\\/){1}";
 
 	/**
 	 * 
@@ -194,6 +194,7 @@ public class Util
 					case "/"   -> pile.add(val2 / val1);
 					case "div" -> pile.add((double)((int)(val2 / val1)));
 					case "mod" -> pile.add(val2%val1);
+					case "^"   -> pile.add(Math.pow(val2,val1));
 				}
 			}
 			else
@@ -212,7 +213,7 @@ public class Util
 								 { "<", ">", "<=", ">=", "!=", "=" },
 								 { "ou", "+", "-"                  },
 								 { "et", "×", "/"                  },
-								 { "non"                           }
+								 { "non", "^"                      }
 							  };
 
 		for (int numPrio=0;numPrio<prio.length;numPrio++)

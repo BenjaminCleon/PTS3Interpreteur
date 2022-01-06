@@ -1,6 +1,7 @@
 package AlgoPars.Metier;
 
 import java.util.Scanner;
+import iut.algo.Console;
 
 import AlgoPars.Metier.Interpreteur;
 import AlgoPars.Metier.Donnee      ;
@@ -17,19 +18,24 @@ public class EntreeSortie
 	public static void lire(String ligne, Interpreteur interpreteur)
 	{
 		String saisie;
+		String var   ;
 		Donnee tmp   ;
 
-		ligne = ligne.substring(ligne.indexOf("(")+1, ligne.indexOf(")")).replaceAll(" ", "");
-		tmp   = interpreteur.getDonnee(ligne);
+		interpreteur.actualiser();
+
+		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.indexOf(")")).replaceAll(" ", "");
 
 		try
 		{
-			Scanner sc = new Scanner(System.in);
-			System.out.print("saisie: ");
-			saisie = sc.nextLine();
-			System.out.println(saisie);
+			if ( ligne.contains(",") )var = ligne.substring(0, ligne.indexOf(",") );
+			else                      var = ligne.substring(0);
 
+			tmp = interpreteur.getDonnee(var);
+			//Scanner sc = new Scanner(System.in);
+			saisie = Console.lireString();//sc.next(); 
 			Util.setValeurBySwitch(tmp, saisie);
+			//sc.close();
+			if ( ligne.contains(",") )EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), interpreteur);
 		}catch(Exception e)
 		{
 			System.out.println("Erreur 101");
