@@ -15,7 +15,6 @@ import AlgoPars.Controleur;
 import iut.algo.Console;
 import iut.algo.CouleurConsole;
 
-
 /**
  * Classe principale liée à la vue du modèle MVC
  * @author LHEAD
@@ -158,7 +157,7 @@ public class CUI
 
 		for ( int i=0;i<127;i++)res+="¨";
 
-		Console.println(res);
+		System.out.println(res);
 	}
 
 	public ArrayList<String> getListeMot()

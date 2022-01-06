@@ -21,9 +21,6 @@ import iut.algo.CouleurConsole;
  */
 public class Interpreteur
 {
-	private static final String BG_ROUGE = "\u001b[41m";
-	private static final String BG_RESET = "\u001b[40m";
-
 	private Controleur  controleur; // controleur associé
 
 	private List<Donnee>  lstDonnee ; // liste des données
@@ -120,7 +117,7 @@ public class Interpreteur
 		String line = "";
 		try
 		{
-			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"));
+			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"), "UTF8");
 			while(sc.hasNextLine())
 			{
 				line = sc.nextLine();
@@ -161,6 +158,7 @@ public class Interpreteur
 	public String getFichier(int n)
 	{
 		String res ;
+		String tmp ;
 		int    size;
 		
 		int i;
@@ -337,5 +335,10 @@ public class Interpreteur
 	public String getDonnees()
 	{
 		return this.gestionDonnee.getDonneeString();
+	}
+
+	public void actualiser()
+	{
+		this.controleur.actualiser();
 	}
 }

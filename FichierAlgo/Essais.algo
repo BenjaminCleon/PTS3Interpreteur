@@ -12,11 +12,12 @@ variable:
 	y: réel
 	z: booléen
 DEBUT
+	lire ( u )
 	u <-- "Yo"
 	v <-- "Salut er"
 	w <-- 'C'
-	x <-- 2 × 3 + 4/(5 + 6)
-	y <-- 2 × 3 + 4/(5 + 6)
+	x <-- 2 ^ 3 + 4/(5 + 6)
+	y <-- 2 ^ 3 + 4/(5 + 6)
 	z <-- false
 
 	ecrire(STRING)
