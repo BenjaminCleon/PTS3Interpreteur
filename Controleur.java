@@ -35,7 +35,7 @@ public class Controleur
 	{
 		return this.metier.getDonnees();
 	}
-
+	
 	/*
 	 * Lecture de l'utilisateur pour se deplacer dans le code
 	*/ 
@@ -54,7 +54,8 @@ public class Controleur
 				switch(line.toUpperCase())
 				{
 					case ""  -> {numLigne++;}
-					case "B" -> {numLigne--;}
+					case "B" -> {this.metier.goTo(--numLigne);}
+					case "GO BK" -> {}
 					default ->
 					{
 						switch((line.charAt(0) + "").toUpperCase())
@@ -64,6 +65,9 @@ public class Controleur
 						}
 					}
 				}
+				if( line.toLowerCase().contains("+ bk"))System.out.println(line.substring(5));
+				if( line.toLowerCase().contains("- bk"))System.out.println(line.substring(5));
+				
 				this.metier.interpreter(numLigne);
 			}
 			input.close();

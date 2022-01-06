@@ -15,6 +15,9 @@ import AlgoPars.Controleur;
 import iut.algo.Console;
 import iut.algo.CouleurConsole;
 
+import static org.fusesource.jansi.Ansi.*;
+import static org.fusesource.jansi.Ansi.Color.*;
+import org.fusesource.jansi.AnsiConsole;
 
 /**
  * Classe principale liée à la vue du modèle MVC
@@ -98,20 +101,19 @@ public class CUI
 		tabFichier = fichier.split("\n");//le divise par ligne
 		tabData    = data.split("\n");
 		Console.normal();
-		res = putColor("defaut") + CouleurConsole.NOIR.getFond() + "\n";
-		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
-		res += "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |\n";
-		for ( int i=0;i<84;i++)res+="¨";
+		res = "\n";
+		res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format("%-32s", "") + ansi().reset() + "\n";				
+		res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format("%-32s", "") + ansi().reset() +"\n";
+		for ( int i=0;i<84;i++)res+=   ansi().bg(WHITE) + "" + ansi().fg(BLACK) +"¨";
 		res += " ";
-		for ( int i=0;i<42;i++)res+="¨";
+		for ( int i=0;i<42;i++)res+= "¨";
 
-		res += "\n";
+		res +=  ansi().reset() + "\n";
 
-		res += "|" + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |\n";
+		res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", tabFichier[0]) +"|     NOM         |          VALEUR       |" + ansi().reset() + "\n";
 		
 		for (int i=1;i<40;i++)
 		{
-		
 			int caractere = 0;
 						
 			String numLig = tabFichier[i].substring(0,2);
@@ -142,21 +144,22 @@ public class CUI
 						nouvelleLigne += tabSplit[cpt] + " ";
 
 				}
-				res += "|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|\n";
+				res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|" + ansi().reset() +"\n";
 			}
 			else // Si c'est que des espaces
 			{
-				res += "|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|\n";
+				res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|" + ansi().reset() +"\n";
 			}
 		}
-		for ( int i=0;i<127;i++)res+="¨";	
-
+		for ( int i=0;i<127;i++)res+= ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "¨";	
+		res += ansi().reset() + "\n";
+		/*
 		res += "\n\n¨¨¨¨¨¨¨¨¨¨¨\n" + "| CONSOLE |\n";
 		for ( int i=0;i<127;i++)res+="¨";
-		
-		res += "\n" + this.controleur.getTraceDexecution() + "\n";
+		*/
+		//res += "\n" + this.controleur.getTraceDexecution() + "\n";
 
-		for ( int i=0;i<127;i++)res+="¨";
+		//for ( int i=0;i<127;i++)res+="¨";
 
 		Console.println(res);
 	}
@@ -185,10 +188,9 @@ public class CUI
 	{
 		String sCoul = "";
 		for(String couleur : this.hashMap.keySet())
-		{
 			if(this.hashMap.get(couleur).contains(mot))
 				sCoul = couleur;
-		}
+		
 		switch(sCoul)
 		{
 			case "CYAN" -> sCoul = CouleurConsole.CYAN .getFont();
