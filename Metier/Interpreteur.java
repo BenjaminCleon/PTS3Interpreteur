@@ -242,6 +242,8 @@ public class Interpreteur
 				nom = lSplit[i].replaceAll(" |\t", "");
 				if(l[1].matches("(.*)tableau(.*)"))
 				{
+					int nbDim=0;
+					for(int j=0; j<l[1].length(); j++)if(l[1].charAt(j)=='[')nbDim++;
 					String type = "";
 					if(l[1].matches("(.*)tableau(.*)"))
 					{
@@ -249,14 +251,19 @@ public class Interpreteur
 						type = lig[1].replaceFirst(" ", "");
 						type = type  .replaceFirst("s", "");
 					}
-					int taille = Integer.parseInt((l[1].split("\\[|\\]"))[1].replaceAll(" ", ""));
-					switch(type)
+					int taille;
+					
+					if(nbDim == 1)
 					{
-						case Type.ENTIER  -> tmp = new Donnee<ArrayList<Integer>>  (nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
-						case Type.REEL    -> tmp = new Donnee<ArrayList<Double>>   (nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
-						case Type.BOOLEEN -> tmp = new Donnee<ArrayList<Boolean>>  (nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
-						case Type.CHAR    -> tmp = new Donnee<ArrayList<Character>>(nom, type, new ArrayList<Character>(), this.lectureConstante, taille);
-						default           -> tmp = new Donnee<ArrayList<String>>   (nom, type, new ArrayList<String>   (), this.lectureConstante, taille);
+						taille = Integer.parseInt((l[1].split("\\[|\\]"))[1].replaceAll(" ", ""));
+						switch(type)
+						{
+							case Type.ENTIER  -> tmp = new Donnee<ArrayList<Integer>>  (nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
+							case Type.REEL    -> tmp = new Donnee<ArrayList<Double>>   (nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
+							case Type.BOOLEEN -> tmp = new Donnee<ArrayList<Boolean>>  (nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
+							case Type.CHAR    -> tmp = new Donnee<ArrayList<Character>>(nom, type, new ArrayList<Character>(), this.lectureConstante, taille);
+							default           -> tmp = new Donnee<ArrayList<String>>   (nom, type, new ArrayList<String>   (), this.lectureConstante, taille);
+						}
 					}
 					this.lstDonnee.add(tmp);
 					
