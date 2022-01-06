@@ -4,7 +4,7 @@ import AlgoPars.Controleur          ;
 import AlgoPars.Metier.Donnee       ;
 import AlgoPars.Metier.EntreeSortie ;
 import AlgoPars.Metier.GestionDonnee;
-import AlgoPars.Metier.Tableau      ;
+//import AlgoPars.Metier.Tableau      ;
 
 import java.util.List         ;
 import java.io.FileInputStream;
@@ -27,7 +27,7 @@ public class Interpreteur
 	private Controleur  controleur; // controleur associé
 
 	private List<Donnee>  lstDonnee ; // liste des données
-	private List<Tableau> lstTableau; // liste des tableaux
+	//private List<Tableau> lstTableau; // liste des tableaux
 	private List<String>  lstContenu; // contenu du fichier
 	
 	private String traceDexecution ; // trace d'éxécution du code
@@ -53,7 +53,7 @@ public class Interpreteur
 
 		this.lstContenu      = new ArrayList<String>();
 		this.lstDonnee       = new ArrayList<Donnee>();
-		this.lstTableau      = new ArrayList<Tableau>();
+		//this.lstTableau      = new ArrayList<Tableau>();
 		this.traceDexecution = "";
 
 		this.lectureVariable  = false;
@@ -230,7 +230,6 @@ public class Interpreteur
 	{
 		Donnee tmp;
 		String nom;
-		Tableau tab;
 		
 		tmp = null;
 		if(this.lectureVariable) 
@@ -249,18 +248,19 @@ public class Interpreteur
 					if(l[1].matches("(.*)tableau(.*)"))
 					{
 						String[] lig = l[1].split("de|d'",2);
-						type = lig[1].replaceFirst(" ","");
+						type = lig[1].replaceFirst(" ", "");
+						type = type  .replaceFirst("s", "");
 					}
 					int taille = Integer.parseInt((l[1].split("\\[|\\]"))[1].replaceAll(" ", ""));
 					switch(type)
 					{
-						case "entiers"   -> tab = new Tableau<Integer>  (nom, type, taille);
-						case "réels"     -> tab = new Tableau<Double>   (nom, type, taille);
-						case "booléen"   -> tab = new Tableau<Boolean>  (nom, type, taille);
-						case "caractère" -> tab = new Tableau<Character>(nom, type, taille);
-						default          -> tab = new Tableau<String>   (nom, type, taille);
+						case Type.ENTIER  -> tmp = new Donnee<ArrayList<Integer>>  (nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
+						case Type.REEL    -> tmp = new Donnee<ArrayList<Double>>   (nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
+						case Type.BOOLEEN -> tmp = new Donnee<ArrayList<Boolean>>  (nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
+						case Type.CHAR    -> tmp = new Donnee<ArrayList<Character>>(nom, type, new ArrayList<Character>(), this.lectureConstante, taille);
+						default           -> tmp = new Donnee<ArrayList<String>>   (nom, type, new ArrayList<String>   (), this.lectureConstante, taille);
 					}
-					this.lstTableau.add(tab);
+					this.lstDonnee.add(tmp);
 					
 				}
 				else
@@ -302,15 +302,23 @@ public class Interpreteur
 	{
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
 		String value  = Util.getValeur(ligne, false, this);
-
-		System.out.println(nomVar + " |" + value + "|");
+		int ind =-1;
+		
+		//System.out.println(nomVar + " |" + value + "|");
 
 		Donnee tmp = null;
-
+		
+		if(nomVar.matches("(.*)[(.*)](.*)"))
+		{
+			String[] decomp = nomVar.split("\\[|\\]");
+			nomVar = decomp[0];
+			ind    = Integer.parseInt(decomp[1]);
+		}
+		
 		for ( Donnee data: this.lstDonnee )
 			if ( data.getNom().equals(nomVar) )tmp = data;
 
-		Util.setValeurBySwitch(tmp, value);
+		Util.setValeurBySwitch(tmp, value, ind);
 	}
 
 	/**
