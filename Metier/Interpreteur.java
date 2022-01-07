@@ -348,11 +348,11 @@ public class Interpreteur
 					int taille = Integer.parseInt((l[1].split("\\[|\\]"))[1].replaceAll(" ", ""));
 					switch(type)
 					{
-						case Type.ENTIER  -> tmp = new Donnee<ArrayList<Integer>>  (nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
-						case Type.REEL    -> tmp = new Donnee<ArrayList<Double>>   (nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
-						case Type.BOOLEEN -> tmp = new Donnee<ArrayList<Boolean>>  (nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
-						case Type.CHAR    -> tmp = new Donnee<ArrayList<Character>>(nom, type, new ArrayList<Character>(), this.lectureConstante, taille);
-						default           -> tmp = new Donnee<ArrayList<String>>   (nom, type, new ArrayList<String>   (), this.lectureConstante, taille);
+						case Type.ENTIER  -> tmp = new Donnee(nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
+						case Type.REEL    -> tmp = new Donnee(nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
+						case Type.BOOLEEN -> tmp = new Donnee(nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
+						case Type.CHAR    -> tmp = new Donnee(nom, type, new ArrayList<Character>(), this.lectureConstante, taille);
+						default           -> tmp = new Donnee(nom, type, new ArrayList<String>   (), this.lectureConstante, taille);
 					}
 					this.lstDonnee.add(tmp);
 					
@@ -361,11 +361,11 @@ public class Interpreteur
 				{
 					switch(this.getType(ligne))
 					{
-						case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , null, false);
-						case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , null, false);
-						case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , null, false);
-						case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, null, false);
-						default           -> tmp = new Donnee<String>   (nom, Type.CHAINE , null, false);
+						case Type.ENTIER  -> tmp = new Donnee(nom, Type.ENTIER , null, false);
+						case Type.REEL    -> tmp = new Donnee(nom, Type.REEL   , null, false);
+						case Type.CHAR    -> tmp = new Donnee(nom, Type.CHAR   , null, false);
+						case Type.BOOLEEN -> tmp = new Donnee(nom, Type.BOOLEEN, null, false);
+						default           -> tmp = new Donnee(nom, Type.CHAINE , null, false);
 					}
 				}
 				this.lstDonnee.add(tmp);
@@ -378,11 +378,11 @@ public class Interpreteur
 			String val = Util.getValeur(ligne, true, null);			
 			switch(this.getType(ligne))
 			{
-				case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , Integer.parseInt(val)    , true);
-				case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , Double.parseDouble(val)  , true);
-				case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , val.charAt(0)            , true);
-				case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, Boolean.parseBoolean(val), true);
-				default           -> tmp = new Donnee<String>   (nom, Type.CHAINE ,                       val, true); 
+				case Type.ENTIER  -> tmp = new Donnee(nom, Type.ENTIER , Integer.parseInt(val)    , true);
+				case Type.REEL    -> tmp = new Donnee(nom, Type.REEL   , Double.parseDouble(val)  , true);
+				case Type.CHAR    -> tmp = new Donnee(nom, Type.CHAR   , val.charAt(0)            , true);
+				case Type.BOOLEEN -> tmp = new Donnee(nom, Type.BOOLEEN, Boolean.parseBoolean(val), true);
+				default           -> tmp = new Donnee(nom, Type.CHAINE ,                       val, true); 
 			}
 			this.lstDonnee.add(tmp);
 		}
@@ -412,7 +412,7 @@ public class Interpreteur
 		for ( Donnee data: this.lstDonnee )
 			if ( data.getNom().equals(nomVar) )tmp = data;
 
-		Util.setValeurBySwitch(tmp, value, ind);
+		Util.setValeurBySwitch(tmp, value);
 	}
 
 	/**
