@@ -1,5 +1,8 @@
 package AlgoPars;
 
+import iut.algo.Console;
+
+import java.util.List;
 import java.util.Scanner;
 
 import AlgoPars.Metier.Interpreteur;
@@ -15,6 +18,8 @@ public class Controleur
 	private CUI          ihm   ; // Partie visuelle
 	private Interpreteur metier; // Partie métier
 
+	private int numLigne       ; // numéro de la ligne actuelle
+
 	/**
 	 * Constructeur de la classe Controleur
 	 */
@@ -22,6 +27,8 @@ public class Controleur
 	{
 		this.ihm    = new CUI         (this);
 		this.metier = new Interpreteur(this, nomFic);
+
+		this.numLigne = 0;
 
 		this.lectureUtilisateur();
 	}
@@ -45,12 +52,11 @@ public class Controleur
 
 		try
 		{
-			Scanner input = new Scanner(System.in);
-			int numLigne = 0;
-			while(numLigne<this.metier.getSizeContenu())
+			while(this.numLigne<this.metier.getSizeContenu())
 			{
-				this.ihm.afficher(numLigne);
-				line = input.nextLine();
+				this.ihm.afficher(this.numLigne);
+				
+				line = Console.lireString();
 				switch(line.toUpperCase())
 				{
 					case ""  -> {numLigne++;}
@@ -60,7 +66,7 @@ public class Controleur
 					{
 						switch((line.charAt(0) + "").toUpperCase())
 						{
-							case "L" -> {numLigne = Integer.parseInt(line.substring(1));}
+							case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
 							case "I" -> {/*S'arreter dans une itération */}
 						}
 					}
@@ -70,13 +76,34 @@ public class Controleur
 				
 				this.metier.interpreter(numLigne);
 			}
-			input.close();
 		} catch (Exception e) {System.out.println("Erreur 002 : Deplacement ligne par ligne"); e.printStackTrace();}
 	}
 
-	public String getTraceDexecution()
+	/**
+	 * 
+	 * @param args
+	 */
+	public void actualiser()
+	{
+		this.ihm.afficher(this.numLigne);
+	}
+
+	/**
+	 * 
+	 * @return la trace d'éxécuton
+	 */
+	public List<String> getTraceDexecution()
 	{
 		return this.metier.getTraceDexecution();
+	}
+
+	/**
+	 * 
+	 * @return la trace des numéros ou il y a eu un lire
+	 */
+	public List<Integer> getTraceLire()
+	{
+		return this.metier.getTraceLire();
 	}
 
 	/**

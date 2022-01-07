@@ -15,10 +15,6 @@ import AlgoPars.Controleur;
 import iut.algo.Console;
 import iut.algo.CouleurConsole;
 
-import static org.fusesource.jansi.Ansi.*;
-import static org.fusesource.jansi.Ansi.Color.*;
-import org.fusesource.jansi.AnsiConsole;
-
 /**
  * Classe principale liée à la vue du modèle MVC
  * @author LHEAD
@@ -90,27 +86,49 @@ public class CUI
 	 */
 	public void afficher(int n)
 	{
+		String delta;
 		String res;
 
 		String fichier, data;
 		String[] tabFichier, tabData;
 
-		fichier = this.controleur.getFichier(n);
-		data    = this.controleur.getDonnees();
+		List<String>  execution;
+		List<Integer> traceLire;
+
+		fichier   = this.controleur.getFichier(n);
+		data      = this.controleur.getDonnees() ;
+		execution = this.controleur.getTraceDexecution();
 
 		tabFichier = fichier.split("\n");//le divise par ligne
 		tabData    = data.split("\n");
 		Console.normal();
 		res = "\n";
-		res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format("%-32s", "") + ansi().reset() + "\n";				
-		res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format("%-32s", "") + ansi().reset() +"\n";
-		for ( int i=0;i<84;i++)res+=   ansi().bg(WHITE) + "" + ansi().fg(BLACK) +"¨";
+		res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format("%-32s", "") + ansi().reset() + "\n";				
+		res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format("%-32s", "") + ansi().reset() +"\n";
+		for ( int i=0;i<84;i++)res+=   ansi().bg(WHITECouleurConsole.BLANC.getFond()) + "" + ansi().fg(BLACK) +"¨";
 		res += " ";
 		for ( int i=0;i<42;i++)res+= "¨";
 
 		res +=  ansi().reset() + "\n";
 
-		res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", tabFichier[0]) +"|     NOM         |          VALEUR       |" + ansi().reset() + "\n";
+		res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", tabFichier[0]) +"|     NOM         |          VALEUR       |" + ansi().reset() + "\n";
+		
+		Console.effacerEcran();
+		res = putColor("defaut") + CouleurConsole.BLANC.getFond() + "\n";
+		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
+		res += "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|Execution|\n";
+		for ( int i=0;i<84;i++)res+="¨";
+		res += " ";
+		for ( int i=0;i<41;i++)res+="¨";
+		res += " ";
+		for ( int i=0;i<43;i++)res+="¨";
+		res += "\n";
+
+		res += "|" + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
+		
+		this.afficher(res, -1);
+		this.afficher(String.format(" %-42s|",this.getValueInExec(execution, 0)), 0);
+		Console.println("");
 		
 		for (int i=1;i<40;i++)
 		{
@@ -120,11 +138,10 @@ public class CUI
 			String ligne = tabFichier[i].substring(2);
 
 			Boolean bOk = false;
-			for(char c : ligne.toCharArray())
-				if (c != ' ') bOk = true;
+			for(char c : ligne.toCharArray())if (c != ' ') bOk = true;
+
 			if(bOk)//Si c'est pas que des espaces
-			{	
-				
+			{		
 				while(ligne.charAt(caractere) == ' ' && caractere < ligne.length())
 					caractere++;
 			
@@ -144,23 +161,39 @@ public class CUI
 						nouvelleLigne += tabSplit[cpt] + " ";
 
 				}
-				res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|" + ansi().reset() +"\n";
+				String tmp = this.getValueInExec(execution, i);
+
+				Console.print("|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|");
+				delta = String.valueOf(42-tmp.length());
+				this.afficher(" ", -1);
+				this.afficher(tmp, i);
+				this.afficher(String.format(" %-" + delta + "s", "") + "|\n", -1);
+				//res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|" + ansi().reset() +"\n";
 			}
 			else // Si c'est que des espaces
 			{
-				res += ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|" + ansi().reset() +"\n";
+				String tmp = this.getValueInExec(execution, i);
+
+				Console.print("|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|");
+				delta = String.valueOf(42-tmp.length());
+				this.afficher(" ", -1);
+				this.afficher(tmp, i);
+				this.afficher(String.format(" %-" + delta + "s", "") + "|\n", -1);
+				//res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|" + ansi().reset() +"\n";
 			}
-		}
-		for ( int i=0;i<127;i++)res+= ansi().bg(WHITE) + "" + ansi().fg(BLACK) + "¨";	
+		}/*
+		for ( int i=0;i<127;i++)res+= CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "¨";	
 		res += ansi().reset() + "\n";
-		/*
+		
 		res += "\n\n¨¨¨¨¨¨¨¨¨¨¨\n" + "| CONSOLE |\n";
 		for ( int i=0;i<127;i++)res+="¨";
-		*/
+		
 		//res += "\n" + this.controleur.getTraceDexecution() + "\n";
 
-		//for ( int i=0;i<127;i++)res+="¨";
+		//for ( int i=0;i<127;i++)res+="¨";*/
 
+		res = "";
+		for ( int i=0;i<170;i++)res+="¨";
 		Console.println(res);
 	}
 
@@ -199,5 +232,25 @@ public class CUI
 			default     -> sCoul = CouleurConsole.BLANC.getFont();
 		}
 		return sCoul;
+	}
+
+	public void afficher(String ligne, int n)
+	{
+		if ( this.controleur.getTraceLire().contains(n) )
+		{
+			Console.souligner();
+			Console.print(ligne);
+			Console.normal();
+		}
+		else
+		{
+			Console.print(ligne);
+		}
+	}
+
+	public String getValueInExec(List<String> execution, int i)
+	{
+		if ( execution != null )return (execution.size()>i)?execution.get(i):"";
+		return "";
 	}
 }

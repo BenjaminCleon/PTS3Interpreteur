@@ -1,6 +1,7 @@
 package AlgoPars.Metier;
 
 import java.util.Scanner;
+import iut.algo.Console;
 
 import AlgoPars.Metier.Interpreteur;
 import AlgoPars.Metier.Donnee      ;
@@ -14,27 +15,35 @@ public class EntreeSortie
 	 * Permet de lire une donnée
 	 * @param data
 	 */
-	public static void lire(String ligne, Interpreteur interpreteur)
+	public static String lire(String ligne, Interpreteur interpreteur)
 	{
 		String saisie;
+		String var   ;
 		Donnee tmp   ;
 
-		ligne = ligne.substring(ligne.indexOf("(")+1, ligne.indexOf(")")).replaceAll(" ", "");
-		tmp   = interpreteur.getDonnee(ligne);
+		interpreteur.actualiser();
 
+		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.indexOf(")")).replaceAll(" ", "");
+
+		saisie = "";
 		try
 		{
-			Scanner sc = new Scanner(System.in);
-			System.out.print("saisie: ");
-			saisie = sc.nextLine();
-			System.out.println(saisie);
+			if ( ligne.contains(",") )var = ligne.substring(0, ligne.indexOf(",") );
+			else                      var = ligne.substring(0);
 
+			tmp = interpreteur.getDonnee(var);
+			//Scanner sc = new Scanner(System.in);
+			saisie = Console.lireString();//sc.next(); 
 			Util.setValeurBySwitch(tmp, saisie);
+			//sc.close();
+			if ( ligne.contains(",") )return saisie + " " + EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), interpreteur);
 		}catch(Exception e)
 		{
 			System.out.println("Erreur 101");
 			e.printStackTrace();
 		}
+
+		return saisie;
 	}
 
 	/**
@@ -44,13 +53,35 @@ public class EntreeSortie
 	 */
 	public static String ecrire(String ligne, Interpreteur interpret)
 	{
-		ligne = ligne.substring(ligne.indexOf("(")+1, ligne.indexOf(")"));
-		return String.format("| %-123s |", EntreeSortie.ecrireRec(ligne.replaceAll(" ", ""), interpret));
+		ligne = ligne.substring(ligne.indexOf("(")+1, ligne.lastIndexOf(")"));
+		String[] tab = ligne.split(",");
+		String res = "";
+
+		for ( String s : tab )
+			res += EntreeSortie.concat(s, interpret);
+		
+		return res;
 	}
 
-	private static String ecrireRec(String ligne, Interpreteur interpret)
+	/**
+	 * Retourne la chaine contenu entre les symboles de concaténation
+	 */
+	public static String concat(String ligne, Interpreteur interpret)
 	{
-		Donnee data = interpret.getDonnee(ligne);
-		return data.getValeur() + "";
+		String sTmp;
+		Donnee dTmp;
+
+		ligne = ligne.replaceAll( "^©? *\"|\" *$", "");
+
+		if ( ligne.contains("©") )
+		{
+			sTmp = ligne.substring(ligne.lastIndexOf("©")+1).replaceAll( "^©? *\"|\" *$", "");
+			dTmp = interpret.getDonnee(sTmp.replaceAll(" |\t", ""));
+			return EntreeSortie.concat(ligne.substring(0, ligne.lastIndexOf("©")), interpret) + ((dTmp!=null)?dTmp.getValeur():"");
+		}
+
+		dTmp = interpret.getDonnee(ligne.replaceAll(" |\t", ""));
+		if (dTmp == null ) return ligne;
+		else               return dTmp.getValeur() + "";
 	}
 }

@@ -4,6 +4,7 @@ import AlgoPars.Controleur          ;
 import AlgoPars.Metier.Donnee       ;
 import AlgoPars.Metier.EntreeSortie ;
 import AlgoPars.Metier.GestionDonnee;
+//import AlgoPars.Metier.Tableau      ;
 
 import java.util.List         ;
 import java.io.FileInputStream;
@@ -26,12 +27,12 @@ public class Interpreteur
 {
 	private Controleur  controleur; // controleur associé
 
-	private List<Donnee> lstDonnee ; // liste des données
-	private List<String> lstContenu; // contenu du fichier
-	public  static List<String> lstValeursLues;
+	private List<Donnee>  lstDonnee ; // liste des données
+	//private List<Tableau> lstTableau; // liste des tableaux
+	private List<String>  lstContenu; // contenu du fichier
 	private List<Integer> lstBk;
-
-	private String traceDexecution ; // trace d'éxécution du code
+	private List<String>  traceDexecution; // trace d'éxécution du code
+	private List<Integer> traceLire      ; // retient les numéros de ligne où il y a eu un lire
 
 	private String nomFichier; // nom du fichier à lire
 	private int    numeroLigne; // Numéro de la ligne en cours
@@ -58,9 +59,9 @@ public class Interpreteur
 
 		this.lstContenu      = new ArrayList<String> ();
 		this.lstDonnee       = new ArrayList<Donnee> ();
-		this.lstValeursLues  = new ArrayList<String> ();
 		this.lstBk           = new ArrayList<Integer>();
-		this.traceDexecution = "";
+		this.traceDexecution = new ArrayList<String> ();
+		this.traceLire       = new ArrayList<Integer>();
 
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
@@ -103,9 +104,9 @@ public class Interpreteur
 			}
 			else
 			{
-				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution += EntreeSortie.ecrire(ligneAInterpreter, this) + "\n";
+				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
 				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-				if ( ligneAInterpreter.contains("lire"  ) )EntreeSortie.lire(ligneAInterpreter, this);		
+				if ( ligneAInterpreter.contains("lire"  ) ){ this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, this));this.traceLire.add(this.traceLire.size()+1); }
 			}
 		}
 
@@ -135,9 +136,18 @@ public class Interpreteur
 	 * Retourne la trace d'execution actuelle
 	 * @return
 	 */
-	public String getTraceDexecution()
+	public List<String> getTraceDexecution()
 	{
 		return this.traceDexecution;
+	}
+
+	/**
+	 * Retourne la trace des numéros de ligne lu
+	 * @return
+	 */
+	public List<Integer> getTraceLire()
+	{
+		return this.traceLire;
 	}
 
 	/**
@@ -148,7 +158,7 @@ public class Interpreteur
 		String line = "";
 		try
 		{
-			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"));
+			Scanner sc = new Scanner (new FileInputStream(nomFichier + ".algo"), "UTF8");
 			while(sc.hasNextLine())
 			{
 				line = sc.nextLine();
@@ -189,6 +199,7 @@ public class Interpreteur
 	public String getFichier(int n)
 	{
 		String res ;
+		String tmp ;
 		int    size;
 		
 		int i;
@@ -280,6 +291,8 @@ public class Interpreteur
 	{
 		Donnee tmp;
 		String nom;
+		
+		tmp = null;
 		if(this.lectureVariable) 
 		{
 
@@ -290,13 +303,37 @@ public class Interpreteur
 			for(int i=0; i<lSplit.length; i++)
 			{
 				nom = lSplit[i].replaceAll(" |\t", "");
-				switch(this.getType(ligne))
+				if(l[1].matches("(.*)tableau(.*)"))
 				{
-					case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , null, false);
-					case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , null, false);
-					case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , null, false);
-					case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, null, false);
-					default           -> tmp = new Donnee<String>   (nom, Type.CHAINE , null, false);
+					String type = "";
+					if(l[1].matches("(.*)tableau(.*)"))
+					{
+						String[] lig = l[1].split("de|d'",2);
+						type = lig[1].replaceFirst(" ", "");
+						type = type  .replaceFirst("s", "");
+					}
+					int taille = Integer.parseInt((l[1].split("\\[|\\]"))[1].replaceAll(" ", ""));
+					switch(type)
+					{
+						case Type.ENTIER  -> tmp = new Donnee<ArrayList<Integer>>  (nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
+						case Type.REEL    -> tmp = new Donnee<ArrayList<Double>>   (nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
+						case Type.BOOLEEN -> tmp = new Donnee<ArrayList<Boolean>>  (nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
+						case Type.CHAR    -> tmp = new Donnee<ArrayList<Character>>(nom, type, new ArrayList<Character>(), this.lectureConstante, taille);
+						default           -> tmp = new Donnee<ArrayList<String>>   (nom, type, new ArrayList<String>   (), this.lectureConstante, taille);
+					}
+					this.lstDonnee.add(tmp);
+					
+				}
+				else
+				{
+					switch(this.getType(ligne))
+					{
+						case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , null, false);
+						case Type.REEL    -> tmp = new Donnee<Double>   (nom, Type.REEL   , null, false);
+						case Type.CHAR    -> tmp = new Donnee<Character>(nom, Type.CHAR   , null, false);
+						case Type.BOOLEEN -> tmp = new Donnee<Boolean>  (nom, Type.BOOLEEN, null, false);
+						default           -> tmp = new Donnee<String>   (nom, Type.CHAINE , null, false);
+					}
 				}
 				this.lstDonnee.add(tmp);
 			}
@@ -305,7 +342,7 @@ public class Interpreteur
 		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
-			String val = Util.getValeur(ligne);			
+			String val = Util.getValeur(ligne, true, null);			
 			switch(this.getType(ligne))
 			{
 				case Type.ENTIER  -> tmp = new Donnee<Integer>  (nom, Type.ENTIER , Integer.parseInt(val)    , true);
@@ -325,16 +362,24 @@ public class Interpreteur
 	private void affecter(String ligne)
 	{
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
-		String value  = Util.getValeur(ligne);
-
-		System.out.println(nomVar + " |" + value + "|");
+		String value  = Util.getValeur(ligne, false, this);
+		int ind =-1;
+		
+		//System.out.println(nomVar + " |" + value + "|");
 
 		Donnee tmp = null;
-
+		
+		if(nomVar.matches("(.*)[(.*)](.*)"))
+		{
+			String[] decomp = nomVar.split("\\[|\\]");
+			nomVar = decomp[0];
+			ind    = Integer.parseInt(decomp[1]);
+		}
+		
 		for ( Donnee data: this.lstDonnee )
 			if ( data.getNom().equals(nomVar) )tmp = data;
 
-		Util.setValeurBySwitch(tmp, value);
+		Util.setValeurBySwitch(tmp, value, ind);
 	}
 
 	/**
@@ -361,5 +406,10 @@ public class Interpreteur
 	public String getDonnees()
 	{
 		return this.gestionDonnee.getDonneeString();
+	}
+
+	public void actualiser()
+	{
+		this.controleur.actualiser();
 	}
 }
