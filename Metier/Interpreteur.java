@@ -45,6 +45,8 @@ public class Interpreteur
 
 	private GestionDonnee gestionDonnee; // permet de gérer les données souhaitant être traiter
 
+	private boolean estDansCommentaire; // permet de savoir si nous sommes dans des commentaires
+
 	/**
 	 * Constructeur principale
 	 */
@@ -66,6 +68,8 @@ public class Interpreteur
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
 
+		this.estDansCommentaire = false;
+
 		this.lectureFichier();
 		this.gestionDonnee = new GestionDonnee(nomFichier, this);
 	}
@@ -83,11 +87,14 @@ public class Interpreteur
 	public void interpreter(int n)
 	{
 		String ligneAInterpreter;
+
+		int indexSimpleCom, indexDbGrosCom;
 		int indexComment;
 
 		if ( n < this.lstContenu.size() && n >= 0 )
 		{
 			ligneAInterpreter = this.lstContenu.get(n);
+			
 			indexComment = ligneAInterpreter.indexOf("//");
 
 			if ( indexComment != -1 )ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);

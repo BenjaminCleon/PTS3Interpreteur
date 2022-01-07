@@ -126,36 +126,35 @@ public class Util
 		{
 			ligneTmp = ligne.substring(0, ligne.indexOf(operateur));
 
-			file.add(ligneTmp);
+			file.add(ligneTmp.replaceAll("^ *\"|\" *$", ""));
 			
 			switch(operateur)
 			{
 				case "(" -> pile.add(operateur);
 				case ")" ->
-                {
-                    while (  !pile.isEmpty() && !(pile.peek()).equals("(") )file.add(pile.pop());
-                    pile.pop();
-                }
-                default  ->
-                {
-                    while ( !pile.isEmpty() && prioSupEgal(pile.peek(), operateur) )
-                        file.add(pile.pop());
+				{
+					while (  !pile.isEmpty() && !(pile.peek()).equals("(") )file.add(pile.pop());
+					pile.pop();
+				}
+				default  ->
+				{
+					while ( !pile.isEmpty() && Util.prioSupEgal(pile.peek(), operateur) )
+						file.add(pile.pop());
 
-
-                    pile.add(operateur);
-                }
+					pile.add(operateur);
+				}
 			}
 
 			ligne = ligne.substring(ligne.indexOf(operateur)+operateur.length());
 		}
-		file.add(ligne);
+		file.add(ligne.replaceAll("^ *\"|\" *$", ""));
 
         while ( !pile.isEmpty() )file.add(pile.pop());
 
         for ( String val: file)if ( !val.equals(""))fileRet.add(val);
 		
 		System.out.println(fileRet);
-		return evaluerEPO(fileRet);
+		return Util.evaluerEPO(fileRet);
 	}
 
     private static String evaluerEPO(Queue<String> file)
@@ -167,7 +166,7 @@ public class Util
 
         for ( String val : file )
         {
-            if ( val.matches("(\\(|\\)|<=|>=|/=|<|>|=|xou|ou|et|non|\\+|-|×|\\^|\\/){1}") )
+            if ( val.matches(Util.REGEX_OP) )
             {
                
 			    if(val.matches("xou|ou|et|non"))
@@ -198,12 +197,13 @@ public class Util
 		                case "×" -> pile.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
 		                case "/" -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
 		                case "^" -> pile.add(String.valueOf(Math.pow(Double.parseDouble(val2),Double.parseDouble(val1))));
-		                case ">"  -> pileLogique.add(new Boolean (Double.parseDouble(val2) >  Double.parseDouble(val1)));
-						case "<"  -> pileLogique.add(new Boolean (Double.parseDouble(val2) <  Double.parseDouble(val1)));
-						case ">=" -> pileLogique.add(new Boolean (Double.parseDouble(val2) >= Double.parseDouble(val1)));
-						case "<=" -> pileLogique.add(new Boolean (Double.parseDouble(val2) <= Double.parseDouble(val1)));
-						case "="  -> pileLogique.add(new Boolean (Double.parseDouble(val2) == Double.parseDouble(val1)));
-						case "/=" -> pileLogique.add(new Boolean (Double.parseDouble(val2) != Double.parseDouble(val1)));
+		                case "©" -> pile.add(String.valueOf(val2 + val1));
+						case ">"  -> pileLogique.add(Double.parseDouble(val2) >  Double.parseDouble(val1));
+						case "<"  -> pileLogique.add(Double.parseDouble(val2) <  Double.parseDouble(val1));
+						case ">=" -> pileLogique.add(Double.parseDouble(val2) >= Double.parseDouble(val1));
+						case "<=" -> pileLogique.add(Double.parseDouble(val2) <= Double.parseDouble(val1));
+						case "="  -> pileLogique.add(Double.parseDouble(val2) == Double.parseDouble(val1));
+						case "/=" -> pileLogique.add(Double.parseDouble(val2) != Double.parseDouble(val1));
 					}
                 }
             }
@@ -227,7 +227,7 @@ public class Util
         		for(String val : lstOpeLogique)
         		{		    				    		
 		    		if(val.matches("non"))
-		    			pileLogique.add(new Boolean(!(pileLogique.remove(0))));
+		    			pileLogique.add(!(pileLogique.remove(0)));
 		    		else
 					{
 						boolean valBool1 = pileLogique.remove(0);
@@ -235,9 +235,9 @@ public class Util
 																
 						switch(val)
 						{
-							case "et"  -> pileLogique.add(new Boolean(valBool1 && valBool2));
-							case "ou"  -> pileLogique.add(new Boolean(valBool1 || valBool2));
-							default    -> pileLogique.add(new Boolean( (valBool1 && !valBool2)||(!valBool1 && valBool2) ));
+							case "et"  -> pileLogique.add(valBool1 && valBool2);
+							case "ou"  -> pileLogique.add(valBool1 || valBool2);
+							default    -> pileLogique.add( (valBool1 && !valBool2)||(!valBool1 && valBool2) );
 						}
 					}
 		    	}
@@ -280,8 +280,10 @@ public class Util
 		Matcher matcher   = pattern.matcher(entreeLigne);
 
 		if ( matcher.find() )
+		{
+			System.out.println(matcher.start() + " " + matcher.end() );
 			return ligne.substring(matcher.start(), matcher.end());
-
+		}
 		return nextOperateur;
 	}
 
