@@ -14,9 +14,12 @@ variable:
 	z: booléen
 DEBUT
 	ecrire ( "Salut", " Paul" © "comment ça va" );
+
+	u <-- "Yo" © " Alan" // test
+
 	lire( x, z, y )
 	t <-- true
-	u <-- "Yo"
+
 	v <-- "Salut er"
 	w <-- 'C'
 	x <-- 2 ^ 3 + 4/(5 + 6)

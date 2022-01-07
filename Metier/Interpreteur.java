@@ -73,9 +73,15 @@ public class Interpreteur
 	 */
 	public void interpreter(int n)
 	{
+		String ligneAInterpreter;
+		int indexComment;
+
 		if ( n < this.lstContenu.size() && n >= 0 )
 		{
-			String ligneAInterpreter = this.lstContenu.get(n);
+			ligneAInterpreter = this.lstContenu.get(n);
+			indexComment = ligneAInterpreter.indexOf("//");
+
+			if ( indexComment != -1 )ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);
 
 			if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;
 			
