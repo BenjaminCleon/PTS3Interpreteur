@@ -61,12 +61,12 @@ public class Controleur
 				{
 					case ""  -> {numLigne++;}
 					case "B" -> {this.metier.goTo(--numLigne);}
-					case "GO BK" -> {/*this.metier.goNextBk();*/}
+					case "GO BK" -> {this.metier.goNextBk(numLigne);}
 					default ->
 					{
 						switch((line.charAt(0) + "").toUpperCase())
 						{
-							case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
+							case "L" -> {this.metier.goTo(Integer.parseInt(line.substring(1)));}
 							case "I" -> {/*S'arreter dans une itération */}
 						}
 					}
