@@ -258,20 +258,21 @@ public class Interpreteur
 				nom = lSplit[i].replaceAll(" |\t", "");
 				if(l[1].matches("(.*)tableau(.*)"))
 				{
-					int nbDim=0;
-					for(int j=0; j<l[1].length(); j++)if(l[1].charAt(j)=='[')nbDim++;
 					String type = "";
-					if(l[1].matches("(.*)tableau(.*)"))
-					{
-						String[] lig = l[1].split("de|d'",2);
-						type = lig[1].replaceFirst(" ", "");
-						type = type  .replaceFirst("s", "");
-					}
-					int taille;
+					String[] lig = l[1].split("de|d'",2);
+					type = lig[1].replaceFirst(" ", "");
+					type = type  .replaceFirst("s", "");
 					
-					if(nbDim == 1)
+					
+					String indices = ligne;
+					String[] t;
+					indices = indices.substring(indices.indexOf("[")+1, indices.lastIndexOf("]"));
+					indices = indices.replaceAll("\\[|\\]$", "");
+					t = indices.split("\\]");
+					Integer[] taille = new Integer[t.length];
+					for(int cpt=0; cpt<t.length; cpt++)taille[cpt] = Integer.parseInt(t[cpt]);
+					switch(this.getType(ligne))
 					{
-						taille = Integer.parseInt((l[1].split("\\[|\\]"))[1].replaceAll(" ", ""));
 						case Type.ENTIER  -> tmp = new Donnee(nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
 						case Type.REEL    -> tmp = new Donnee(nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
 						case Type.BOOLEEN -> tmp = new Donnee(nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
