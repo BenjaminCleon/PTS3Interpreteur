@@ -58,16 +58,31 @@ public class Controleur
 				this.ihm.afficher(this.numLigne);
 				
 				line = Console.lireString();//input.nextLine();
-				switch(line.toUpperCase())
+				if(line.matches("DET var <\\w*>"))
 				{
-					case ""  -> {this.numLigne++;}
-					case "B" -> {this.numLigne--;}
-					default ->
+					String var=line.substring(9,(line.length()-1));
+					System.out.println (this.metier.getTraceVariable(var));
+					
+					line = Console.lireString();//input.nextLine();
+					while(! line.isEmpty() ) 
 					{
-						switch((line.charAt(0) + "").toUpperCase())
+						if(line.equals("PP")) this.metier.traceVariableCopie(var);
+						line = Console.lireString();//input.nextLine();
+					}
+				}
+				else
+				{
+					switch(line.toUpperCase())
+					{
+						case ""  -> {this.numLigne++;}
+						case "B" -> {this.numLigne--;}
+						default ->
 						{
-							case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
-							case "I" -> {/*S'arreter dans une itération */}
+							switch((line.charAt(0) + "").toUpperCase())
+							{
+								case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
+								case "I" -> {/*S'arreter dans une itération */}
+							}
 						}
 					}
 				}
