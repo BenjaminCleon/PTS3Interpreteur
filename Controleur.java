@@ -56,19 +56,34 @@ public class Controleur
 			{
 				this.ihm.afficher(this.numLigne);
 				
-				line = Console.lireString();
-				switch(line.toUpperCase())
+				line = Console.lireString();//input.nextLine();
+				if(line.matches("DET var <\\w*>"))
 				{
-					case ""  -> {numLigne++;}
-					case "B" -> {this.metier.goTo(--numLigne);}
-					case "GO BK" -> {this.metier.goNextBk(numLigne);}
-					default ->
+					String var=line.substring(9,(line.length()-1));
+					System.out.println (this.metier.getTraceVariable(var));
+					
+					line = Console.lireString();//input.nextLine();
+					while(! line.isEmpty() ) 
 					{
-						switch((line.charAt(0) + "").toUpperCase())
-						{
-							case "L" -> {this.metier.goTo(Integer.parseInt(line.substring(1)));}
-							case "I" -> {/*S'arreter dans une itération */}
-						}
+						if(line.equals("PP")) this.metier.traceVariableCopie(var);
+						line = Console.lireString();//input.nextLine();
+					}
+				}
+				else
+				{
+					switch(line.toUpperCase())
+					{
+						case ""  -> {numLigne++;}
+						case "B" -> {this.metier.goTo(--numLigne);}
+						case "GO BK" -> {this.metier.goNextBk(numLigne);}
+						default ->
+							{
+								switch((line.charAt(0) + "").toUpperCase())
+								{
+									case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
+									case "I" -> {/*S'arreter dans une itération */}
+								}
+							}
 					}
 				}
 				if( line.toLowerCase().contains("+ bk"))this.metier.addBk(Integer.parseInt(line.substring(5)));

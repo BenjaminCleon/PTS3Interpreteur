@@ -339,14 +339,19 @@ public class Interpreteur
 				if(l[1].matches("(.*)tableau(.*)"))
 				{
 					String type = "";
-					if(l[1].matches("(.*)tableau(.*)"))
-					{
-						String[] lig = l[1].split("de|d'",2);
-						type = lig[1].replaceFirst(" ", "");
-						type = type  .replaceFirst("s", "");
-					}
-					int taille = Integer.parseInt((l[1].split("\\[|\\]"))[1].replaceAll(" ", ""));
-					switch(type)
+					String[] lig = l[1].split("de|d'",2);
+					type = lig[1].replaceFirst(" ", "");
+					type = type  .replaceFirst("s", "");
+					
+					
+					String indices = ligne;
+					String[] t;
+					indices = indices.substring(indices.indexOf("[")+1, indices.lastIndexOf("]"));
+					indices = indices.replaceAll("\\[|\\]$", "");
+					t = indices.split("\\]");
+					Integer[] taille = new Integer[t.length];
+					for(int cpt=0; cpt<t.length; cpt++)taille[cpt] = Integer.parseInt(t[cpt]);
+					switch(this.getType(ligne))
 					{
 						case Type.ENTIER  -> tmp = new Donnee(nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
 						case Type.REEL    -> tmp = new Donnee(nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
@@ -444,5 +449,20 @@ public class Interpreteur
 	public void actualiser()
 	{
 		this.controleur.actualiser();
+	}
+
+	public void trace()
+	{
+		this.gestionDonnee.traceCopie();
+	}
+	
+	public String getTraceVariable(String var)
+	{
+		return this.gestionDonnee.traceVar(var);
+	}
+	
+	public void traceVariableCopie(String var)
+	{
+		this.gestionDonnee.traceVariableCopie(var);
 	}
 }
