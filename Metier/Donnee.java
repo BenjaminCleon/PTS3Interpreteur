@@ -28,15 +28,15 @@ public class Donnee
 	 * @param estConstant
 	 *     constante ou variable
 	 */
-	public Donnee(String nom, String type, Object valeur, boolean estConstant, int taille)
+	public Donnee(String nom, String type, Object valeur, boolean estConstant, Integer... args)
 	{
-		if ( valeur instanceof List )for (int i=0;i<taille;i++)((List)valeur).add(null);
 		
 		this.nom         = nom        ;
 		this.type        = type       ;
 		this.valeur      = valeur     ;
 		this.estConstant = estConstant;
-
+		
+		if(valeur instanceof List)this.creerDimension(args);
 		
 	}
 	public Donnee(String nom, String type, Object valeur, boolean estConstant)
@@ -89,10 +89,10 @@ public class Donnee
 	 * @param args
 	 *     taille de chaque dimension
 	 */
-	public void creerDimension(int dimen, Integer... args)
+	public void creerDimension(Integer... args)
 	{
 		List<Object> l = ((List)this.valeur);
-
+		int dimen = args.length;
 		for ( int i=0;i<args[0];i++)
 		{
 			if ( dimen >= 2 )
