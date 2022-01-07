@@ -34,7 +34,7 @@ public class EntreeSortie
 			tmp = interpreteur.getDonnee(var);
 			//Scanner sc = new Scanner(System.in);
 			saisie = Console.lireString();//sc.next(); 
-			Util.setValeurBySwitch(tmp, saisie, -1);
+			Util.setValeurBySwitch(tmp, saisie);
 			//sc.close();
 			if ( ligne.contains(",") )return saisie + " " + EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), interpreteur);
 		}catch(Exception e)
