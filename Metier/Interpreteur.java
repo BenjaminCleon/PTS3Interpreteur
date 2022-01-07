@@ -6,17 +6,17 @@ import AlgoPars.Metier.EntreeSortie ;
 import AlgoPars.Metier.GestionDonnee;
 //import AlgoPars.Metier.Tableau      ;
 
-import java.util.List         ;
 import java.io.FileInputStream;
+
+import java.util.List         ;
+import java.util.Collections  ;
 import java.util.ArrayList    ;
 import java.util.Scanner      ;
 
 import iut.algo.Console;
 import iut.algo.CouleurConsole;
 
-import static org.fusesource.jansi.Ansi.*;
-import static org.fusesource.jansi.Ansi.Color.*;
-import org.fusesource.jansi.AnsiConsole;
+
 
 
 /**
@@ -121,7 +121,8 @@ public class Interpreteur
 
 	public void reset()
 	{
-		this.lstDonnee = new ArrayList<Donnee>();
+		this.lstDonnee       = new ArrayList<Donnee> ();
+		this.traceDexecution = new ArrayList<String> ();
 	}
 
 	public void goTo(int n)
@@ -134,7 +135,7 @@ public class Interpreteur
 		else
 			courant = this.lignePrc;
 		
-		while(courant <= n)
+		while(courant < n)
 			this.interpreter(courant++);
 	}
 
@@ -255,10 +256,32 @@ public class Interpreteur
 	public String getLigne(int val)
 	{
 		String sRet = "";
+		String sVal = "";
 		if (this.numeroLigne == val)
-			sRet = ansi().bg(BLUE) + "";
-		sRet+= String.format("%2d %-80s",val, this.lstContenu.get(val))+ "\n";
+			sRet = CouleurConsole.JAUNE.getFond() + "";
+		if(this.lstBk.contains(val))
+		{
+			sVal = CouleurConsole.ROUGE.getFont() + "" + String.format("%2d ", val) + CouleurConsole.NOIR.getFont();
+		}
+		else
+		{
+			sVal = CouleurConsole.NOIR.getFont() + String.format("%2d ", val) + "";
+		}
+		sRet+= sVal + String.format("%-80s", this.lstContenu.get(val))+ CouleurConsole.BLANC.getFond() + "\n";
 		return sRet;
+	}
+
+	public void goNextBk(int courant)
+	{
+		if( this.lstBk.isEmpty())return;
+		for (int i = 0; i < this.lstBk.size(); i++)
+		{
+			if(this.lstBk.get(i) >= courant)
+			{
+				this.goTo(this.lstBk.get(i));
+				return;
+			}
+		}
 	}
 
 	/** Ajoute un point d'arret
@@ -269,8 +292,10 @@ public class Interpreteur
 	 */
 	public boolean addBk(int ligne)
 	{
-		if(this.lstBk.contains(ligne)) return false;
+		
+		if(ligne > this.getSizeContenu() || ligne< 0 || this.lstBk.contains(ligne)) return false;
 		this.lstBk.add(ligne);
+		Collections.sort(this.lstBk);
 		return true;
 	}
 
@@ -283,7 +308,9 @@ public class Interpreteur
 	public boolean rmBk(int ligne)
 	{
 		if(!this.lstBk.contains(ligne)) return false;
-		this.lstBk.remove(ligne);
+		for(int i=0; i<this.lstBk.size(); i++)
+			if(this.lstBk.get(i) == ligne)
+				this.lstBk.remove(i);
 		return true;
 	}
 

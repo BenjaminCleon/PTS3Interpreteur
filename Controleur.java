@@ -61,7 +61,7 @@ public class Controleur
 				{
 					case ""  -> {numLigne++;}
 					case "B" -> {this.metier.goTo(--numLigne);}
-					case "GO BK" -> {}
+					case "GO BK" -> {/*this.metier.goNextBk();*/}
 					default ->
 					{
 						switch((line.charAt(0) + "").toUpperCase())
@@ -71,8 +71,8 @@ public class Controleur
 						}
 					}
 				}
-				if( line.toLowerCase().contains("+ bk"))System.out.println(line.substring(5));
-				if( line.toLowerCase().contains("- bk"))System.out.println(line.substring(5));
+				if( line.toLowerCase().contains("+ bk"))this.metier.addBk(Integer.parseInt(line.substring(5)));
+				if( line.toLowerCase().contains("- bk"))this.metier.rmBk(Integer.parseInt(line.substring(5)));
 				
 				this.metier.interpreter(numLigne);
 			}

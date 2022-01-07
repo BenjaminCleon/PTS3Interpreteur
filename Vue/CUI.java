@@ -80,6 +80,12 @@ public class CUI
 		alReset.add(lst1.get(lst1.size()-1).getAttributeValue("nom"));
 		this.hashMap.put(lst1.get(lst1.size()-1).getAttributeValue("couleur"),alReset);
 	}
+
+	public String consoleReset()
+	{
+		Console.normal();
+		return "";
+	}
 	/**
 	 * Méthode ayant pour objectif l'affichage complet
 	 * @param n
@@ -103,28 +109,18 @@ public class CUI
 		tabData    = data.split("\n");
 		Console.normal();
 		res = "\n";
-		res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format("%-32s", "") + ansi().reset() + "\n";				
-		res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format("%-32s", "") + ansi().reset() +"\n";
-		for ( int i=0;i<84;i++)res+=   ansi().bg(WHITECouleurConsole.BLANC.getFond()) + "" + ansi().fg(BLACK) +"¨";
-		res += " ";
-		for ( int i=0;i<42;i++)res+= "¨";
 
-		res +=  ansi().reset() + "\n";
-
-		res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", tabFichier[0]) +"|     NOM         |          VALEUR       |" + ansi().reset() + "\n";
-		
 		Console.effacerEcran();
-		res = putColor("defaut") + CouleurConsole.BLANC.getFond() + "\n";
-		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
-		res += "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|Execution|\n";
+		res += CouleurConsole.BLANC.getFond() + "" + CouleurConsole.NOIR.getFont() +"¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-36s", "") + this.consoleReset() + "\n";
+		res += CouleurConsole.BLANC.getFond() + "" +"|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|EXECUTION|" + String.format( "%-36s", "") + this.consoleReset() + "\n";
 		for ( int i=0;i<84;i++)res+="¨";
 		res += " ";
 		for ( int i=0;i<41;i++)res+="¨";
 		res += " ";
-		for ( int i=0;i<43;i++)res+="¨";
-		res += "\n";
+		for ( int i=0;i<46;i++)res+="¨";
+		res +=  this.consoleReset() + "\n";
 
-		res += "|" + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
+		res += "|" + String.format("%-83s", tabFichier[0]) + " |     NOM         |          VALEUR       | ";
 		
 		this.afficher(res, -1);
 		this.afficher(String.format(" %-42s|",this.getValueInExec(execution, 0)), 0);
@@ -156,7 +152,7 @@ public class CUI
 				for(int cpt=0; cpt<tabSplit.length; cpt++)
 				{
 					if(this.estDansListe(tabSplit[cpt]))
-						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + putColor("defaut") + " ";
+						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont() /*putColor("defaut")*/ + " ";
 					else
 						nouvelleLigne += tabSplit[cpt] + " ";
 
@@ -168,7 +164,6 @@ public class CUI
 				this.afficher(" ", -1);
 				this.afficher(tmp, i);
 				this.afficher(String.format(" %-" + delta + "s", "") + "|\n", -1);
-				//res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|" + ansi().reset() +"\n";
 			}
 			else // Si c'est que des espaces
 			{
@@ -179,21 +174,12 @@ public class CUI
 				this.afficher(" ", -1);
 				this.afficher(tmp, i);
 				this.afficher(String.format(" %-" + delta + "s", "") + "|\n", -1);
-				//res += CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|" + ansi().reset() +"\n";
 			}
-		}/*
-		for ( int i=0;i<127;i++)res+= CouleurConsole.BLANC.getFond() + "" + ansi().fg(BLACK) + "¨";	
-		res += ansi().reset() + "\n";
-		
-		res += "\n\n¨¨¨¨¨¨¨¨¨¨¨\n" + "| CONSOLE |\n";
-		for ( int i=0;i<127;i++)res+="¨";
-		
-		//res += "\n" + this.controleur.getTraceDexecution() + "\n";
+		}
 
-		//for ( int i=0;i<127;i++)res+="¨";*/
-
-		res = "";
-		for ( int i=0;i<170;i++)res+="¨";
+		res = /*CouleurConsole.BLANC.getFond() +*/"";
+		for ( int i=0;i<173;i++)res+="¨";
+		res += this.consoleReset();
 		Console.println(res);
 	}
 
