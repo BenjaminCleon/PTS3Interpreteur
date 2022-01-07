@@ -21,7 +21,7 @@ import iut.algo.Console;
  */
 public class Util
 {
-	private static final String REGEX_OP  = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|©|\\/){1}";
+	private static final String REGEX_OP  = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|©|\\/\\^|\\/|\\\\\\/ ̄ |\\|-?\\d*\\|){1}";
 	private static final String TRUE  = "true" ;
 	private static final String FALSE = "false";
 	/**
@@ -111,49 +111,22 @@ public class Util
 		int dernierOp;
 
 		String tmp     ;
-		String ligneTmp     = "";
-		String operateur    = "";
-		String operateurTmp = "";
-
-		String dernierFile = "";
+		String ligneTmp  = "";
+		String operateur = "";
 
 		Stack<String> pile = new Stack     <String>();
 		Queue<String> file = new LinkedList<String>();
 
-		Queue<String> fileRet = new LinkedList<String>();
+        Queue<String> fileRet = new LinkedList<String>();
 
 		dernierOp = 0;
 		taille = ligne.length();
 		
-		while ( (operateur = Util.nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
+		while ( (operateur = nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
 		{
-			Console.println(ligneTmp);
-			if ( operateur.length() <= ligne.length()) operateurTmp = Util.nextOperateur(ligne.substring(operateur.length()));
-
-			if  ( file.isEmpty() && ligne.indexOf(operateur) == 0 || operateurTmp == null )
-			{	
-				if ( operateurTmp == null )
-				{
-					ligneTmp = ligne.substring(0);
-					ligne    = "";
-				}
-				else
-				{
-					dernierOp = ligne.indexOf(Util.nextOperateur(ligne.substring(operateur.length())));
-					ligneTmp = ligne.substring(0, dernierOp);
-					ligne    = ligne.substring(ligneTmp.length());
-				}
-
-				ligneTmp = ligneTmp.replaceAll("^ *\"|\" *$", "");
-
-				file.add(ligneTmp);
-				continue;
-			}
-
 			ligneTmp = ligne.substring(0, ligne.indexOf(operateur));
-			ligneTmp = ligneTmp.replaceAll("^ *\"|\" *$", "");
 
-			file.add(ligneTmp);
+			file.add(ligneTmp.replaceAll("^ *\"|\" *$", ""));
 			
 			switch(operateur)
 			{
@@ -176,70 +149,116 @@ public class Util
 		}
 		file.add(ligne.replaceAll("^ *\"|\" *$", ""));
 
-		while ( !pile.isEmpty() )file.add(pile.pop());
+        while ( !pile.isEmpty() )file.add(pile.pop());
 
-		for ( String val: file)if ( !val.equals(""))fileRet.add(val);
-
+        for ( String val: file)if ( !val.equals(""))fileRet.add(val);
+		
 		System.out.println(fileRet);
 		return Util.evaluerEPO(fileRet);
 	}
 
-	private static String evaluerEPO(Queue<String> file)
-	{
-		Stack<String> pile    = new Stack<String>();
-		String val1, val2;
+    private static String evaluerEPO(Queue<String> file)
+    {
+        Stack<String> pile = new Stack<String>();
+        ArrayList<Boolean> pileLogique = new ArrayList<Boolean>();
+        Stack<String> lstOpeLogique = new Stack<String>();
+        String val1, val2;
 
-		for ( String val : file )
-		{
-			if ( val.matches(Util.REGEX_OP) )
-			{
-				val1 = pile.pop();
-				val2 = pile.pop();
-
-				switch(val)
-				{
-					case "-"   -> pile.add(String.valueOf(Double.parseDouble(val2) - Double.parseDouble(val1)));
-					case "+"   -> pile.add(String.valueOf(Double.parseDouble(val2) + Double.parseDouble(val1)));
-					case "×"   -> pile.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
-					case "/"   -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
-					case "div" -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
-					case "mod" -> pile.add(String.valueOf(Double.valueOf(val2)%Double.valueOf(val1)));
-					case "^"   -> pile.add(String.valueOf(Math.pow(Double.valueOf(val2),Double.valueOf(val1))));
-					// case ">"   -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)> Double.parseDouble(val1))));
-					// case "<"   -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)< Double.parseDouble(val1))));
-					// case "<="  -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)<=Double.parseDouble(val1))));
-					// case ">="  -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)>=Double.parseDouble(val1))));
-					// case "et"  -> pile.add(String.valueOf(Boolean.parseBoolean(val2)&&Boolean.parseBoolean(val1)));
-					// case "ou"  -> pile.add(String.valueOf(Boolean.parseBoolean(val2)||Boolean.parseBoolean(val1)));
-					case "©"   -> pile.add(String.valueOf(val2 + val1));
-				}
-			}
-			else
-				pile.add(val);
+        for ( String val : file )
+        {
+            if ( val.matches(Util.REGEX_OP) )
+            {
+               
+			    if(val.matches("xou|ou|et|non"))
+			    {
+			    	lstOpeLogique.add(val);
+			    }
+			    else if(val.matches("(\\\\\\/ ̄ |\\|-?\\d*\\|){1}"))
+			    {
+			    	switch(val) //
+		        	{
+		        	   	case "\\/ ̄ " -> pile.add( String.valueOf( (Math.sqrt (Double.parseDouble(file.remove())) )) );
+		        	   	default ->
+		        	   	{
+		        	   		val=val.replace('|', ' ');
+		        	   		pile.add(String.valueOf( Math.abs(Double.parseDouble(val.trim())) ));
+		        	   	}
+					}
+			    }
+			    else
+			    {
+					val1 = pile.pop();
+					val2 = pile.pop();
+					
+					switch(val) // Traitement opérateur arithmétiques binaires + puissance
+		            {
+		                case "+" -> pile.add(String.valueOf(Double.parseDouble(val2) + Double.parseDouble(val1)));
+		                case "-" -> pile.add(String.valueOf(Double.parseDouble(val2) - Double.parseDouble(val1)));
+		                case "×" -> pile.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
+		                case "/" -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
+		                case "^" -> pile.add(String.valueOf(Math.pow(Double.parseDouble(val2),Double.parseDouble(val1))));
+		                case "©" -> pile.add(String.valueOf(val2 + val1));
+						case ">"  -> pileLogique.add(Double.parseDouble(val2) >  Double.parseDouble(val1));
+						case "<"  -> pileLogique.add(Double.parseDouble(val2) <  Double.parseDouble(val1));
+						case ">=" -> pileLogique.add(Double.parseDouble(val2) >= Double.parseDouble(val1));
+						case "<=" -> pileLogique.add(Double.parseDouble(val2) <= Double.parseDouble(val1));
+						case "="  -> pileLogique.add(Double.parseDouble(val2) == Double.parseDouble(val1));
+						case "/=" -> pileLogique.add(Double.parseDouble(val2) != Double.parseDouble(val1));
+					}
+                }
+            }
+            else
+                pile.add(val);
+        }
+        
+        if (! pileLogique.isEmpty())
+        {
+        	if(lstOpeLogique.isEmpty())
+        	{
+        		boolean allTrue = true;
+        	
+		    	for(Boolean b : pileLogique)
+		    		if(b==false)allTrue=false;
+        	
+        		return String.valueOf(allTrue);
+        	}
+        	else
+        	{        				
+        		for(String val : lstOpeLogique)
+        		{		    				    		
+		    		if(val.matches("non"))
+		    			pileLogique.add(!(pileLogique.remove(0)));
+		    		else
+					{
+						boolean valBool1 = pileLogique.remove(0);
+						boolean valBool2 = pileLogique.remove(0);
+																
+						switch(val)
+						{
+							case "et"  -> pileLogique.add(valBool1 && valBool2);
+							case "ou"  -> pileLogique.add(valBool1 || valBool2);
+							default    -> pileLogique.add( (valBool1 && !valBool2)||(!valBool1 && valBool2) );
+						}
+					}
+		    	}
+		    	
+		    	return String.valueOf(pileLogique.remove(0));
+        	}
 		}
-
-		Console.println(pile);
-		return pile.pop();
-	}
-
-	public static String convert(boolean bOk)
-	{
-		if ( bOk )return Util.TRUE ;
-		else      return Util.FALSE;
-	}
+		else return String.valueOf (pile.pop());
+    }
 
 	private static boolean prioSupEgal(String st1, String st2)
 	{
 		int prioSt1 = 0, prioSt2 = 0;
 
 		final String[][] prio =
-							  {  { "("                             },
-								 { "<", ">", "<=", ">=", "!=", "=" },
-								 { "ou", "+", "-"                  },
-								 { "et", "×", "/"                  },
-								 { "non", "^"                      },
-								 { "©"                             }
-							  };
+		                      {  { "("                             },
+		                         { "<", ">", "<=", ">=", "/=", "=" },
+		                         { "+", "-"                        },
+		                         { "×", "/", "^"                   },
+		                         { "non"                           }
+						      };
 
 		for (int numPrio=0;numPrio<prio.length;numPrio++)
 			for (int i=0;i<prio[numPrio].length;i++)
