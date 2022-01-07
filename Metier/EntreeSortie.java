@@ -23,7 +23,7 @@ public class EntreeSortie
 
 		interpreteur.actualiser();
 
-		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.indexOf(")")).replaceAll(" ", "");
+		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.lastIndexOf(")")).replaceAll(" ", "");
 
 		saisie = "";
 		try
@@ -34,7 +34,7 @@ public class EntreeSortie
 			tmp = interpreteur.getDonnee(var);
 			//Scanner sc = new Scanner(System.in);
 			saisie = Console.lireString();//sc.next(); 
-			Util.setValeurBySwitch(tmp, saisie);
+			Util.setValeurBySwitch(tmp, saisie, -1);
 			//sc.close();
 			if ( ligne.contains(",") )return saisie + " " + EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), interpreteur);
 		}catch(Exception e)
@@ -58,7 +58,7 @@ public class EntreeSortie
 		String res = "";
 
 		for ( String s : tab )
-			res += EntreeSortie.concat(s, interpret);
+			res += Util.expression(s);
 		
 		return res;
 	}
@@ -70,14 +70,13 @@ public class EntreeSortie
 	{
 		String sTmp;
 		Donnee dTmp;
-
 		ligne = ligne.replaceAll( "^©? *\"|\" *$", "");
 
 		if ( ligne.contains("©") )
 		{
 			sTmp = ligne.substring(ligne.lastIndexOf("©")+1).replaceAll( "^©? *\"|\" *$", "");
 			dTmp = interpret.getDonnee(sTmp.replaceAll(" |\t", ""));
-			return EntreeSortie.concat(ligne.substring(0, ligne.lastIndexOf("©")), interpret) + ((dTmp!=null)?dTmp.getValeur():"");
+			return EntreeSortie.concat(ligne.substring(0, ligne.lastIndexOf("©")), interpret) + ((dTmp!=null)?dTmp.getValeur():sTmp);
 		}
 
 		dTmp = interpret.getDonnee(ligne.replaceAll(" |\t", ""));
