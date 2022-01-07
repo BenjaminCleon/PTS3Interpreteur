@@ -130,16 +130,24 @@ public class Donnee
 	 * @param valeur
 	 * @return true si la valeur a été changé
 	 */
-	public boolean setValeur(Object valeur, int ind)
+	public boolean setValeur(Object valeur, Integer... args)
 	{
 		if ( this.estConstant )return false;
-		if(ind == -1)
+		if(!(this.valeur instanceof List))
 		{
 			this.valeur = valeur;
 		}
 		else
 		{
-			((List)this.valeur).set(ind, valeur);
+			if ( ((List)this.valeur).get(0) instanceof List )
+			{
+				if ( ((List)((List)this.valeur).get(0)) instanceof List )
+					((List)((List)((List)this.valeur).get(args[0])).get(args[1])).set(args[2], valeur);
+				else
+					((List)((List)this.valeur).get(args[0])).set(args[1], valeur);
+			}
+			else
+				((List)this.valeur).set(args[0], valeur);
 		}
 		return true;
 	}

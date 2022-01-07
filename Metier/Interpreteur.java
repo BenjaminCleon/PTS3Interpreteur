@@ -336,7 +336,7 @@ public class Interpreteur
 		for ( Donnee data: this.lstDonnee )
 			if ( data.getNom().equals(nomVar) )tmp = data;
 
-		Util.setValeurBySwitch(tmp, value, ind);
+		Util.setValeurBySwitch(tmp, value);
 	}
 
 	/**
