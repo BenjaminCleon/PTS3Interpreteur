@@ -168,7 +168,6 @@ public class Util
 					while ( !pile.isEmpty() && Util.prioSupEgal(pile.peek(), operateur) )
 						file.add(pile.pop());
 
-
 					pile.add(operateur);
 				}
 			}
@@ -262,8 +261,10 @@ public class Util
 		Matcher matcher   = pattern.matcher(entreeLigne);
 
 		if ( matcher.find() )
+		{
+			System.out.println(matcher.start() + " " + matcher.end() );
 			return ligne.substring(matcher.start(), matcher.end());
-
+		}
 		return nextOperateur;
 	}
 
