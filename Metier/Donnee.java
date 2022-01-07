@@ -72,12 +72,14 @@ public class Donnee<E>
 			{
 				if ( ((List)((List)this.valeur).get(0)) instanceof List )
 					return ((List)((List)((List)this.valeur).get(args[0])).get(args[1])).get(args[2]);
+				else
+					return ((List)((List)this.valeur).get(args[0])).get(args[1]);
 			}
 			else
-				return ((List)((List)this.valeur).get(args[0])).get(args[1]);
+				return ((List)this.valeur).get(args[0]);
 		}
-		else
-			return ((List)this.valeur).get(args[0]);
+
+		return null;
 	}
 
 	/**
