@@ -223,7 +223,7 @@ public class Interpreteur
 			for(int a = l; a<40; a++)
 				res += String.format("%-80s", " ") + "\n";
 		}
-		else
+		else//Il y a plus de 40 lignes
 		{
 			int move = 0;
 			if( this.numeroLigne < 20)
