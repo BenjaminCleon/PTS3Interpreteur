@@ -1,5 +1,6 @@
 package AlgoPars.Metier;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -9,6 +10,9 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import AlgoPars.Metier.Type;
 import iut.algo.Console;
 
@@ -17,7 +21,7 @@ import iut.algo.Console;
  */
 public class Util
 {
-	private static final String REGEX_OP  = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|\\/){1}";
+	private static final String REGEX_OP  = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|©|\\/){1}";
 	private static final String TRUE  = "true" ;
 	private static final String FALSE = "false";
 	/**
@@ -68,8 +72,8 @@ public class Util
 		String valeur[] = ligne.split("<--");
 		boolean bOk = false;
 
-		if ( bAffectParConst )
-			if ( ! (valeur[1].indexOf("\"") != -1) )valeur[1] = valeur[1].replaceAll(" ", "");
+		if ( bAffectParConst && ! (valeur[1].indexOf("\"") != -1) )
+			valeur[1] = valeur[1].replaceAll(" ", "");
 
 		if ( !bAffectParConst )
 		{
@@ -79,9 +83,11 @@ public class Util
 				valeur[1] = String.valueOf(Util.expression(valeur[1].replaceAll(" ", "")));
 			
 			if ( type.equals(Type.CHAR) || type.equals(Type.BOOLEEN) )valeur[1] = valeur[1].replaceAll(" ", "");
+
+			if ( type.equals(Type.CHAINE) ) valeur[1] = Util.expression(valeur[1]);
 		}
 
-		valeur[1] = valeur[1].replaceAll(" \"|\t|\"|'|" ,"");
+		valeur[1] = valeur[1].replaceAll("^ *\"|\" *$|\t|'" ,"");
 
 		return valeur[1];
 	}
@@ -121,6 +127,7 @@ public class Util
 		
 		while ( (operateur = Util.nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
 		{
+			Console.println(ligneTmp);
 			if ( operateur.length() <= ligne.length()) operateurTmp = Util.nextOperateur(ligne.substring(operateur.length()));
 
 			if  ( file.isEmpty() && ligne.indexOf(operateur) == 0 || operateurTmp == null )
@@ -137,11 +144,15 @@ public class Util
 					ligne    = ligne.substring(ligneTmp.length());
 				}
 
+				ligneTmp = ligneTmp.replaceAll("^ *\"|\" *$", "");
+
 				file.add(ligneTmp);
 				continue;
 			}
 
 			ligneTmp = ligne.substring(0, ligne.indexOf(operateur));
+			ligneTmp = ligneTmp.replaceAll("^ *\"|\" *$", "");
+
 			file.add(ligneTmp);
 			
 			switch(operateur)
@@ -164,7 +175,7 @@ public class Util
 
 			ligne = ligne.substring(ligne.indexOf(operateur)+operateur.length());
 		}
-		file.add(ligne);
+		file.add(ligne.replaceAll("^ *\"|\" *$", ""));
 
 		while ( !pile.isEmpty() )file.add(pile.pop());
 
@@ -186,8 +197,6 @@ public class Util
 				val1 = pile.pop();
 				val2 = pile.pop();
 
-				Console.println(val2 + val + val1);
-
 				switch(val)
 				{
 					case "-"   -> pile.add(String.valueOf(Double.parseDouble(val2) - Double.parseDouble(val1)));
@@ -197,12 +206,13 @@ public class Util
 					case "div" -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
 					case "mod" -> pile.add(String.valueOf(Double.valueOf(val2)%Double.valueOf(val1)));
 					case "^"   -> pile.add(String.valueOf(Math.pow(Double.valueOf(val2),Double.valueOf(val1))));
-					case ">"   -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)> Double.parseDouble(val1))));
-					case "<"   -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)< Double.parseDouble(val1))));
-					case "<="  -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)<=Double.parseDouble(val1))));
-					case ">="  -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)>=Double.parseDouble(val1))));
-					case "et"  -> pile.add(String.valueOf(Boolean.parseBoolean(val2)&&Boolean.parseBoolean(val1)));
-					case "ou"  -> pile.add(String.valueOf(Boolean.parseBoolean(val2)||Boolean.parseBoolean(val1)));
+					// case ">"   -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)> Double.parseDouble(val1))));
+					// case "<"   -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)< Double.parseDouble(val1))));
+					// case "<="  -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)<=Double.parseDouble(val1))));
+					// case ">="  -> pile.add(String.valueOf(Util.convert(Double.parseDouble(val2)>=Double.parseDouble(val1))));
+					// case "et"  -> pile.add(String.valueOf(Boolean.parseBoolean(val2)&&Boolean.parseBoolean(val1)));
+					// case "ou"  -> pile.add(String.valueOf(Boolean.parseBoolean(val2)||Boolean.parseBoolean(val1)));
+					case "©"   -> pile.add(String.valueOf(val2 + val1));
 				}
 			}
 			else
@@ -228,7 +238,8 @@ public class Util
 								 { "<", ">", "<=", ">=", "!=", "=" },
 								 { "ou", "+", "-"                  },
 								 { "et", "×", "/"                  },
-								 { "non", "^"                      }
+								 { "non", "^"                      },
+								 { "©"                             }
 							  };
 
 		for (int numPrio=0;numPrio<prio.length;numPrio++)
@@ -255,4 +266,26 @@ public class Util
 
 		return nextOperateur;
 	}
+
+	public Character car( int  value ){ return (char)value; }
+	public Integer   ord( char value ){ return (int )value; }
+
+	public String enChaine ( double value ){ return String.valueOf(value); }
+	public String enChaine ( int    value ){ return String.valueOf(value); }
+
+	public Integer enEntier( String chaine ){ return Integer.parseInt   (chaine); }
+	public Double  enReel  ( String chaine ){ return Double .parseDouble(chaine); }
+
+	public Integer plancher ( double value ){ return (int)Math.floor(value); }
+	public Integer arrondi  ( double value ){ return (int)Math.round(value); }
+
+	public String aujourdhui(){ return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDateTime.now()); }
+	public String jour      (){ return aujourdhui().substring(0, 2); }
+	public String mois      (){ return aujourdhui().substring(3, 5); }
+	public String annee     (){ return aujourdhui().substring(6)   ; }
+
+	public Boolean estReel  ( String chaine ){ return chaine.matches("^\\d+.\\d+$"); }
+	public Boolean estEntier( String chaine ){ return chaine.matches("^\\d$"      ); }
+
+	public Integer hasard( int valeur ){ return (int)(Math.random()*valeur); }
 }
