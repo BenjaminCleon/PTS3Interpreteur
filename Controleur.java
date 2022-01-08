@@ -42,7 +42,7 @@ public class Controleur
 	{
 		return this.metier.getDonnees();
 	}
-
+	
 	/*
 	 * Lecture de l'utilisateur pour se deplacer dans le code
 	*/ 
@@ -52,28 +52,45 @@ public class Controleur
 
 		try
 		{
-			//Scanner input = new Scanner(System.in);
 			while(this.numLigne<this.metier.getSizeContenu())
 			{
 				this.ihm.afficher(this.numLigne);
 				
 				line = Console.lireString();//input.nextLine();
-				switch(line.toUpperCase())
+				if(line.matches("DET var <\\w*>"))
 				{
-					case ""  -> {this.numLigne++;}
-					case "B" -> {this.numLigne--;}
-					default ->
+					String var=line.substring(9,(line.length()-1));
+					System.out.println (this.metier.getTraceVariable(var));
+					
+					line = Console.lireString();//input.nextLine();
+					while(! line.isEmpty() ) 
 					{
-						switch((line.charAt(0) + "").toUpperCase())
-						{
-							case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
-							case "I" -> {/*S'arreter dans une itération */}
-						}
+						if(line.equals("PP")) this.metier.traceVariableCopie(var);
+						line = Console.lireString();//input.nextLine();
 					}
 				}
-				this.metier.interpreter(this.numLigne);
+				else
+				{
+					switch(line.toUpperCase())
+					{
+						case ""  -> {numLigne++;}
+						case "B" -> {this.metier.goTo(--numLigne);}
+						case "GO BK" -> {this.metier.goNextBk(numLigne);}
+						default ->
+							{
+								switch((line.charAt(0) + "").toUpperCase())
+								{
+									case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
+									case "I" -> {/*S'arreter dans une itération */}
+								}
+							}
+					}
+				}
+				if( line.toLowerCase().contains("+ bk"))this.metier.addBk(Integer.parseInt(line.substring(5)));
+				if( line.toLowerCase().contains("- bk"))this.metier.rmBk(Integer.parseInt(line.substring(5)));
+				
+				this.metier.interpreter(numLigne);
 			}
-			//input.close();
 		} catch (Exception e) {System.out.println("Erreur 002 : Deplacement ligne par ligne"); e.printStackTrace();}
 	}
 
