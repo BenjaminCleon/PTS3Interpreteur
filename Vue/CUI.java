@@ -103,19 +103,19 @@ public class CUI
 		tabData    = data.split("\n");
 		Console.effacerEcran();
 		res = putColor("defaut") + CouleurConsole.NOIR.getFond() + "\n";
-		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
-		res += "|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|Execution|\n";
-		for ( int i=0;i<84;i++)res+="¨";
+		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-75s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
+		res += "|  CODE  |" + String.format("%-75s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|Execution|\n";
+		for ( int i=0;i<87;i++)res+="¨";
 		res += " ";
 		for ( int i=0;i<41;i++)res+="¨";
 		res += " ";
 		for ( int i=0;i<43;i++)res+="¨";
 		res += "\n";
 
-		res += "|" + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
+		res += "| " + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
 		
 		this.afficher(res, -1);
-		this.afficher(String.format(" %-42s|",this.getValueInExec(execution, 0)), 0);
+		this.afficher(String.format(" %-42s |",this.getValueInExec(execution, 0)), 0);
 		Console.println("");
 
 		for (int i=1;i<40;i++)
@@ -169,7 +169,7 @@ public class CUI
 			}
 		}
 		res = "";
-		for ( int i=0;i<170;i++)res+="¨";
+		for ( int i=0;i<173;i++)res+="¨";
 		Console.println(res);
 	}
 
