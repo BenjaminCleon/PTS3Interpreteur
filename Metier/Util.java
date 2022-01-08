@@ -127,10 +127,11 @@ public class Util
 		
 		while ( (operateur = nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
 		{
+			ligneTmp = ligne.substring(0, ligne.indexOf(operateur)).replaceAll("^ *\"|\" *$", "");
 			dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
-			System.out.println(ligneTmp);
+			System.out.println("|"+ligneTmp+"|"+((dataTmp!=null)?dataTmp.getValeur():null)+"|");
 			if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
-			else                  ligneTmp = ligne.substring(0, ligne.indexOf(operateur)).replaceAll("^ *\"|\" *$", "");
+			
 
 			file.add(ligneTmp);
 			
@@ -265,8 +266,8 @@ public class Util
 		                      {  { "("                             },
 		                         { "<", ">", "<=", ">=", "/=", "=" },
 		                         { "+", "-"                        },
-		                         { "×", "/", "^"                   },
-		                         { "non"                           }
+		                         { "×", "/"                        },
+		                         { "^", "non"                      }
 						      };
 
 		for (int numPrio=0;numPrio<prio.length;numPrio++)
