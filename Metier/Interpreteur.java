@@ -36,6 +36,10 @@ public class Interpreteur
 
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
+	
+	//booléens qui permettent de savoir si il y a des commentaires /* */
+	private boolean enComm;
+	private boolean commOk;
 
 	private GestionDonnee gestionDonnee; // permet de gérer les données souhaitant être traiter
 
@@ -56,6 +60,9 @@ public class Interpreteur
 
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
+		
+		this.enComm = false;
+		this.commOk = true ;
 
 		this.lectureFichier();
 		this.gestionDonnee = new GestionDonnee(nomFichier, this);
@@ -78,7 +85,8 @@ public class Interpreteur
 
 		if ( n < this.lstContenu.size() && n >= 0 )
 		{
-			ligneAInterpreter = this.lstContenu.get(n);
+			this.commOk = true;
+			ligneAInterpreter = commenter(this.lstContenu.get(n));
 			indexComment = ligneAInterpreter.indexOf("//");
 
 			if ( indexComment != -1 )ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);
@@ -338,6 +346,34 @@ public class Interpreteur
 			if ( data.getNom().equals(nomVar) )tmp = data;
 
 		Util.setValeurBySwitch(tmp, value);
+	}
+
+	public String commenter( String ligne)
+	{
+		
+		if(ligne.contains("/*") && ligne.contains("*/"))
+		{
+			this.commOk = false;
+			int indDebCom, indFinCom;
+			String l = "";
+			indDebCom = ligne.lastIndexOf("/*");
+			indFinCom = ligne.indexOf("*/");
+			if(indDebCom < indFinCom){l = ligne.substring(0, indDebCom) + " " + ligne.substring( indFinCom+ 2);this.enComm = false;}
+			else 
+			{
+				String finLigne = ligne.substring( ligne.lastIndexOf("*/") + 2 );
+				l = ligne.substring(indFinCom + 2, indDebCom);
+				this.enComm = true;
+				if(ligne.lastIndexOf("*/") > indDebCom){l = l + " " + finLigne;this.enComm = false;}
+			} 
+			return commenter(l);
+		}
+		if(ligne.contains("/*")){this.enComm = true ;this.commOk = false;return commenter(ligne.substring(0, ligne.lastIndexOf("/*")));}
+		if(ligne.contains("*/")){this.enComm = false;this.commOk = false;return commenter(ligne.substring(ligne.indexOf("*/")+2, ligne.length()));}
+		if(this.enComm && this.commOk)return "";
+		if(ligne.charAt(0) == ' ') ligne = ligne.substring(1);
+		
+		return ligne;
 	}
 
 	/**
