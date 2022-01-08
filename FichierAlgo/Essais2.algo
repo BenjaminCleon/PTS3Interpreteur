@@ -1,4 +1,4 @@
-ALGORITHME Essais
+ALGORITHME OUAIAIAIAIIAIAIAI
 constante:
 	STRING   <-- "ma chaine"
 	DOUBLE   <-- 25.01
@@ -21,20 +21,30 @@ DEBUT
 
 	v <-- "Salut er"
 	w <-- 'C'
-	y <-- 2-5
-	x <-- y×5^2
+	y <-- 2 ^ 3 + 4/(5 + 6)
 	z <-- false
 
-	ecrire ( STRING )
-	ecrire ( DOUBLE )
-	ecrire ( ENTIER )
-	ecrire ( BOOLEAN )
-	ecrire ( CHAR )
+	ecrire(STRING)
+	ecrire(DOUBLE)
+	ecrire(ENTIER)
+	ecrire(BOOLEAN)
+	ecrire(CHAR)
 
-	ecrire ( v )
-	ecrire ( w )
-	ecrire ( x )
-	ecrire ( u )
-	ecrire ( y )
-	ecrire ( z )
+
+
+
+
+
+
+
+
+
+
+
+	ecrire(v)
+	ecrire(w)
+	ecrire(x)
+	ecrire(u)
+	ecrire(y)
+	ecrire(z)
 FIN

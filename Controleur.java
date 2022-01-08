@@ -42,7 +42,7 @@ public class Controleur
 	{
 		return this.metier.getDonnees();
 	}
-
+	
 	/*
 	 * Lecture de l'utilisateur pour se deplacer dans le code
 	*/ 
@@ -52,7 +52,6 @@ public class Controleur
 
 		try
 		{
-			//Scanner input = new Scanner(System.in);
 			while(this.numLigne<this.metier.getSizeContenu())
 			{
 				this.ihm.afficher(this.numLigne);
@@ -74,21 +73,24 @@ public class Controleur
 				{
 					switch(line.toUpperCase())
 					{
-						case ""  -> {this.numLigne++;}
-						case "B" -> {this.numLigne--;}
+						case ""  -> {numLigne++;}
+						case "B" -> {this.metier.goTo(--numLigne);}
+						case "GO BK" -> {this.metier.goNextBk(numLigne);}
 						default ->
-						{
-							switch((line.charAt(0) + "").toUpperCase())
 							{
-								case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
-								case "I" -> {/*S'arreter dans une itération */}
+								switch((line.charAt(0) + "").toUpperCase())
+								{
+									case "L" -> {this.numLigne = Integer.parseInt(line.substring(1));}
+									case "I" -> {/*S'arreter dans une itération */}
+								}
 							}
-						}
 					}
 				}
-				this.metier.interpreter(this.numLigne);
+				if( line.toLowerCase().contains("+ bk"))this.metier.addBk(Integer.parseInt(line.substring(5)));
+				if( line.toLowerCase().contains("- bk"))this.metier.rmBk(Integer.parseInt(line.substring(5)));
+				
+				this.metier.interpreter(numLigne);
 			}
-			//input.close();
 		} catch (Exception e) {System.out.println("Erreur 002 : Deplacement ligne par ligne"); e.printStackTrace();}
 	}
 

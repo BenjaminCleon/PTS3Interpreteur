@@ -80,6 +80,12 @@ public class CUI
 		alReset.add(lst1.get(lst1.size()-1).getAttributeValue("nom"));
 		this.hashMap.put(lst1.get(lst1.size()-1).getAttributeValue("couleur"),alReset);
 	}
+
+	public String consoleReset()
+	{
+		Console.normal();
+		return "";
+	}
 	/**
 	 * Méthode ayant pour objectif l'affichage complet
 	 * @param n
@@ -101,6 +107,9 @@ public class CUI
 
 		tabFichier = fichier.split("\n");//le divise par ligne
 		tabData    = data.split("\n");
+		Console.normal();
+		res = "\n";
+
 		Console.effacerEcran();
 		res = putColor("defaut") + CouleurConsole.NOIR.getFond() + "\n";
 		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-75s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
@@ -109,15 +118,15 @@ public class CUI
 		res += " ";
 		for ( int i=0;i<41;i++)res+="¨";
 		res += " ";
-		for ( int i=0;i<43;i++)res+="¨";
-		res += "\n";
+		for ( int i=0;i<46;i++)res+="¨";
+		res +=  this.consoleReset() + "\n";
 
 		res += "| " + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
 		
 		this.afficher(res, -1);
 		this.afficher(String.format(" %-42s |",this.getValueInExec(execution, 0)), 0);
 		Console.println("");
-
+		
 		for (int i=1;i<40;i++)
 		{
 			int caractere = 0;
@@ -144,7 +153,7 @@ public class CUI
 				for(int cpt=0; cpt<tabSplit.length; cpt++)
 				{
 					if(this.estDansListe(tabSplit[cpt]))
-						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + putColor("defaut") + " ";
+						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont() /*putColor("defaut")*/ + " ";
 					else
 						nouvelleLigne += tabSplit[cpt] + " ";
 
@@ -168,8 +177,10 @@ public class CUI
 				this.afficher(String.format(" %-" + delta + "s", "") + "|\n", -1);
 			}
 		}
-		res = "";
+
+		res = /*CouleurConsole.BLANC.getFond() +*/"";
 		for ( int i=0;i<173;i++)res+="¨";
+		res += this.consoleReset();
 		Console.println(res);
 	}
 
@@ -197,10 +208,9 @@ public class CUI
 	{
 		String sCoul = "";
 		for(String couleur : this.hashMap.keySet())
-		{
 			if(this.hashMap.get(couleur).contains(mot))
 				sCoul = couleur;
-		}
+		
 		switch(sCoul)
 		{
 			case "CYAN" -> sCoul = CouleurConsole.CYAN .getFont();
