@@ -78,6 +78,8 @@ public class Util
 
 		if ( !bAffectParConst )
 		{
+			valeur[0]=valeur[0].trim();
+			
 			type = interpreteur.getDonnee(valeur[0].replaceAll(" |\t", "")).getType();
 
 			if ( type.equals(Type.ENTIER) || type.equals(Type.REEL) || type.equals(Type.BOOLEEN) )
@@ -95,6 +97,8 @@ public class Util
 
 	public static void setValeurBySwitch(Donnee data, String value, Integer... args)
 	{
+		System.out.println(data);
+		
 		switch(data.getType())
 		{
 			case Type.ENTIER  -> data.setValeur((int)(Double.parseDouble  (value)), args);

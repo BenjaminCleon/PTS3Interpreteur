@@ -189,10 +189,13 @@ public class Interpreteur
 	 *    la donnée associée au nom
 	 */
 	public Donnee getDonnee(String nom)
-	{
+	{		
+		if(nom.indexOf('[')!= -1)
+			nom = nom.substring(0, nom.indexOf('['));
+		
 		for ( Donnee data : this.lstDonnee )
 			if ( data.getNom().equals(nom) )return data;
-		
+
 		return null;
 	}
 
@@ -387,7 +390,7 @@ public class Interpreteur
 		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
-			String val = Util.getValeur(ligne, true, null);			
+			String val = Util.getValeur(ligne, true, null);
 			switch(this.getType(ligne))
 			{
 				case Type.ENTIER  -> tmp = new Donnee(nom, Type.ENTIER , Integer.parseInt(val)    , true);
@@ -406,6 +409,10 @@ public class Interpreteur
 	 */
 	private void affecter(String ligne)
 	{
+		Integer[] taille;
+		String indices = ligne;
+		String[] t;
+			
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
 		String value  = Util.getValeur(ligne, false, this);
 		int ind =-1;
@@ -414,17 +421,22 @@ public class Interpreteur
 
 		Donnee tmp = null;
 		
-		if(nomVar.matches("(.*)[(.*)](.*)"))
+		taille = null;
+
+		if ( nomVar.contains("[") )
 		{
-			String[] decomp = nomVar.split("\\[|\\]");
-			nomVar = decomp[0];
-			ind    = Integer.parseInt(decomp[1]);
+			nomVar = nomVar.substring(0, nomVar.indexOf("["));
+
+			indices = indices.substring(indices.indexOf("[")+1, indices.lastIndexOf("]")).replaceAll("\\[|\\]$", "");
+			t = indices.split("\\]");
+			taille = new Integer[t.length];
+			for(int cpt=0; cpt<t.length; cpt++)taille[cpt] = Integer.parseInt(t[cpt]);
 		}
 		
-		for ( Donnee data: this.lstDonnee )
-			if ( data.getNom().equals(nomVar) )tmp = data;
-
-		Util.setValeurBySwitch(tmp, value);
+		tmp = this.getDonnee(nomVar);
+		
+		if ( taille != null )Util.setValeurBySwitch(tmp, value, taille);
+		else                 Util.setValeurBySwitch(tmp, value);
 	}
 
 	/**
