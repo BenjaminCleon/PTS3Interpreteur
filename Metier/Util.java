@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import AlgoPars.Metier.Interpreteur;
 import AlgoPars.Metier.Type;
 import iut.algo.Console;
 
@@ -80,11 +81,11 @@ public class Util
 			type = interpreteur.getDonnee(valeur[0].replaceAll(" |\t", "")).getType();
 
 			if ( type.equals(Type.ENTIER) || type.equals(Type.REEL) || type.equals(Type.BOOLEEN) )
-				valeur[1] = String.valueOf(Util.expression(valeur[1].replaceAll(" ", "")));
+				valeur[1] = String.valueOf(Util.expression(valeur[1].replaceAll(" ", ""), interpreteur));
 			
 			if ( type.equals(Type.CHAR) || type.equals(Type.BOOLEEN) )valeur[1] = valeur[1].replaceAll(" ", "");
 
-			if ( type.equals(Type.CHAINE) ) valeur[1] = Util.expression(valeur[1]);
+			if ( type.equals(Type.CHAINE) ) valeur[1] = Util.expression(valeur[1], interpreteur);
 		}
 
 		valeur[1] = valeur[1].replaceAll("^ *\"|\" *$|\t|'" ,"");
@@ -105,10 +106,12 @@ public class Util
 	}
 
 	   
-	public static String expression(String ligne)
+	public static String expression(String ligne, Interpreteur interpret)
 	{
 		int taille   ;
 		int dernierOp;
+
+		Donnee dataTmp;
 
 		String tmp     ;
 		String ligneTmp  = "";
@@ -124,9 +127,12 @@ public class Util
 		
 		while ( (operateur = nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
 		{
-			ligneTmp = ligne.substring(0, ligne.indexOf(operateur));
+			dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
+			System.out.println(ligneTmp);
+			if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
+			else                  ligneTmp = ligne.substring(0, ligne.indexOf(operateur)).replaceAll("^ *\"|\" *$", "");
 
-			file.add(ligneTmp.replaceAll("^ *\"|\" *$", ""));
+			file.add(ligneTmp);
 			
 			switch(operateur)
 			{
@@ -147,13 +153,16 @@ public class Util
 
 			ligne = ligne.substring(ligne.indexOf(operateur)+operateur.length());
 		}
-		file.add(ligne.replaceAll("^ *\"|\" *$", ""));
+
+		dataTmp = interpret.getDonnee(ligne.replaceAll(" *", ""));
+		if ( dataTmp != null )ligne = String.valueOf(dataTmp.getValeur());
+		else                  ligne = ligne.replaceAll("^ *\"|\" *$", "");
+		file.add(ligne);
 
         while ( !pile.isEmpty() )file.add(pile.pop());
 
         for ( String val: file)if ( !val.equals(""))fileRet.add(val);
 		
-		System.out.println(fileRet);
 		return Util.evaluerEPO(fileRet);
 	}
 

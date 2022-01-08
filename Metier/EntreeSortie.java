@@ -71,29 +71,8 @@ public class EntreeSortie
 		String res = "";
 
 		for ( String s : tab )
-			res += Util.expression(s);
+			res += Util.expression(s, interpret);
 		
 		return res;
-	}
-
-	/**
-	 * Retourne la chaine contenu entre les symboles de concaténation
-	 */
-	public static String concat(String ligne, Interpreteur interpret)
-	{
-		String sTmp;
-		Donnee dTmp;
-		ligne = ligne.replaceAll( "^©? *\"|\" *$", "");
-
-		if ( ligne.contains("©") )
-		{
-			sTmp = ligne.substring(ligne.lastIndexOf("©")+1).replaceAll( "^©? *\"|\" *$", "");
-			dTmp = interpret.getDonnee(sTmp.replaceAll(" |\t", ""));
-			return EntreeSortie.concat(ligne.substring(0, ligne.lastIndexOf("©")), interpret) + ((dTmp!=null)?dTmp.getValeur():sTmp);
-		}
-
-		dTmp = interpret.getDonnee(ligne.replaceAll(" |\t", ""));
-		if (dTmp == null ) return ligne;
-		else               return dTmp.getValeur() + "";
 	}
 }
