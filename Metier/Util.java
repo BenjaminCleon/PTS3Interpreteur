@@ -71,23 +71,26 @@ public class Util
 		String type;
 		String valeur[] = ligne.split("<--");
 		boolean bOk = false;
-
-		if ( bAffectParConst && ! (valeur[1].indexOf("\"") != -1) )
+		try
+		{
+			if ( bAffectParConst && ! (valeur[1].indexOf("\"") != -1) )
 			valeur[1] = valeur[1].replaceAll(" ", "");
 
-		if ( !bAffectParConst )
-		{
-			type = interpreteur.getDonnee(valeur[0].replaceAll(" |\t", "")).getType();
+			if ( !bAffectParConst )
+			{
+				type = interpreteur.getDonnee(valeur[0].replaceAll(" |\t", "")).getType();
 
-			if ( type.equals(Type.ENTIER) || type.equals(Type.REEL) || type.equals(Type.BOOLEEN) )
-				valeur[1] = String.valueOf(Util.expression(valeur[1].replaceAll(" ", "")));
-			
-			if ( type.equals(Type.CHAR) || type.equals(Type.BOOLEEN) )valeur[1] = valeur[1].replaceAll(" ", "");
+				if ( type.equals(Type.ENTIER) || type.equals(Type.REEL) || type.equals(Type.BOOLEEN) )
+					valeur[1] = String.valueOf(Util.expression(valeur[1].replaceAll(" ", "")));
+				
+				if ( type.equals(Type.CHAR) || type.equals(Type.BOOLEEN) )valeur[1] = valeur[1].replaceAll(" ", "");
 
-			if ( type.equals(Type.CHAINE) ) valeur[1] = Util.expression(valeur[1]);
-		}
+				if ( type.equals(Type.CHAINE) ) valeur[1] = Util.expression(valeur[1]);
+			}
 
-		valeur[1] = valeur[1].replaceAll("^ *\"|\" *$|\t|'" ,"");
+			valeur[1] = valeur[1].replaceAll("^ *\"|\" *$|\t|'" ,"");
+		}catch(Exception e){System.out.println("Erreur 003 : Variable inexistante \n");e.printStackTrace();}
+		
 
 		return valeur[1];
 	}
