@@ -1,0 +1,15 @@
+ALGORITHME EssaisTableau
+variable:
+    s : tableau[5] de caractères
+DEBUT
+	ecrire ( "Salut", " Paul " © "comment ça va" )
+
+	s[0] <-- 'e'
+	s[1] <-- 'd'
+	s[2] <-- 'c'
+	s[3] <-- 'b'
+	s[4] <-- 'a'
+	
+	ecrire ( s[0] )
+
+FIN

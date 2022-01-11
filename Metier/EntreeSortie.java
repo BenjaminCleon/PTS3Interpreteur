@@ -1,5 +1,11 @@
 package AlgoPars.Metier;
 
+import java.security.AlgorithmConstraints;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import iut.algo.Console;
 
@@ -11,54 +17,102 @@ import AlgoPars.Metier.Donnee      ;
  */
 public class EntreeSortie
 {
+	private static ArrayList<Integer> alNum = new ArrayList<Integer>();
+	private static Map <Integer, ArrayList<Object>> hashMap = new HashMap<Integer, ArrayList<Object>>();
+	private static int cpt;
+	
 	/**
 	 * Permet de lire une donnée
 	 * @param data
 	 */
-	public static String lire(String ligne, Interpreteur interpreteur)
+	public static String lire(String ligne, int numero, Interpreteur interpreteur)
 	{
-		String saisie;
+		String saisie = "";
 		String var   ;
 		String nomVar;
 		Donnee tmp   ;
 		
 		int ind = -1;
-
+		
 		interpreteur.actualiser();
 
+		System.out.println("la on est dans lire a la ligne " + numero);
 		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.lastIndexOf(")")).replaceAll(" ", "");
 
-		saisie = "";
-		try
+		if(!interpreteur.getBw())
 		{
-			if ( ligne.contains(",") )var = ligne.substring(0, ligne.indexOf(",") );
-			else                      var = ligne.substring(0);
+			saisie = "";
+			try
+			{
+				if ( ligne.contains(",") )var = ligne.substring(0, ligne.indexOf(",") );
+				else                      var = ligne.substring(0);
 
-			if ( var.contains("[") )
+				if ( var.contains("[") )
+				{
+					nomVar = var.substring(0, var.indexOf("["));
+					ind    = Integer.parseInt(var.substring(var.indexOf("[")+1, var.indexOf("]")));
+				}
+				else
+				{
+					nomVar = var;
+				}
+
+				tmp = interpreteur.getDonnee(nomVar);
+				Console.print("Ecrivez : ");
+				saisie = Console.lireString();//sc.next(); 
+				Util.setValeurBySwitch(tmp, saisie);
+
+				if(EntreeSortie.hashMap.containsKey(numero))
+					hashMap.get(numero).add(saisie);
+				else
+				{
+					ArrayList<Object> alObj = new ArrayList<Object>(); 
+					alObj.add(saisie);
+					System.out.println("hashMap.put(" + numero + ", " + alObj + ");");
+					hashMap.put(numero, alObj);
+				}
+
+				if ( ligne.contains(",") )return saisie + " " + EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), numero, interpreteur);
+			}catch(Exception e)
 			{
-				nomVar = var.substring(0, var.indexOf("["));
-				ind    = Integer.parseInt(var.substring(var.indexOf("[")+1, var.indexOf("]")));
+				System.out.println("Erreur 101");
+				e.printStackTrace();
 			}
-			else
-			{
-				nomVar = var;
-			}
-			
-			tmp = interpreteur.getDonnee(nomVar);
-			//Scanner sc = new Scanner(System.in);
-			saisie = Console.lireString();//sc.next(); 
-			Util.setValeurBySwitch(tmp, saisie);
-			//sc.close();
-			if ( ligne.contains(",") )return saisie + " " + EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), interpreteur);
-		}catch(Exception e)
-		{
-			System.out.println("Erreur 101");
-			e.printStackTrace();
 		}
-
+		else
+		{
+			String[] vars = ligne.split(",");// tableau des variables
+			String tmpSaisie = "";
+			if( hashMap.get(numero) != null)
+			{
+				if( hashMap.get(numero).size()>1 )
+				{
+					for(int i = 0; i<hashMap.get(numero).size(); i++)
+					{
+						tmp = interpreteur.getDonnee(vars[i]);
+						Object o = EntreeSortie.hashMap.get(numero).get(i);
+						tmpSaisie = (String)o;
+						Util.setValeurBySwitch(tmp, tmpSaisie);
+						saisie += tmpSaisie + " ";
+					}
+				}
+				else//Si il n'y a qu'une variable à lire
+				{
+					tmp = interpreteur.getDonnee(vars[0]);
+					saisie = (String)EntreeSortie.hashMap.get(numero).get(0);
+					Util.setValeurBySwitch(tmp, saisie);
+				}
+				System.out.println("hasmap" + EntreeSortie.hashMap.get(numero));
+			}
+		}
 		return saisie;
 	}
-
+	public static void resetHashMap(int n)
+	{
+		for(Integer i : EntreeSortie.hashMap.keySet())
+			if(i>n)EntreeSortie.hashMap.get(i).clear();
+		
+	}
 	/**
 	 * Permet de faire l'équivalent d'un écrire
 	 * @param ligne

@@ -14,7 +14,7 @@ variable:
 	y: réel
 	z: booléen
 DEBUT
-	ecrire ( "Salut", " Paul" © "comment ça va" )
+	ecrire ( "Salut", " Paul " © "comment ça va" )
 
 	t <-- estEntier(45)
 	x <-- 8 mod 3
@@ -50,6 +50,14 @@ DEBUT
 	x <-- arrondi(y)
 
 	lire ( x )
+	
+	si 3<4 alors
+		ecrire ( "Test si" );
+		ecrire ( "Test deux insructions 1" );
+	sinon
+		ecrire ( "Test sinon" );
+		ecrire ( "Test deux instructions 2" );
+	fsi
 
 	w <-- car(ord('A')+17)
 

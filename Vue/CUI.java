@@ -121,7 +121,6 @@ public class CUI
 		res +=  this.consoleReset() + "\n";
 
 		res += "| " + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
-		
 		this.afficher(res, -1);
 		this.afficher(String.format(" %-42s |",this.getValueInExec(execution, 0)), 0);
 		Console.println("");
@@ -152,7 +151,7 @@ public class CUI
 				for(int cpt=0; cpt<tabSplit.length; cpt++)
 				{
 					if(this.estDansListe(tabSplit[cpt]))
-						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont() /*putColor("defaut")*/ + " ";
+						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont()  + " ";
 					else
 						nouvelleLigne += tabSplit[cpt] + " ";
 

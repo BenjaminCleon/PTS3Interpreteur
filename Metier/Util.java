@@ -86,8 +86,9 @@ public class Util
 		String type;
 		String valeur[] = ligne.split("<--");
 		boolean bOk = false;
-
-		if ( bAffectParConst && ! (valeur[1].indexOf("\"") != -1) )
+		try
+		{
+			if ( bAffectParConst && ! (valeur[1].indexOf("\"") != -1) )
 			valeur[1] = valeur[1].replaceAll(" ", "");
 
 		if ( !bAffectParConst )
@@ -102,7 +103,9 @@ public class Util
 			if ( type.equals(Type.CHAINE) || type.equals(Type.BOOLEEN) ) valeur[1] = Util.expression(valeur[1], interpreteur);
 		}
 
-		valeur[1] = valeur[1].replaceAll("^ *\"|\" *$|\t|'" ,"");
+			valeur[1] = valeur[1].replaceAll("^ *\"|\" *$|\t|'" ,"");
+		}catch(Exception e){System.out.println("Erreur 003 : Variable inexistante \n");e.printStackTrace();}
+		
 
 		return valeur[1];
 	}

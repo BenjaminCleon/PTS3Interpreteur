@@ -42,6 +42,10 @@ public class Interpreteur
 
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
+	private boolean bw;
+	private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
+	private boolean structureConditionnelleAlt; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle alternative
+	private boolean condition; // permet de connaitre le résultat du test pour entrer dans la structure conditionnelle
 	
 	//booléens qui permettent de savoir si il y a des commentaires /* */
 	private boolean enComm;
@@ -71,6 +75,10 @@ public class Interpreteur
 
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
+		this.bw               = false;
+		this.structureConditionnelle = false;
+		this.structureConditionnelleAlt = false;
+		this.condition = false;
 		
 		this.enComm = false;
 		this.commOk = true ;
@@ -98,44 +106,78 @@ public class Interpreteur
 		int indexSimpleCom, indexDbGrosCom;
 		int indexComment;
 
-		if ( n < this.lstContenu.size() && n >= 0 )
+		if ( n < this.lstContenu.size() && n >= 0)
 		{
+			ligneAInterpreter = this.lstContenu.get(n);
+			
 			this.commOk = true;
 			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
-
-			indexComment = ligneAInterpreter.indexOf("//");
-
-			if ( indexComment != -1 )ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);
-
-			if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;
 			
-			if ( ligneAInterpreter.equals("variable:" ) )
-			{
-				this.lectureConstante = false;
-				this.lectureVariable  = true ;
-			}
-			if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
-
-			if ( (this.lectureVariable || this.lectureConstante) && 
-				!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
-			{
-				// Alan c'est ton moment
-				this.creerDonnee(ligneAInterpreter);
+			if(!this.structureConditionnelle||this.structureConditionnelle && this.condition||this.structureConditionnelleAlt && ! this.condition)
+			{				
+				indexComment = ligneAInterpreter.indexOf("//");
 				
+				if ( indexComment != -1 )ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);
+
+				if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;
+				
+				if ( ligneAInterpreter.equals("variable:" ) )
+				{
+					this.lectureConstante = false;
+					this.lectureVariable  = true ;
+				}
+				if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
+
+				if ( (this.lectureVariable || this.lectureConstante) && 
+					!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
+				{
+					// Alan c'est ton moment
+					this.creerDonnee(ligneAInterpreter);
+					
+				}
+				else
+				{				
+					if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
+					if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
+					if ( ligneAInterpreter.contains("lire"  ) )
+					{
+						this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n,  this));
+						this.traceLire.add(n);
+					}
+				}
 			}
-			else
+			
+			if ( ligneAInterpreter.matches("\\s*si .* alors") )
 			{
 				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
 				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-				if ( ligneAInterpreter.contains("lire"  ) ){ this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, this));this.traceLire.add(this.traceLire.size()+1); }
+				
+				if ( ligneAInterpreter.contains("lire"  ) )
+				{ 
+					this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n, this));
+					this.traceLire.add(n); 
+				}
+				ligneAInterpreter = ligneAInterpreter.replace("si", "");
+				ligneAInterpreter = ligneAInterpreter.replace("alors", "");
+				this.structureConditionnelle=true;
+				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.condition=true;
+				else this.condition=false;
 			}
+			if ( ligneAInterpreter.matches("\\s*sinon$") ) this.structureConditionnelleAlt=true;
+			if ( ligneAInterpreter.contains("fsi"  ) ) this.structureConditionnelle=this.structureConditionnelleAlt=false;
 		}
 
 		this.lignePrc = n;
 	}
 
+	public boolean getBw()
+	{
+		return this.bw;
+	}
+
 	public void reset()
 	{
+		this.bw = true;
 		this.lstDonnee       = new ArrayList<Donnee> ();
 		this.traceDexecution = new ArrayList<String> ();
 	}
@@ -144,16 +186,27 @@ public class Interpreteur
 	{
 		if ( n < 0 || n >= this.lstContenu.size() )return;
 		
+		
+
 		int courant = 1;
 		if( this.lignePrc > n )//Si on recule
 			this.reset();
 		else
 			courant = this.lignePrc;
 		
-		while(courant < n)
-			this.interpreter(courant++);
+		while(courant <= n)//Voir si <= ou pas
+		{
+			this.controleur.setNumLigne(courant);
+			this.interpreter(courant++);//++courant?
+		}
+		
+		this.resetHashMap(n);
+		this.bw = false;
 	}
-
+	public void resetHashMap(int n)
+	{
+		EntreeSortie.resetHashMap(n);
+	}
 	/**
 	 * Retourne la trace d'execution actuelle
 	 * @return
@@ -276,7 +329,12 @@ public class Interpreteur
 		String sRet = "";
 		String sVal = "";
 		if (this.numeroLigne == val)
-			sRet = CouleurConsole.JAUNE.getFond() + "";
+		{
+			if( this.lstContenu.get(val).matches("\\s*si .* alors") && this.condition)      sRet = CouleurConsole. VERT.getFond() + "";
+			else if(this.lstContenu.get(val).matches("\\s*si .* alors") && !this.condition) sRet = CouleurConsole.ROUGE.getFond() + "";
+			else      sRet = CouleurConsole.JAUNE.getFond() + "";
+		}
+			
 		if(this.lstBk.contains(val))
 		{
 			sVal = CouleurConsole.ROUGE.getFont() + "" + String.format("%2d ", val) + CouleurConsole.NOIR.getFont();
@@ -292,14 +350,24 @@ public class Interpreteur
 	public void goNextBk(int courant)
 	{
 		if( this.lstBk.isEmpty())return;
-		for (int i = 0; i < this.lstBk.size(); i++)
+		
+		if(this.lstBk.size() == 1)
 		{
-			if(this.lstBk.get(i) >= courant)
+			this.goTo(this.lstBk.get(0));
+		}
+		else
+		{
+			for (int i = 0; i < this.lstBk.size(); i++)
 			{
-				this.goTo(this.lstBk.get(i));
-				return;
+				if(this.lstBk.get(i) > courant)// a modifier
+				{
+					this.goTo(this.lstBk.get(i));
+					this.controleur.setNumLigne(this.lstBk.get(i));
+					return;
+				}
 			}
 		}
+		
 	}
 
 	/** Ajoute un point d'arret
@@ -329,6 +397,7 @@ public class Interpreteur
 		for(int i=0; i<this.lstBk.size(); i++)
 			if(this.lstBk.get(i) == ligne)
 				this.lstBk.remove(i);
+		Collections.sort(this.lstBk);
 		return true;
 	}
 
@@ -342,18 +411,18 @@ public class Interpreteur
 	{
 		Donnee tmp;
 		String nom;
-		
 		tmp = null;
 		if(this.lectureVariable) 
 		{
-
 			String[] l = ligne.split(":");
 			l[0].replaceAll(" |\t", "");
 			String[] lSplit = l[0].split(",");
 			
 			for(int i=0; i<lSplit.length; i++)
 			{
+				//System.out.println("l1" + l[1]);	//l[1] est le probleme car il prend le l[1] de la ligne ou on est
 				nom = lSplit[i].replaceAll(" |\t", "");
+				
 				if(l[1].matches("(.*)tableau(.*)"))
 				{
 					String type = "";
