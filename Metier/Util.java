@@ -22,12 +22,12 @@ import iut.algo.Console;
  */
 public class Util
 {
-	private static final String REGEX_OP    = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|\\d+\\+|\\d+-|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\d*\\|){1}";
+	private static final String REGEX_OP    ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\d+\\+|\\d+-|×|©|\\/\\^|\\/|\\\\\\/ ̄ |\\|-?\\d*\\|){1}";
 	private static final String REGEX_PRIMI = "ord\\(|car\\(|enChaine\\(|enEntier\\(|enReel\\(|plancher\\(|arrondi\\(";
 	
 	private static final String TRUE  = "true" ;
 	private static final String FALSE = "false";
-	
+
 	/**
 	 * 
 	 * @param ligne
@@ -134,19 +134,14 @@ public class Util
 
 		dernierOp = 0;
 
-		if ( bPrimi ) ligne = Util.traiterPrimi(ligne, interpret);
-
+		//if ( bPrimi ) ligne = Util.traiterPrimi(ligne, interpret);
 		taille = ligne.length();
-		
-		System.out.println(ligne);
 		
 		while ( (operateur = nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
 		{
-			System.out.println(ligneTmp);
-			
 			ligneTmp = ligne.substring(0, ligne.indexOf(operateur)).replaceAll("^ *\"|\" *$", "");
 			dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
-			System.out.println("|"+ligneTmp+"|"+((dataTmp!=null)?dataTmp.getValeur():null)+"|");
+			//System.out.println("|"+ligneTmp+"|"+((dataTmp!=null)?dataTmp.getValeur():null)+"|");
 			if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
 			
 			file.add(ligneTmp);
@@ -181,6 +176,8 @@ public class Util
 
         for ( String val: file)if ( !val.equals(""))fileRet.add(val);
 		
+		System.out.println(fileRet);
+
 		return Util.evaluerEPO(fileRet);
 	}
 
@@ -360,8 +357,6 @@ public class Util
 		matcher2 = pattern.matcher(ligneNext);
 		if ( matcher2.find() ) tmp = Util.expression(ligneNext, interpret, true );
 		else                   tmp = Util.expression(ligneNext, interpret, false);
-
-		System.out.println(ligne.substring(matcher1.start(), matcher1.end()-1 ) + "|" +  tmp);
 
 		switch( ligne.substring(matcher1.start(), matcher1.end()-1 ) )
 		{
