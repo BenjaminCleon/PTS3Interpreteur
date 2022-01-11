@@ -16,10 +16,42 @@ variable:
 DEBUT
 	ecrire ( "Salut", " Paul" © "comment ça va" )
 
+	t <-- estEntier(45)
+	x <-- 8 mod 3
+	t <-- estEntier(x)
+	t <-- estEntier(45.02)
+	t <-- estReel(45.3)
+	t <-- estReel("tets")
+	x <-- 8mod5
+	t <-- 4 > (5+3) ou 4 > 2
+	x <-- -4 + 8 × 6 - 8 × - 9
+	u <-- "Aujourdhui nous sommes le " © aujourdhui()
+	ecrire ( u )
+	u <-- "Aujourdhui nous sommes le " © jour()  © mois() © annee()
+	ecrire ( u )
+	x <-- -98
+	x <-- -x
+	x <-- ord('A')+17
+	w <-- car(ord('A') + 3×4)
+
+	/*
+	"enChaine"
+	"enEntier"
+	"enReel"  
+	"plancher"
+	"arrondi" 
+	*/
+
+	u <-- enChaine(x) © "2"
+	x <-- enEntier("45")
+	x <-- enEntier(u)
+	y <-- enReel("45.8")
+	x <-- plancher(arrondi( y ) )
+	x <-- arrondi(y)
+
 	lire ( x )
 
-	x <-- +5
-	//w <-- car(ord('A')+5)
+	w <-- car(ord('A')+17)
 
 	s[0] <-- 'e'
 	s[1] <-- 'd'
@@ -33,8 +65,7 @@ DEBUT
 
 	v <-- "Salut er"
 	w <-- 'C'
-	y <-- ((65))
-	x <-- \/¯y
+	x <-- \/¯x+45
 	ecrire ( "Alan est un putain de boss" ) // super
 	ecrire ( "Alan est trop fort" )
 

@@ -73,6 +73,11 @@ public class GestionDonnee
 				else
 				{
 					valVar = String.valueOf(tmp.getValeur());
+					if ( tmp.getType().equals(Type.BOOLEEN) )
+					{
+						if ( valVar.equals("true") )valVar = "vrai";
+						else                        valVar = "faux";
+					}
 					if(valVar.length() > 10)
 					{
 						String debut = valVar.substring(0,5);

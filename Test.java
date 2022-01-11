@@ -10,9 +10,19 @@ import java.util.regex.Pattern;
 class Test{
 	public static void main(String[] args)
 	{
-		List<List<String>> lst = new ArrayList<List<String>>();
+		/* final String REGEX_OP ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+\\d+|-\\d+|x|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\d*\\||ord|car|enChaine|enEntier|enReel|plancher|arrondi){1}";
+		String test = "5+8x9-4";
 
-		if ( lst instanceof List<?> )
+		CharSequence entreeLigne = test;
+		String patternStr = REGEX_OP;
+		Pattern pattern = Pattern.compile(patternStr) ;
+		Matcher matcher1 = pattern.matcher(entreeLigne);
+		
+		while(matcher1.find())
+		{
+			System.out.println(test.substring(matcher1.start(), matcher1.end()));
+		} */
+
+		System.out.println(Integer.parseInt("--4"));
 	}
-
 }
