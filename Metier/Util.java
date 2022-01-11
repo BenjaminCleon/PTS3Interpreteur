@@ -22,7 +22,7 @@ import iut.algo.Console;
  */
 public class Util
 {
-	private static final String REGEX_OP    = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\d*\\|){1}";
+	private static final String REGEX_OP    = "(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\+|-|×|\\d+\\+|\\d+-|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\d*\\|){1}";
 	private static final String REGEX_PRIMI = "ord\\(|car\\(|enChaine\\(|enEntier\\(|enReel\\(|plancher\\(|arrondi\\(";
 	
 	private static final String TRUE  = "true" ;
@@ -81,6 +81,8 @@ public class Util
 
 		if ( !bAffectParConst )
 		{
+			valeur[0]=valeur[0].trim();
+			
 			type = interpreteur.getDonnee(valeur[0].replaceAll(" |\t", "")).getType();
 
 			if ( !type.equals(Type.CHAINE) )
@@ -96,6 +98,8 @@ public class Util
 
 	public static void setValeurBySwitch(Donnee data, String value, Integer... args)
 	{
+		System.out.println(data);
+		
 		switch(data.getType())
 		{
 			case Type.ENTIER  -> data.setValeur((int)(Double.parseDouble  (value)), args);
@@ -134,8 +138,12 @@ public class Util
 
 		taille = ligne.length();
 		
+		System.out.println(ligne);
+		
 		while ( (operateur = nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
 		{
+			System.out.println(ligneTmp);
+			
 			ligneTmp = ligne.substring(0, ligne.indexOf(operateur)).replaceAll("^ *\"|\" *$", "");
 			dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
 			System.out.println("|"+ligneTmp+"|"+((dataTmp!=null)?dataTmp.getValeur():null)+"|");
@@ -205,29 +213,43 @@ public class Util
 					}
 			    }
 			    else
-			    {
-					val1 = pile.pop();
-					val2 = pile.pop();
+			    {				
+					if(val.contains("-"))
+					{
+						String valPrc = val.substring(0, val.indexOf('-'));
+						pile.add( String.valueOf(Double.parseDouble(valPrc) - Double.parseDouble(pile.pop())) );
+					}
+					else if(val.contains("+"))
+					{
+						String valPrc = val.substring(0, val.indexOf('+'));
+						pile.add( String.valueOf(Double.parseDouble(valPrc) + Double.parseDouble(pile.pop())) );
+					}
+					else
+					{
 					
-					switch(val) // Traitement opérateur arithmétiques binaires + puissance
-		            {
-		                case "+" -> pile.add(String.valueOf(Double.parseDouble(val2) + Double.parseDouble(val1)));
-		                case "-" -> pile.add(String.valueOf(Double.parseDouble(val2) - Double.parseDouble(val1)));
-		                case "×" -> pile.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
-		                case "/" -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
-		                case "^" -> pile.add(String.valueOf(Math.pow(Double.parseDouble(val2),Double.parseDouble(val1))));
-		                case "©" -> pile.add(String.valueOf(val2 + val1));
-						case ">"  -> pileLogique.add(Double.parseDouble(val2) >  Double.parseDouble(val1));
-						case "<"  -> pileLogique.add(Double.parseDouble(val2) <  Double.parseDouble(val1));
-						case ">=" -> pileLogique.add(Double.parseDouble(val2) >= Double.parseDouble(val1));
-						case "<=" -> pileLogique.add(Double.parseDouble(val2) <= Double.parseDouble(val1));
-						case "="  -> pileLogique.add(Double.parseDouble(val2) == Double.parseDouble(val1));
-						case "/=" -> pileLogique.add(Double.parseDouble(val2) != Double.parseDouble(val1));
+						val1 = pile.pop();
+						val2 = pile.pop();
+						
+						switch(val) // Traitement opérateur arithmétiques binaires + puissance
+				        {
+							case "×" -> pile.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
+							case "/" -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
+							case "^" -> System.out.println("Test:" + pile.add(String.valueOf(Math.pow(Double.parseDouble(val2),Double.parseDouble(val1)))) );
+							case "©" -> pile.add(String.valueOf(val2 + val1));
+							case ">"  -> pileLogique.add(Double.parseDouble(val2) >  Double.parseDouble(val1));
+							case "<"  -> pileLogique.add(Double.parseDouble(val2) <  Double.parseDouble(val1));
+							case ">=" -> pileLogique.add(Double.parseDouble(val2) >= Double.parseDouble(val1));
+							case "<=" -> pileLogique.add(Double.parseDouble(val2) <= Double.parseDouble(val1));
+							case "="  -> pileLogique.add(Double.parseDouble(val2) == Double.parseDouble(val1));
+							case "/=" -> pileLogique.add(Double.parseDouble(val2) != Double.parseDouble(val1));
+						}
 					}
                 }
             }
             else
-                pile.add(val);
+            {
+				pile.add(val);
+            }
         }
         
         if (! pileLogique.isEmpty())

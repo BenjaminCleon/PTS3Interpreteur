@@ -6,6 +6,7 @@ constante:
 	BOOLEAN  <-- false
 	CHAR     <-- 'C'
 variable:
+    s : tableau[5] de caractères
     t : booléen
 	u,v: chaine de caractères
 	w: caractère
@@ -15,8 +16,17 @@ variable:
 DEBUT
 	ecrire ( "Salut", " Paul" © "comment ça va" )
 
-	w <-- car(ord('A')+5)
+	lire ( x )
 
+	//x <-- +5
+	//w <-- car(ord('A')+5)
+
+	s[0] <-- 'e'
+	s[1] <-- 'd'
+	s[2] <-- 'c'
+	s[3] <-- 'b'
+	s[4] <-- 'a'
+	
 	u <-- "Yo" © " Alan" // test
 	
 	t <-- true
