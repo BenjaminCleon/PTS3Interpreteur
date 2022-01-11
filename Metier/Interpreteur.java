@@ -140,7 +140,11 @@ public class Interpreteur
 				{				
 					if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
 					if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-					if ( ligneAInterpreter.contains("lire"  ) ){ this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, this));this.traceLire.add(this.traceLire.size()+1); }
+					if ( ligneAInterpreter.contains("lire"  ) )
+					{
+						this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, numeroLigne,  this));
+						this.traceLire.add(this.traceLire.size()+1);
+					}
 				}
 			}
 			
