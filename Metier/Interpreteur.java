@@ -472,10 +472,12 @@ public class Interpreteur
 		if(ligne.contains("*/")){this.enComm = false;this.commOk = false;return commenter(ligne.substring(ligne.indexOf("*/")+2, ligne.length()));}
 		//si la ligne contient uniquement une fermeture de commentaire, on indique que la suite sera interprété et on enlève la partie commentée puis on rappelle la fonction 
 		if(this.enComm && this.commOk)return "";
+
 		//si la ligne est désignée comme commentaire (donc on a eu un /* sans */) et qu'il n'y a pas de signe de commentaire dans la ligne originelle, la ligne entière est commentée alors on ne renvois rien
 		if(ligne != null && ! ligne.equals("") && ligne.charAt(0) == ' ') ligne = ligne.substring(1);
 		//on enlève le premier caractère si c'est un espace
 		return ligne;// on retourne la ligne sans commentaire
+
 	}
 
 	/**

@@ -111,10 +111,9 @@ public class CUI
 		res = "\n";
 
 		Console.effacerEcran();
-		res = putColor("defaut") + CouleurConsole.NOIR.getFond() + "\n";
-		res += "¨¨¨¨¨¨¨¨¨¨" + String.format("%-75s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨\n";
-		res += "|  CODE  |" + String.format("%-75s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|Execution|\n";
-		for ( int i=0;i<87;i++)res+="¨";
+		res += CouleurConsole.BLANC.getFond() + "" + CouleurConsole.NOIR.getFont() +"¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-36s", "") + this.consoleReset() + "\n";
+		res += CouleurConsole.BLANC.getFond() + "" +"|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|EXECUTION|" + String.format( "%-36s", "") + this.consoleReset() + "\n";
+		for ( int i=0;i<84;i++)res+="¨";
 		res += " ";
 		for ( int i=0;i<41;i++)res+="¨";
 		res += " ";
@@ -178,9 +177,11 @@ public class CUI
 			}
 		}
 
-		res = /*CouleurConsole.BLANC.getFond() +*/"";
-		for ( int i=0;i<173;i++)res+="¨";
+		res = CouleurConsole.BLANC.getFond() +"";
+		for ( int i=0;i<173;i++)res+= CouleurConsole.NOIR.getFont() + "¨";
+		res += CouleurConsole.NOIR.getFond();
 		res += this.consoleReset();
+		res += CouleurConsole.BLANC.getFont();
 		Console.println(res);
 	}
 
@@ -228,6 +229,7 @@ public class CUI
 			Console.souligner();
 			Console.print(ligne);
 			Console.normal();
+			Console.print( CouleurConsole.BLANC.getFond() );
 		}
 		else
 		{
