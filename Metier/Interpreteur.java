@@ -86,6 +86,7 @@ public class Interpreteur
 	 */
 	public void interpreter(int n)
 	{
+		System.out.println("inter debut n->" + n);
 		String ligneAInterpreter;
 
 		int indexSimpleCom, indexDbGrosCom;
@@ -111,23 +112,32 @@ public class Interpreteur
 			if ( (this.lectureVariable || this.lectureConstante) && 
 				!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
 			{
+				System.out.println("avant creer donnnee");
 				// Alan c'est ton moment
-				this.creerDonnee(ligneAInterpreter);
+				this.creerDonnee(ligneAInterpreter);//probleme
 				
 			}
 			else
 			{
 				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
 				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-				if ( ligneAInterpreter.contains("lire"  ) ){ this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, this));this.traceLire.add(this.traceLire.size()+1); }
+				
+				if ( ligneAInterpreter.contains("lire"  ) )
+				{ 
+					this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n, this));
+					this.traceLire.add(this.traceLire.size()+1); 
+				}
 			}
 		}
 
 		this.lignePrc = n;
+		System.out.println("ligne prc apres interpretet : " + this.lignePrc);
 	}
 
 	public void reset()
 	{
+		System.out.println("reset");
+		//this.lignePrc = 0;
 		this.lstDonnee       = new ArrayList<Donnee> ();
 		this.traceDexecution = new ArrayList<String> ();
 	}
@@ -136,14 +146,17 @@ public class Interpreteur
 	{
 		if ( n < 0 || n >= this.lstContenu.size() )return;
 		
+		this.controleur.setNumLigne(n);
+
 		int courant = 1;
 		if( this.lignePrc > n )//Si on recule
 			this.reset();
 		else
 			courant = this.lignePrc;
 		
-		while(courant < n)
+		while(courant <= n)//Voir si <= ou pas
 			this.interpreter(courant++);
+		System.out.println("on quitte car " + courant + " > n");
 	}
 
 	/**
@@ -281,14 +294,24 @@ public class Interpreteur
 	public void goNextBk(int courant)
 	{
 		if( this.lstBk.isEmpty())return;
-		for (int i = 0; i < this.lstBk.size(); i++)
+		
+		if(this.lstBk.size() == 1)
 		{
-			if(this.lstBk.get(i) >= courant)
+			this.goTo(this.lstBk.get(0));
+		}
+		else
+		{
+			for (int i = 0; i < this.lstBk.size(); i++)
 			{
-				this.goTo(this.lstBk.get(i));
-				return;
+				if(this.lstBk.get(i) > courant)// a modifier
+				{
+					this.goTo(this.lstBk.get(i));
+					this.controleur.setNumLigne(this.lstBk.get(i));
+					return;
+				}
 			}
 		}
+		
 	}
 
 	/** Ajoute un point d'arret
@@ -318,6 +341,9 @@ public class Interpreteur
 		for(int i=0; i<this.lstBk.size(); i++)
 			if(this.lstBk.get(i) == ligne)
 				this.lstBk.remove(i);
+		Collections.sort(this.lstBk);
+		for (int i=0; i<this.lstBk.size(); i++)
+			System.out.println("indice : " + i + " valeur -> " + this.lstBk.get(i));
 		return true;
 	}
 
@@ -331,18 +357,18 @@ public class Interpreteur
 	{
 		Donnee tmp;
 		String nom;
-		
 		tmp = null;
 		if(this.lectureVariable) 
 		{
-
 			String[] l = ligne.split(":");
 			l[0].replaceAll(" |\t", "");
 			String[] lSplit = l[0].split(",");
 			
 			for(int i=0; i<lSplit.length; i++)
 			{
+				System.out.println("l1" + l[1]);	//l[1] est le probleme car il prend le l[1] de la ligne ou on est
 				nom = lSplit[i].replaceAll(" |\t", "");
+				
 				if(l[1].matches("(.*)tableau(.*)"))
 				{
 					String type = "";
