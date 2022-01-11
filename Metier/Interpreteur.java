@@ -101,7 +101,7 @@ public class Interpreteur
 		if ( n < this.lstContenu.size() && n >= 0 )
 		{
 			this.commOk = true;
-			ligneAInterpreter = commenter(this.lstContenu.get(n));
+			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
 
 			indexComment = ligneAInterpreter.indexOf("//");
 
@@ -449,30 +449,33 @@ public class Interpreteur
 
 	public String commenter( String ligne)
 	{
-		
-		if(ligne.contains("/*") && ligne.contains("*/"))
+		if(ligne.contains("/*") && ligne.contains("*/")) // si ça contient des commentaires et qu'il y a l'ouverture et la fermeture
 		{
-			this.commOk = false;
+			this.commOk = false; // toute la ligne n'est pas a commenter
 			int indDebCom, indFinCom;
 			String l = "";
-			indDebCom = ligne.lastIndexOf("/*");
-			indFinCom = ligne.indexOf("*/");
+			indDebCom = ligne.lastIndexOf("/*");//on récupère le dernier indice de /*
+			indFinCom = ligne.indexOf("*/");    //on récupère le premier indice de */
 			if(indDebCom < indFinCom){l = ligne.substring(0, indDebCom) + " " + ligne.substring( indFinCom+ 2);this.enComm = false;}
+			// si la dernière ouverture de commentaire est fermée par la première fermeture, pas besoin d'effectuer d'autre tests, on supprime juste cette partie de la ligne a interpreter
 			else 
 			{
-				String finLigne = ligne.substring( ligne.lastIndexOf("*/") + 2 );
+				String finLigne = ligne.substring( ligne.lastIndexOf("*/") + 2 );// on prépare la fin de ligne si il y en a après la dernière fermeture
 				l = ligne.substring(indFinCom + 2, indDebCom);
 				this.enComm = true;
-				if(ligne.lastIndexOf("*/") > indDebCom){l = l + " " + finLigne;this.enComm = false;}
+				if(ligne.lastIndexOf("*/") > indDebCom){l = l + " " + finLigne;this.enComm = false;}// si c'est le cas on l'ajoute après la première partie de la ligne
 			} 
-			return commenter(l);
+			return commenter(l);// on utilise cette fonction en récursivité car on peut avoir plusieurs commentaires dans la même ligne
 		}
 		if(ligne.contains("/*")){this.enComm = true ;this.commOk = false;return commenter(ligne.substring(0, ligne.lastIndexOf("/*")));}
+		//si la ligne ne contient que une ouverture de commentaire on indique que les prochaines lignes jusqu'a la fermeture, seront commentée puis on appelle la fonction pour finir le traitement
 		if(ligne.contains("*/")){this.enComm = false;this.commOk = false;return commenter(ligne.substring(ligne.indexOf("*/")+2, ligne.length()));}
+		//si la ligne contient uniquement une fermeture de commentaire, on indique que la suite sera interprété et on enlève la partie commentée puis on rappelle la fonction 
 		if(this.enComm && this.commOk)return "";
-		if(ligne.charAt(0) == ' ') ligne = ligne.substring(1);
-		
-		return ligne;
+		//si la ligne est désignée comme commentaire (donc on a eu un /* sans */) et qu'il n'y a pas de signe de commentaire dans la ligne originelle, la ligne entière est commentée alors on ne renvois rien
+		if(ligne != null && ! ligne.equals("") && ligne.charAt(0) == ' ') ligne = ligne.substring(1);
+		//on enlève le premier caractère si c'est un espace
+		return ligne;// on retourne la ligne sans commentaire
 	}
 
 	/**
