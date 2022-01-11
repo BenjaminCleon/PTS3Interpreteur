@@ -152,7 +152,7 @@ public class CUI
 				for(int cpt=0; cpt<tabSplit.length; cpt++)
 				{
 					if(this.estDansListe(tabSplit[cpt]))
-						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont() /*putColor("defaut")*/ + " ";
+						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont()  + " ";
 					else
 						nouvelleLigne += tabSplit[cpt] + " ";
 
@@ -177,7 +177,7 @@ public class CUI
 			}
 		}
 
-		res = /*CouleurConsole.BLANC.getFond() +*/"";
+		res = "";
 		for ( int i=0;i<173;i++)res+="¨";
 		res += this.consoleReset();
 		Console.println(res);
