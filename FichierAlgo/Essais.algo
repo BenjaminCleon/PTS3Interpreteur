@@ -13,7 +13,9 @@ variable:
 	y: réel
 	z: booléen
 DEBUT
-	ecrire ( "Salut", " Paul" © "comment ça va" );
+	ecrire ( "Salut", " Paul" © "comment ça va" )
+
+	w <-- car(ord('A')+5)
 
 	u <-- "Yo" © " Alan" // test
 	
@@ -21,8 +23,12 @@ DEBUT
 
 	v <-- "Salut er"
 	w <-- 'C'
-	y <-- 2-5
-	x <-- y×5^2
+	y <-- ((65))
+	x <-- \/¯y
+	ecrire ( "Alan est un putain de boss" ) // super
+	ecrire ( "Alan est trop fort" )
+
+
 	z <-- false
 
 	ecrire ( STRING )
