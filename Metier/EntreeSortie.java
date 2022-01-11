@@ -1,5 +1,6 @@
 package AlgoPars.Metier;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import iut.algo.Console;
 
@@ -11,11 +12,12 @@ import AlgoPars.Metier.Donnee      ;
  */
 public class EntreeSortie
 {
+	private static ArrayList<Integer> alNum = new ArrayList<Integer>();
 	/**
 	 * Permet de lire une donnée
 	 * @param data
 	 */
-	public static String lire(String ligne, Interpreteur interpreteur)
+	public static String lire(String ligne, int numero, Interpreteur interpreteur)
 	{
 		String saisie;
 		String var   ;
@@ -24,6 +26,7 @@ public class EntreeSortie
 		
 		int ind = -1;
 
+		System.out.println("dans lire");
 		interpreteur.actualiser();
 
 		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.lastIndexOf(")")).replaceAll(" ", "");
@@ -43,13 +46,19 @@ public class EntreeSortie
 			{
 				nomVar = var;
 			}
-			
+
+			for(Integer val : EntreeSortie.alNum)
+				if(val == numero && interpreteur.getDonnee(nomVar).getValeur() != null)//ça signifie que la ligne à deja été traitée auparavant
+				{
+					return "" + interpreteur.getDonnee(nomVar).getValeur();
+				}
+
 			tmp = interpreteur.getDonnee(nomVar);
 			//Scanner sc = new Scanner(System.in);
 			saisie = Console.lireString();//sc.next(); 
 			Util.setValeurBySwitch(tmp, saisie);
 			//sc.close();
-			if ( ligne.contains(",") )return saisie + " " + EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), interpreteur);
+			if ( ligne.contains(",") )return saisie + " " + EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), numero, interpreteur);
 		}catch(Exception e)
 		{
 			System.out.println("Erreur 101");
