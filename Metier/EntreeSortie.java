@@ -36,6 +36,7 @@ public class EntreeSortie
 		
 		interpreteur.actualiser();
 
+		System.out.println("la on est dans lire a la ligne " + numero);
 		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.lastIndexOf(")")).replaceAll(" ", "");
 
 		if(!interpreteur.getBw())
@@ -57,6 +58,7 @@ public class EntreeSortie
 				}
 
 				tmp = interpreteur.getDonnee(nomVar);
+				Console.print("Ecrivez : ");
 				saisie = Console.lireString();//sc.next(); 
 				Util.setValeurBySwitch(tmp, saisie);
 
@@ -66,6 +68,7 @@ public class EntreeSortie
 				{
 					ArrayList<Object> alObj = new ArrayList<Object>(); 
 					alObj.add(saisie);
+					System.out.println("hashMap.put(" + numero + ", " + alObj + ");");
 					hashMap.put(numero, alObj);
 				}
 
@@ -79,25 +82,37 @@ public class EntreeSortie
 		else
 		{
 			String[] vars = ligne.split(",");// tableau des variables
-			if( hashMap.get(numero).size()>1)
+			String tmpSaisie = "";
+			if( hashMap.get(numero) != null)
 			{
-				for(int i = 0; i<hashMap.get(numero).size(); i++)
+				if( hashMap.get(numero).size()>1 )
 				{
-					Object o = EntreeSortie.hashMap.get(numero).get(i);
-					saisie += (String)o + " ";
+					for(int i = 0; i<hashMap.get(numero).size(); i++)
+					{
+						tmp = interpreteur.getDonnee(vars[i]);
+						Object o = EntreeSortie.hashMap.get(numero).get(i);
+						tmpSaisie = (String)o;
+						Util.setValeurBySwitch(tmp, tmpSaisie);
+						saisie += tmpSaisie + " ";
+					}
 				}
+				else//Si il n'y a qu'une variable à lire
+				{
+					tmp = interpreteur.getDonnee(vars[0]);
+					saisie = (String)EntreeSortie.hashMap.get(numero).get(0);
+					Util.setValeurBySwitch(tmp, saisie);
+				}
+				System.out.println("hasmap" + EntreeSortie.hashMap.get(numero));
 			}
-			else
-			{
-				tmp = interpreteur.getDonnee(vars[0]);
-				saisie = (String)EntreeSortie.hashMap.get(numero).get(0);
-				Util.setValeurBySwitch(tmp, saisie);
-			}
-			System.out.println(EntreeSortie.hashMap.get(numero));
 		}
 		return saisie;
 	}
-
+	public static void resetHashMap(int n)
+	{
+		for(Integer i : EntreeSortie.hashMap.keySet())
+			if(i>n)EntreeSortie.hashMap.get(i).clear();
+		
+	}
 	/**
 	 * Permet de faire l'équivalent d'un écrire
 	 * @param ligne

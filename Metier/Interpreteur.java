@@ -101,7 +101,6 @@ public class Interpreteur
 	 */
 	public void interpreter(int n)
 	{
-		//System.out.println("inter debut n->" + n);
 		String ligneAInterpreter;
 
 		int indexSimpleCom, indexDbGrosCom;
@@ -142,8 +141,8 @@ public class Interpreteur
 					if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
 					if ( ligneAInterpreter.contains("lire"  ) )
 					{
-						this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, numeroLigne,  this));
-						this.traceLire.add(this.traceLire.size()+1);
+						this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n,  this));
+						this.traceLire.add(n);
 					}
 				}
 			}
@@ -156,7 +155,7 @@ public class Interpreteur
 				if ( ligneAInterpreter.contains("lire"  ) )
 				{ 
 					this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n, this));
-					this.traceLire.add(this.traceLire.size()+1); 
+					this.traceLire.add(n); 
 				}
 				ligneAInterpreter = ligneAInterpreter.replace("si", "");
 				ligneAInterpreter = ligneAInterpreter.replace("alors", "");
@@ -169,18 +168,16 @@ public class Interpreteur
 		}
 
 		this.lignePrc = n;
-		//System.out.println("ligne prc apres interpretet : " + this.lignePrc);
 	}
 
 	public boolean getBw()
 	{
 		return this.bw;
 	}
+
 	public void reset()
 	{
 		this.bw = true;
-		System.out.println("reset");
-		//this.lignePrc = 0;
 		this.lstDonnee       = new ArrayList<Donnee> ();
 		this.traceDexecution = new ArrayList<String> ();
 	}
@@ -189,7 +186,7 @@ public class Interpreteur
 	{
 		if ( n < 0 || n >= this.lstContenu.size() )return;
 		
-		this.controleur.setNumLigne(n);
+		
 
 		int courant = 1;
 		if( this.lignePrc > n )//Si on recule
@@ -197,12 +194,19 @@ public class Interpreteur
 		else
 			courant = this.lignePrc;
 		
-		while(courant < n)//Voir si <= ou pas
-			this.interpreter(courant++);
+		while(courant <= n)//Voir si <= ou pas
+		{
+			this.controleur.setNumLigne(courant);
+			this.interpreter(courant++);//++courant?
+		}
 		
+		this.resetHashMap(n);
 		this.bw = false;
 	}
-
+	public void resetHashMap(int n)
+	{
+		EntreeSortie.resetHashMap(n);
+	}
 	/**
 	 * Retourne la trace d'execution actuelle
 	 * @return
@@ -325,7 +329,12 @@ public class Interpreteur
 		String sRet = "";
 		String sVal = "";
 		if (this.numeroLigne == val)
-			sRet = CouleurConsole.JAUNE.getFond() + "";
+		{
+			if( this.lstContenu.get(val).matches("\\s*si .* alors") && this.condition)      sRet = CouleurConsole. VERT.getFond() + "";
+			else if(this.lstContenu.get(val).matches("\\s*si .* alors") && !this.condition) sRet = CouleurConsole.ROUGE.getFond() + "";
+			else      sRet = CouleurConsole.JAUNE.getFond() + "";
+		}
+			
 		if(this.lstBk.contains(val))
 		{
 			sVal = CouleurConsole.ROUGE.getFont() + "" + String.format("%2d ", val) + CouleurConsole.NOIR.getFont();
@@ -389,8 +398,6 @@ public class Interpreteur
 			if(this.lstBk.get(i) == ligne)
 				this.lstBk.remove(i);
 		Collections.sort(this.lstBk);
-		for (int i=0; i<this.lstBk.size(); i++)
-			System.out.println("indice : " + i + " valeur -> " + this.lstBk.get(i));
 		return true;
 	}
 
@@ -413,7 +420,7 @@ public class Interpreteur
 			
 			for(int i=0; i<lSplit.length; i++)
 			{
-				System.out.println("l1" + l[1]);	//l[1] est le probleme car il prend le l[1] de la ligne ou on est
+				//System.out.println("l1" + l[1]);	//l[1] est le probleme car il prend le l[1] de la ligne ou on est
 				nom = lSplit[i].replaceAll(" |\t", "");
 				
 				if(l[1].matches("(.*)tableau(.*)"))

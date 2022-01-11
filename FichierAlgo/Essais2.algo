@@ -7,11 +7,12 @@ variable:
 	y: chaine de caractères
 DEBUT
 	ecrire ( "Salut", " Paul" © "comment ça va" );
-	lire ( x )
+	lire ( x, y )
 	
 	ecrire ( STRING )
 	ecrire ( DOUBLE )
 	
 	ecrire ( x )
+	ecrire ( y )
 
 FIN

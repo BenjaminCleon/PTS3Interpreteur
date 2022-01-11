@@ -121,7 +121,6 @@ public class CUI
 		res +=  this.consoleReset() + "\n";
 
 		res += "| " + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
-		
 		this.afficher(res, -1);
 		this.afficher(String.format(" %-42s |",this.getValueInExec(execution, 0)), 0);
 		Console.println("");
@@ -158,7 +157,7 @@ public class CUI
 
 				}
 				String tmp = this.getValueInExec(execution, i);
-				
+
 				Console.print("|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|");
 				delta = String.valueOf(42-tmp.length());
 				this.afficher(" ", -1);

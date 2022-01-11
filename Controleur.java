@@ -76,9 +76,9 @@ public class Controleur
 				{
 					switch(line.toUpperCase())
 					{
-						case ""  -> {this.metier.interpreter(numLigne++);}
-						case "B" -> {this.metier.goTo(--numLigne);}
-						case "GO BK" -> {this.metier.goNextBk(numLigne);}
+						case ""  -> {this.metier.interpreter(++this.numLigne);}
+						case "B" -> {this.metier.goTo(--this.numLigne);}
+						case "GO BK" -> {this.metier.goNextBk(this.numLigne);}
 						default ->
 							{
 								switch((line.charAt(0) + "").toUpperCase())
