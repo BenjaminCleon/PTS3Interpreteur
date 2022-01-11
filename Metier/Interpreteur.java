@@ -42,6 +42,7 @@ public class Interpreteur
 
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
+	private boolean bw;
 	
 	//booléens qui permettent de savoir si il y a des commentaires /* */
 	private boolean enComm;
@@ -71,6 +72,7 @@ public class Interpreteur
 
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
+		this.bw               = false;
 		
 		this.enComm = false;
 		this.commOk = true ;
@@ -93,7 +95,7 @@ public class Interpreteur
 	 */
 	public void interpreter(int n)
 	{
-		System.out.println("inter debut n->" + n);
+		//System.out.println("inter debut n->" + n);
 		String ligneAInterpreter;
 
 		int indexSimpleCom, indexDbGrosCom;
@@ -120,7 +122,7 @@ public class Interpreteur
 			if ( (this.lectureVariable || this.lectureConstante) && 
 				!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
 			{
-				System.out.println("avant creer donnnee");
+				//System.out.println("avant creer donnnee");
 				// Alan c'est ton moment
 				this.creerDonnee(ligneAInterpreter);//probleme
 				
@@ -139,11 +141,16 @@ public class Interpreteur
 		}
 
 		this.lignePrc = n;
-		System.out.println("ligne prc apres interpretet : " + this.lignePrc);
+		//System.out.println("ligne prc apres interpretet : " + this.lignePrc);
 	}
 
+	public boolean getBw()
+	{
+		return this.bw;
+	}
 	public void reset()
 	{
+		this.bw = true;
 		System.out.println("reset");
 		//this.lignePrc = 0;
 		this.lstDonnee       = new ArrayList<Donnee> ();
@@ -162,9 +169,10 @@ public class Interpreteur
 		else
 			courant = this.lignePrc;
 		
-		while(courant <= n)//Voir si <= ou pas
+		while(courant < n)//Voir si <= ou pas
 			this.interpreter(courant++);
-		System.out.println("on quitte car " + courant + " > n");
+		
+		this.bw = false;
 	}
 
 	/**
