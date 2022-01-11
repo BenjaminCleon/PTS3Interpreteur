@@ -22,7 +22,7 @@ import iut.algo.Console;
  */
 public class Util
 {
-	private static final String REGEX_OP    ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\d+\\+|\\d+-|×|©|\\/\\^|\\/|\\\\\\/ ̄ |\\|-?\\d*\\|){1}";
+	private static final String REGEX_OP    ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\d+\\+|\\d+-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\d*\\|){1}";
 	private static final String REGEX_PRIMI = "ord\\(|car\\(|enChaine\\(|enEntier\\(|enReel\\(|plancher\\(|arrondi\\(";
 	
 	private static final String TRUE  = "true" ;
@@ -134,14 +134,13 @@ public class Util
 
 		dernierOp = 0;
 
-		//if ( bPrimi ) ligne = Util.traiterPrimi(ligne, interpret);
+		if ( bPrimi ) ligne = Util.traiterPrimi(ligne, interpret);
 		taille = ligne.length();
 		
 		while ( (operateur = nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
 		{
 			ligneTmp = ligne.substring(0, ligne.indexOf(operateur)).replaceAll("^ *\"|\" *$", "");
 			dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
-			//System.out.println("|"+ligneTmp+"|"+((dataTmp!=null)?dataTmp.getValeur():null)+"|");
 			if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
 			
 			file.add(ligneTmp);
