@@ -42,6 +42,9 @@ public class Interpreteur
 
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
+	private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
+	private boolean structureConditionnelleAlt; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle alternative
+	private boolean condition; // permet de connaitre le résultat du test pour entrer dans la structure conditionnelle
 	
 	//booléens qui permettent de savoir si il y a des commentaires /* */
 	private boolean enComm;
@@ -71,6 +74,9 @@ public class Interpreteur
 
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
+		this.structureConditionnelle = false;
+		this.structureConditionnelleAlt = false;
+		this.condition = false;
 		
 		this.enComm = false;
 		this.commOk = true ;
@@ -98,37 +104,53 @@ public class Interpreteur
 		int indexSimpleCom, indexDbGrosCom;
 		int indexComment;
 
-		if ( n < this.lstContenu.size() && n >= 0 )
+		if ( n < this.lstContenu.size() && n >= 0)
 		{
+			ligneAInterpreter = this.lstContenu.get(n);
+			
 			this.commOk = true;
 			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
-
-			indexComment = ligneAInterpreter.indexOf("//");
-
-			if ( indexComment != -1 )ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);
-
-			if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;
 			
-			if ( ligneAInterpreter.equals("variable:" ) )
-			{
-				this.lectureConstante = false;
-				this.lectureVariable  = true ;
-			}
-			if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
+			if(!this.structureConditionnelle||this.structureConditionnelle && this.condition||this.structureConditionnelleAlt && ! this.condition)
+			{				
+				indexComment = ligneAInterpreter.indexOf("//");
 
-			if ( (this.lectureVariable || this.lectureConstante) && 
-				!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
-			{
-				// Alan c'est ton moment
-				this.creerDonnee(ligneAInterpreter);
+				if ( indexComment != -1 )ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);
+
+				if ( ligneAInterpreter.equals("DEBUT") )this.lectureConstante = this.lectureVariable = false;
 				
+				if ( ligneAInterpreter.equals("variable:" ) )
+				{
+					this.lectureConstante = false;
+					this.lectureVariable  = true ;
+				}
+				if ( ligneAInterpreter.equals("constante:") )this.lectureConstante = true;
+
+				if ( (this.lectureVariable || this.lectureConstante) && 
+					!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
+				{
+					// Alan c'est ton moment
+					this.creerDonnee(ligneAInterpreter);
+					
+				}
+				else
+				{				
+					if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
+					if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
+					if ( ligneAInterpreter.contains("lire"  ) ){ this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, this));this.traceLire.add(this.traceLire.size()+1); }
+				}
 			}
-			else
+			
+			if ( ligneAInterpreter.matches("\\s*si .* alors") )
 			{
-				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
-				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-				if ( ligneAInterpreter.contains("lire"  ) ){ this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, this));this.traceLire.add(this.traceLire.size()+1); }
+				ligneAInterpreter = ligneAInterpreter.replace("si", "");
+				ligneAInterpreter = ligneAInterpreter.replace("alors", "");
+				this.structureConditionnelle=true;
+				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.condition=true;
+				else this.condition=false;
 			}
+			if ( ligneAInterpreter.matches("\\s*sinon$") ) this.structureConditionnelleAlt=true;
+			if ( ligneAInterpreter.contains("fsi"  ) ) this.structureConditionnelle=this.structureConditionnelleAlt=false;
 		}
 
 		this.lignePrc = n;

@@ -17,6 +17,14 @@ DEBUT
 	ecrire ( "Salut", " Paul" © "comment ça va" )
 
 	lire ( x )
+	
+	si 3>4 alors
+		ecrire ( "Test si" );
+		ecrire ( "Test deux insructions 1" );
+	sinon
+		ecrire ( "Test sinon" );
+		ecrire ( "Test deux instructions 2" );
+	fsi
 
 	x <-- +5
 	//w <-- car(ord('A')+5)
