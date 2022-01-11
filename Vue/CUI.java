@@ -158,7 +158,7 @@ public class CUI
 
 				}
 				String tmp = this.getValueInExec(execution, i);
-
+				
 				Console.print("|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|");
 				delta = String.valueOf(42-tmp.length());
 				this.afficher(" ", -1);
