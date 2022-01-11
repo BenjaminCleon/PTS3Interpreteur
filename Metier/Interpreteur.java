@@ -42,6 +42,10 @@ public class Interpreteur
 
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
+	
+	//booléens qui permettent de savoir si il y a des commentaires /* */
+	private boolean enComm;
+	private boolean commOk;
 
 	private GestionDonnee gestionDonnee; // permet de gérer les données souhaitant être traiter
 
@@ -67,6 +71,9 @@ public class Interpreteur
 
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
+		
+		this.enComm = false;
+		this.commOk = true ;
 
 		this.estDansCommentaire = false;
 
@@ -94,8 +101,9 @@ public class Interpreteur
 
 		if ( n < this.lstContenu.size() && n >= 0 )
 		{
-			ligneAInterpreter = this.lstContenu.get(n);
-			
+			this.commOk = true;
+			ligneAInterpreter = commenter(this.lstContenu.get(n));
+
 			indexComment = ligneAInterpreter.indexOf("//");
 
 			if ( indexComment != -1 )ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);
@@ -202,10 +210,13 @@ public class Interpreteur
 	 *    la donnée associée au nom
 	 */
 	public Donnee getDonnee(String nom)
-	{
+	{		
+		if(nom.indexOf('[')!= -1)
+			nom = nom.substring(0, nom.indexOf('['));
+		
 		for ( Donnee data : this.lstDonnee )
 			if ( data.getNom().equals(nom) )return data;
-		
+
 		return null;
 	}
 
@@ -413,7 +424,7 @@ public class Interpreteur
 		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
-			String val = Util.getValeur(ligne, true, null);			
+			String val = Util.getValeur(ligne, true, null);
 			switch(this.getType(ligne))
 			{
 				case Type.ENTIER  -> tmp = new Donnee(nom, Type.ENTIER , Integer.parseInt(val)    , true);
@@ -432,6 +443,10 @@ public class Interpreteur
 	 */
 	private void affecter(String ligne)
 	{
+		Integer[] taille;
+		String indices = ligne;
+		String[] t;
+			
 		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
 		String value  = Util.getValeur(ligne, false, this);
 		int ind =-1;
@@ -440,17 +455,50 @@ public class Interpreteur
 
 		Donnee tmp = null;
 		
-		if(nomVar.matches("(.*)[(.*)](.*)"))
+		taille = null;
+
+		if ( nomVar.contains("[") )
 		{
-			String[] decomp = nomVar.split("\\[|\\]");
-			nomVar = decomp[0];
-			ind    = Integer.parseInt(decomp[1]);
+			nomVar = nomVar.substring(0, nomVar.indexOf("["));
+
+			indices = indices.substring(indices.indexOf("[")+1, indices.lastIndexOf("]")).replaceAll("\\[|\\]$", "");
+			t = indices.split("\\]");
+			taille = new Integer[t.length];
+			for(int cpt=0; cpt<t.length; cpt++)taille[cpt] = Integer.parseInt(t[cpt]);
 		}
 		
-		for ( Donnee data: this.lstDonnee )
-			if ( data.getNom().equals(nomVar) )tmp = data;
+		tmp = this.getDonnee(nomVar);
+		
+		if ( taille != null )Util.setValeurBySwitch(tmp, value, taille);
+		else                 Util.setValeurBySwitch(tmp, value);
+	}
 
-		Util.setValeurBySwitch(tmp, value);
+	public String commenter( String ligne)
+	{
+		
+		if(ligne.contains("/*") && ligne.contains("*/"))
+		{
+			this.commOk = false;
+			int indDebCom, indFinCom;
+			String l = "";
+			indDebCom = ligne.lastIndexOf("/*");
+			indFinCom = ligne.indexOf("*/");
+			if(indDebCom < indFinCom){l = ligne.substring(0, indDebCom) + " " + ligne.substring( indFinCom+ 2);this.enComm = false;}
+			else 
+			{
+				String finLigne = ligne.substring( ligne.lastIndexOf("*/") + 2 );
+				l = ligne.substring(indFinCom + 2, indDebCom);
+				this.enComm = true;
+				if(ligne.lastIndexOf("*/") > indDebCom){l = l + " " + finLigne;this.enComm = false;}
+			} 
+			return commenter(l);
+		}
+		if(ligne.contains("/*")){this.enComm = true ;this.commOk = false;return commenter(ligne.substring(0, ligne.lastIndexOf("/*")));}
+		if(ligne.contains("*/")){this.enComm = false;this.commOk = false;return commenter(ligne.substring(ligne.indexOf("*/")+2, ligne.length()));}
+		if(this.enComm && this.commOk)return "";
+		if( ligne != null && !ligne.equals("") && ligne.charAt(0) == ' ') ligne = ligne.substring(1);
+		
+		return ligne;
 	}
 
 	/**

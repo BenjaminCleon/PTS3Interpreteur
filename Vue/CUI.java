@@ -120,10 +120,10 @@ public class CUI
 		for ( int i=0;i<46;i++)res+="¨";
 		res +=  this.consoleReset() + "\n";
 
-		res += "|" + String.format("%-83s", tabFichier[0]) + " |     NOM         |          VALEUR       | ";
+		res += "| " + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
 		
 		this.afficher(res, -1);
-		this.afficher(String.format(" %-42s|",this.getValueInExec(execution, 0)), 0);
+		this.afficher(String.format(" %-42s |",this.getValueInExec(execution, 0)), 0);
 		Console.println("");
 		
 		for (int i=1;i<40;i++)
@@ -177,9 +177,11 @@ public class CUI
 			}
 		}
 
-		res = "";
-		for ( int i=0;i<173;i++)res+="¨";
+		res = CouleurConsole.BLANC.getFond() +"";
+		for ( int i=0;i<173;i++)res+= CouleurConsole.NOIR.getFont() + "¨";
+		res += CouleurConsole.NOIR.getFond();
 		res += this.consoleReset();
+		res += CouleurConsole.BLANC.getFont();
 		Console.println(res);
 	}
 
@@ -227,6 +229,7 @@ public class CUI
 			Console.souligner();
 			Console.print(ligne);
 			Console.normal();
+			Console.print( CouleurConsole.BLANC.getFond() );
 		}
 		else
 		{

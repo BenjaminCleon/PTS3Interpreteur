@@ -59,7 +59,7 @@ public class Donnee
 	 */
 	public Object getValeur(Integer... args)
 	{
-		if ( this.valeur instanceof List )return this.getValeurTableau(args);
+		//if ( this.valeur instanceof List )return this.getValeurTableau(args);
 
 		return this.valeur;
 	}
