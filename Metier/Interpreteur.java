@@ -695,35 +695,43 @@ public class Interpreteur
 	private void affecter(String ligne)
 	{
 		Integer[] taille;
-		String indices = ligne;
+		String indices;
 		String[] t;
+		String[] nomSplit;
 
-		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
+		String nomVar;
 		String value = Util.getValeur(ligne, false, this);
-		int ind = -1;
-
-		Donnee tmp = null;
-
-		taille = null;
-
-		// si dans un tableau
-		if (nomVar.contains("["))
+		// = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
+		nomSplit = ligne.split("<--");
+		for ( int i=0;i<nomSplit.length-1;i++)
 		{
-			nomVar = nomVar.substring(0, nomVar.indexOf("["));
+			nomVar = nomSplit[i].replaceAll(" |\t", "");
 
-			indices = indices.substring(indices.indexOf("[") + 1, indices.lastIndexOf("]")).replaceAll("\\[|\\]$", "");
-			t = indices.split("\\]");
-			taille = new Integer[t.length];
-			for (int cpt = 0; cpt < t.length; cpt++)
-				taille[cpt] = Integer.parseInt(t[cpt]);
+			Donnee tmp = null;
+			taille     = null;
+
+			// si dans un tableau
+			if (nomVar.contains("["))
+			{
+				nomVar = nomVar.substring(0, nomVar.indexOf("["));
+
+				indices = ligne.substring(0, ligne.indexOf("<--") );
+				indices = indices.substring(indices.indexOf("[") + 1, indices.lastIndexOf("]")).replaceAll("\\[|\\]$", "");
+				t = indices.split("\\]");
+				taille = new Integer[t.length];
+				for (int cpt = 0; cpt < t.length; cpt++)
+					taille[cpt] = Integer.parseInt(t[cpt]);
+			}
+
+			tmp = this.getDonnee(nomVar);
+
+			if (taille != null)
+				Util.setValeurBySwitch(tmp, value, taille);
+			else
+				Util.setValeurBySwitch(tmp, value);
+
+			ligne = ligne.substring(ligne.indexOf("<--") + 3);
 		}
-
-		tmp = this.getDonnee(nomVar);
-
-		if (taille != null)
-			Util.setValeurBySwitch(tmp, value, taille);
-		else
-			Util.setValeurBySwitch(tmp, value);
 	}
 
 	/**

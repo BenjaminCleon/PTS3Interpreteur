@@ -93,8 +93,8 @@ public class Util
 		boolean bOk = false;
 		try
 		{
-			if ( bAffectParConst && ! (valeur[1].indexOf("\"") != -1) )
-			valeur[1] = valeur[1].replaceAll(" ", "");
+			if ( bAffectParConst && ! (valeur[valeur.length-1].indexOf("\"") != -1) )
+			valeur[valeur.length-1] = valeur[valeur.length-1].replaceAll(" ", "");
 
 		if ( !bAffectParConst )
 		{
@@ -103,16 +103,16 @@ public class Util
 			type = interpreteur.getDonnee(valeur[0].replaceAll(" |\t", "")).getType();
 
 			if ( !type.equals(Type.CHAINE) && !type.equals(Type.BOOLEEN))
-				valeur[1] = String.valueOf(Util.expression(valeur[1].replaceAll(" ", ""), interpreteur));
+				valeur[valeur.length-1] = String.valueOf(Util.expression(valeur[valeur.length-1].replaceAll(" ", ""), interpreteur));
 			
-			if ( type.equals(Type.CHAINE) || type.equals(Type.BOOLEEN) ) valeur[1] = Util.expression(valeur[1], interpreteur);
+			if ( type.equals(Type.CHAINE) || type.equals(Type.BOOLEEN) ) valeur[valeur.length-1] = Util.expression(valeur[valeur.length-1], interpreteur);
 		}
 
-			valeur[1] = valeur[1].replaceAll("^ *\"|\" *$|\t|'" ,"");
+			valeur[valeur.length-1] = valeur[valeur.length-1].replaceAll("^ *\"|\" *$|\t|'" ,"");
 		}catch(Exception e){System.out.println("Erreur 003 : Variable inexistante \n");e.printStackTrace();}
 		
 
-		return valeur[1];
+		return valeur[valeur.length-1];
 	}
 
 	/**
