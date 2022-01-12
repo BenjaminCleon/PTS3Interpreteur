@@ -4,9 +4,11 @@ import iut.algo.Console;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 import AlgoPars.Metier.Interpreteur;
 import AlgoPars.Vue.CUI;
+
 
 /**
  * Classe controleur de l'interpréteur
@@ -25,8 +27,8 @@ public class Controleur
 	 */
 	public Controleur(String nomFic)
 	{
-		this.ihm    = new CUI         (this);
 		this.metier = new Interpreteur(this, nomFic);
+		this.ihm    = new CUI         (this);
 
 		this.numLigne = 0;
 
@@ -58,7 +60,7 @@ public class Controleur
 			while(this.numLigne<this.metier.getSizeContenu())
 			{
 				this.ihm.afficher(this.numLigne);
-				
+				Console.print("Instruction ( \"help\" pour aide ) : ");
 				line = Console.lireString();//input.nextLine();
 				if(line.matches("DET var <\\w*>"))
 				{
@@ -79,6 +81,7 @@ public class Controleur
 						case ""  -> {this.metier.interpreter(++this.numLigne);}
 						case "B" -> {this.metier.goTo(--this.numLigne);}
 						case "GO BK" -> {this.metier.goNextBk(this.numLigne);}
+						case "HELP" ->{this.ihm.afficherAide();}
 						default ->
 							{
 								switch((line.charAt(0) + "").toUpperCase())
@@ -86,7 +89,7 @@ public class Controleur
 									case "L" -> {
 													this.metier.goTo(Integer.parseInt(line.substring(1)));
 												}
-									case "I" -> {/*S'arreter dans une itération */}
+									case "I" -> {this.metier.arreterBoucle(Integer.parseInt(line.substring(2)), numLigne);}
 								}
 							}
 					}
@@ -117,6 +120,11 @@ public class Controleur
 		return this.metier.getTraceDexecution();
 	}
 
+	public ArrayList<String> getListeVariable()
+	{
+		return this.metier.getListeVariable();
+	}
+	
 	/**
 	 * 
 	 * @return la trace des numéros ou il y a eu un lire

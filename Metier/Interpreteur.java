@@ -94,6 +94,10 @@ public class Interpreteur
 	 */
 	public void setNumeroLigne(int numeroLigne){this.numeroLigne = numeroLigne;}
 
+	public ArrayList<String> getListeVariable()
+	{
+		return this.gestionDonnee.getListeVariable();
+	}
 
 	/**
 	 * Interprete la ligne n en partant du principe que ce qui est au-dessus est interpréter
@@ -168,6 +172,11 @@ public class Interpreteur
 		}
 
 		this.lignePrc = n;
+	}
+
+	public void arreterBoucle(int iteration, int numeroLigne)
+	{
+
 	}
 
 	public boolean getBw()
