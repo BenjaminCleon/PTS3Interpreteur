@@ -8,6 +8,7 @@ import AlgoPars.Metier.GestionDonnee;
 
 import java.io.FileInputStream;
 
+import java.util.Stack        ;
 import java.util.List         ;
 import java.util.Collections  ;
 import java.util.ArrayList    ;
@@ -43,7 +44,15 @@ public class Interpreteur
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
 	private boolean bw;
-	private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
+	
+	private Stack<Boolean> lstStructureConditionnelle;
+	private Stack<Boolean> lstStructureConditionnelleAlt;
+	private Stack<Boolean> lstCondition;
+	
+	private Stack<Integer> lstLigneDebutBoucle;
+	private Stack<Integer> lstLigneFinBoucle;
+	
+	/*private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
 	private boolean structureConditionnelleAlt; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle alternative
 	private boolean condition; // permet de connaitre le résultat du test pour entrer dans la structure conditionnelle
 	
@@ -76,9 +85,13 @@ public class Interpreteur
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
 		this.bw               = false;
-		this.structureConditionnelle = false;
-		this.structureConditionnelleAlt = false;
-		this.condition = false;
+		
+		this.lstStructureConditionnelle    = new Stack<Boolean>();
+		this.lstStructureConditionnelleAlt = new Stack<Boolean>();
+		this.lstCondition                  = new Stack<Boolean>();
+		
+		this.lstLigneDebutBoucle = new Stack<Integer>();
+		this.lstLigneFinBoucle = new Stack<Integer>();
 		
 		this.enComm = false;
 		this.commOk = true ;
@@ -109,7 +122,8 @@ public class Interpreteur
 
 		int indexSimpleCom, indexDbGrosCom;
 		int indexComment;
-
+		boolean condition, structureConditionnelle, structureConditionnelleAlt;
+		
 		if ( n < this.lstContenu.size() && n >= 0)
 		{
 			ligneAInterpreter = this.lstContenu.get(n);
@@ -117,7 +131,15 @@ public class Interpreteur
 			this.commOk = true;
 			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
 			
-			if(!this.structureConditionnelle||this.structureConditionnelle && this.condition||this.structureConditionnelleAlt && ! this.condition)
+			condition                 = true ;
+			structureConditionnelle   = false;
+			structureConditionnelleAlt= false;
+			
+			if(! this.lstCondition                 .isEmpty() ) condition                 = this.lstCondition                 .peek();
+			if(! this.lstStructureConditionnelle   .isEmpty() ) structureConditionnelle   = this.lstStructureConditionnelle   .peek();
+			if(! this.lstStructureConditionnelleAlt.isEmpty() )	structureConditionnelleAlt= this.lstStructureConditionnelleAlt.peek();
+			
+			if( condition && !structureConditionnelle && !structureConditionnelleAlt||structureConditionnelle && condition||structureConditionnelleAlt && !condition )
 			{				
 				indexComment = ligneAInterpreter.indexOf("//");
 				
@@ -152,23 +174,53 @@ public class Interpreteur
 			}
 			
 			if ( ligneAInterpreter.matches("\\s*si .* alors") )
-			{
-				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
-				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-				
-				if ( ligneAInterpreter.contains("lire"  ) )
-				{ 
-					this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n, this));
-					this.traceLire.add(n); 
-				}
-				ligneAInterpreter = ligneAInterpreter.replace("si", "");
+			{		
+				ligneAInterpreter = ligneAInterpreter.replace("si"   , "");
 				ligneAInterpreter = ligneAInterpreter.replace("alors", "");
-				this.structureConditionnelle=true;
-				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.condition=true;
-				else this.condition=false;
+				this.lstStructureConditionnelle   .add(true );
+				this.lstStructureConditionnelleAlt.add(false);
+				
+				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.lstCondition.add(true);
+				else this.lstCondition.add(false);
 			}
-			if ( ligneAInterpreter.matches("\\s*sinon$") ) this.structureConditionnelleAlt=true;
-			if ( ligneAInterpreter.contains("fsi"  ) ) this.structureConditionnelle=this.structureConditionnelleAlt=false;
+			
+			if ( ligneAInterpreter.matches("\\s*sinon$") )
+			{
+				this.lstStructureConditionnelleAlt.pop(     );
+				this.lstStructureConditionnelleAlt.add(true );
+				this.lstStructureConditionnelle   .pop(     );
+				this.lstStructureConditionnelle   .add(false);
+			}
+			
+			if ( ligneAInterpreter.contains("fsi"  ) )
+			{
+				this.lstStructureConditionnelle   .pop();
+				this.lstStructureConditionnelleAlt.pop();
+				this.lstCondition                 .pop();
+			}
+			
+			if ( ligneAInterpreter.matches("\\s*tq .* faire") )
+			{
+				ligneAInterpreter = ligneAInterpreter.replace("tq"   , "");
+				ligneAInterpreter = ligneAInterpreter.replace("faire", "");
+				
+				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.lstCondition.add(true);
+				else
+				{
+					this.lstCondition.add(false);
+					this.controleur.changerLigne(this.lstLigneFinBoucle.pop()+1);
+				}
+				
+				this.lstLigneDebutBoucle.add(n);
+			}
+			
+			if ( ligneAInterpreter.contains("ftq") )
+			{
+				this.lstLigneFinBoucle.add(n);
+				
+				interpreter(this.lstLigneDebutBoucle.peek());
+				if(this.lstCondition.pop()) this.controleur.changerLigne(this.lstLigneDebutBoucle.pop());
+			}
 		}
 
 		this.lignePrc = n;
@@ -187,6 +239,7 @@ public class Interpreteur
 	public void reset()
 	{
 		this.bw = true;
+		this.lectureConstante = this.lectureVariable = false;
 		this.lstDonnee       = new ArrayList<Donnee> ();
 		this.traceDexecution = new ArrayList<String> ();
 	}
@@ -339,8 +392,8 @@ public class Interpreteur
 		String sVal = "";
 		if (this.numeroLigne == val)
 		{
-			if( this.lstContenu.get(val).matches("\\s*si .* alors") && this.condition)      sRet = CouleurConsole. VERT.getFond() + "";
-			else if(this.lstContenu.get(val).matches("\\s*si .* alors") && !this.condition) sRet = CouleurConsole.ROUGE.getFond() + "";
+			if( this.lstContenu.get(val).matches("\\s*si .* alors") && ! this.lstCondition.isEmpty() && this.lstCondition.peek())      sRet = CouleurConsole. VERT.getFond() + "";
+			else if(this.lstContenu.get(val).matches("\\s*si .* alors") && ! this.lstCondition.isEmpty() && !this.lstCondition.peek()) sRet = CouleurConsole.ROUGE.getFond() + "";
 			else      sRet = CouleurConsole.JAUNE.getFond() + "";
 		}
 			

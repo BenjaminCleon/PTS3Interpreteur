@@ -46,7 +46,7 @@ public class Controleur
 	}
 	public void setNumLigne(int n)
 	{
-		this.numLigne = n;
+		if ( this.numLigne >= 0)this.numLigne = n;
 	}
 	/*
 	 * Lecture de l'utilisateur pour se deplacer dans le code
@@ -62,9 +62,9 @@ public class Controleur
 				this.ihm.afficher(this.numLigne);
 				Console.print("Instruction ( \"help\" pour aide ) : ");
 				line = Console.lireString();//input.nextLine();
-				if(line.matches("DET var <\\w*>"))
+				if(line.matches("DET var \\w*"))
 				{
-					String var=line.substring(9,(line.length()-1));
+					String var=line.substring(8,(line.length()));
 					System.out.println (this.metier.getTraceVariable(var));
 					
 					line = Console.lireString();//input.nextLine();
@@ -79,7 +79,8 @@ public class Controleur
 					switch(line.toUpperCase())
 					{
 						case ""  -> {this.metier.interpreter(++this.numLigne);}
-						case "B" -> {this.metier.goTo(--this.numLigne);}
+						case "B" -> {this.setNumLigne(--this.numLigne);this.metier.goTo(this.numLigne);}
+						case "TRACE" -> {this.metier.trace();}
 						case "GO BK" -> {this.metier.goNextBk(this.numLigne);}
 						case "HELP" ->{this.ihm.afficherAide();}
 						default ->
@@ -132,6 +133,11 @@ public class Controleur
 	public List<Integer> getTraceLire()
 	{
 		return this.metier.getTraceLire();
+	}
+	
+	public void changerLigne (int n)
+	{
+		this.numLigne = n;
 	}
 
 	/**

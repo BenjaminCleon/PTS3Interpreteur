@@ -77,6 +77,11 @@ public class GestionDonnee
 				else
 				{
 					valVar = String.valueOf(tmp.getValeur());
+					if ( tmp.getType().equals(Type.BOOLEEN) )
+					{
+						if ( valVar.equals("true") )valVar = "vrai";
+						else                        valVar = "faux";
+					}
 					if(valVar.length() > 10)
 					{
 						String debut = valVar.substring(0,5);
@@ -116,77 +121,113 @@ public class GestionDonnee
 	
 	public String traceVar(String var)
 	{
-		System.out.println();
-		
 		String sRet = "";
+		String type = "";
+
+		int dimension;
 		
 		for(int i=0; i < 11; i++) sRet += "¨";
-		sRet += "\n| DONNEES |\n";
+		sRet +=  "\n| DONNEES |\n";
 			
-		for(int i=0; i < 85; i++) sRet += "¨";
-		sRet += "\n|     NOM         |                           VALEUR                                |\n";
+		for(int i=0; i < 56; i++) sRet += "¨";
+		sRet += "\n|     NOM         |                 TYPE               |\n";
 		
 		Donnee tmp = this.interpreteur.getDonnee(var);
-		sRet += "| " + String.format("%-15s", var) + " | " /*+ String.format("%63s", "") + " |\n" */;
-		
-		System.out.println(tmp.getType());
-		
-		switch(tmp.getType())
+		dimension = tmp.getDimension();
+
+		if ( dimension >= 1 )
 		{
-			case "chaine de caractères" ->
+			type = "Tableau d";
+			switch ( tmp.getType() )
 			{
-				String val = String.valueOf(tmp.getValeur());
-				sRet += String.format ("%63s", val) + " |\n";	
+				case Type.ENTIER -> type += "'entiers";
+				default          -> type += "e " + tmp.getType();
 			}
-			default ->
+		}
+		else
+			type = tmp.getType();
+
+		sRet += "| " + String.format("%-15s", var) + " | " + String.format("%35s", type) + "|\n";
+		for(int i=0; i < 56; i++) sRet += "¨";
+		sRet += "\n¨¨¨¨¨¨¨¨\n|Valeur|\n¨¨¨¨¨¨¨¨\n";
+		for(int i=0; i < 56; i++) sRet += "¨";
+		sRet += "\n";
+
+		if ( dimension == 0 )
+		{
+			String val = String.valueOf(tmp.getValeur());
+			if ( tmp.getType().equals(Type.BOOLEEN)) 
 			{
-				if(tmp.getValeur() instanceof List)
+				if ( val.equals("true"))val = "vrai";
+				else                    val = "faux";
+			}
+
+			sRet += String.format ("|  %-50s  |\n", val);
+			for(int i=0; i < 56; i++) sRet += "¨";	
+		}
+		else
+		{
+			String ligneTab   = "";
+			String ligneIndice= "";
+			int dim1, dim2, dim3;
+			dim1 = dim2 = dim3 = 0;
+			
+			List<Object> tab = (List<Object>)(tmp.getValeur());
+
+			dim1 = tab.size();
+			if ( dimension >= 2 )dim2 = ((List)((List)tab).get(0)).size();
+			if ( dimension == 3 )dim3 = ((List)((List)((List)tab).get(0)).get(0)).size();
+		
+			for(int i=0;i<112;i++)sRet += "¨";
+			sRet += "\n";
+
+			for(int i=0; i < dim1; i++)
+			{
+				if ( dimension >= 2 )
 				{
-					String ligneTab= "";
-					String ligneIndice= "";
-					
-					List<Object> tab = (List<Object>)(tmp.getValeur());
-					for(int n=0; n < tab.size(); n++)
+					for (int j=0;j<dim2;j++)
 					{
-						String sCase = "";
-						
-						if(tmp.getType().equals("caractère")) sCase = "['" + tmp.getValeurTableau(n) + "']";
-						else sCase = "[" + tmp.getValeurTableau(n) + "]";
-						
-						if((ligneTab.length() + sCase.length()) < 61) 
+						if ( dimension == 3 )
 						{
-							ligneTab += sCase;
-							int milieu = (int)(sCase.length() / 2);
-							
-							for(int i=0; i < milieu; i++) ligneIndice += " ";
-							ligneIndice += tab.indexOf(tmp.getValeurTableau(n));
-							
-							if(tab.indexOf(tmp.getValeurTableau(n)) > 9 || milieu % 2 !=0 && milieu > 1) milieu--;
-							for(int i=0; i < milieu; i++) ligneIndice += " ";
+							for (int k=0;k<dim3;k++)
+							{
+								sRet += String.format("| %-25s | %-80s |",
+							                      tmp.getNom()+"["+i+"]"+"["+j+"]["+k+"]",
+												  ((List)((List)tab.get(i)).get(j)).get(k) + "");
+								sRet += "\n";
+							}
+
+							if ( j != dim2 -1 )
+							{
+								for(int l=0; l < 112; l++) sRet += "¨";
+								sRet += "\n";
+							}
 						}
 						else
 						{
-							sRet += ajoutLigne(ligneTab, ligneIndice);
-							ligneTab = ligneIndice = "";
+							sRet += String.format("| %-25s | %-80s |",
+							                      tmp.getNom()+"["+i+"]"+"["+j+"]", ((List)tab.get(i)).get(j) + "");
+							sRet += "\n";
 						}
 					}
-					
-					if(! ligneTab.isEmpty())
+					if ( i != dim1 -1 )
 					{
-						sRet += ajoutLigne(ligneTab, ligneIndice);
-						ligneTab = ligneIndice = "";
+						for(int l=0; l < 112; l++) sRet += "¨";
+						sRet += "\n";
 					}
-					
-					String s = " | " + String.format("%-15s", "") + " | ";
-					sRet = sRet.replace(s, " ");
+				}
+				else
+				{
+					sRet += String.format("| %-25s | %-80s |",
+					                      tmp.getNom()+"["+i+"]", tab.get(i)+ "");
+					sRet += "\n";
 				}
 			}
-		}
+			for(int i=0; i < 112; i++) sRet += "¨";
+			sRet += "\n";
 
-		for(int i=0; i < 85; i++) sRet += "¨";
-		sRet += "\n";
-		
-		return sRet;
+		}
+		return sRet + "\n";
 	}
 	
 	public void traceVariableCopie(String var)

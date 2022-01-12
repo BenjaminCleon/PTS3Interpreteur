@@ -1,5 +1,6 @@
 package AlgoPars.Metier;
 
+import java.lang.Character.Subset;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,11 +23,21 @@ import iut.algo.Console;
  */
 public class Util
 {
-	private static final String REGEX_OP    ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|xou|ou|et|non|\\d+\\+|\\d+-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\d*\\|){1}";
-	private static final String REGEX_PRIMI = "ord\\(|car\\(|enChaine\\(|enEntier\\(|enReel\\(|plancher\\(|arrondi\\(";
-	
+	private static String ligneAInterprete = "";
+	private static String lastOperateur    = "";
+	private static boolean bInterpreter  = true;
+
+	private static List<String> lstTypePourEnChaine = new ArrayList<String>();
+
+	private static Queue<String> file;
+	private static Stack<String> pile;
+
+	private static final String REGEX_OP ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|\\bxou\\b|\\bou\\b|\\bet\\b|\\bnon\\b|\\+|-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\w*\\||\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
+	private static final String REGEX_PRIMI = "(\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
+	private static final String REGEX_DATE  = "(\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b){1}";
 	private static final String TRUE  = "true" ;
 	private static final String FALSE = "false";
+	private static Pattern  pattern = Pattern.compile(Util.REGEX_OP);
 
 	/**
 	 * 
@@ -86,10 +97,10 @@ public class Util
 			
 			type = interpreteur.getDonnee(valeur[0].replaceAll(" |\t", "")).getType();
 
-			if ( !type.equals(Type.CHAINE) )
+			if ( !type.equals(Type.CHAINE) && !type.equals(Type.BOOLEEN))
 				valeur[1] = String.valueOf(Util.expression(valeur[1].replaceAll(" ", ""), interpreteur));
 			
-			if ( type.equals(Type.CHAINE) ) valeur[1] = Util.expression(valeur[1], interpreteur);
+			if ( type.equals(Type.CHAINE) || type.equals(Type.BOOLEEN) ) valeur[1] = Util.expression(valeur[1], interpreteur);
 		}
 
 			valeur[1] = valeur[1].replaceAll("^ *\"|\" *$|\t|'" ,"");
@@ -101,8 +112,6 @@ public class Util
 
 	public static void setValeurBySwitch(Donnee data, String value, Integer... args)
 	{
-		System.out.println(data);
-		
 		switch(data.getType())
 		{
 			case Type.ENTIER  -> data.setValeur((int)(Double.parseDouble  (value)), args);
@@ -126,128 +135,167 @@ public class Util
 
 		Donnee dataTmp;
 
-		String tmp     ;
+		String tmp           ;
+		String typeData      ;
 		String ligneTmp  = "";
 		String operateur = "";
 
-		Stack<String> pile = new Stack     <String>();
-		Queue<String> file = new LinkedList<String>();
+		Util.pile = new Stack     <String>();
+		Util.file = new LinkedList<String>();
 
         Queue<String> fileRet = new LinkedList<String>();
 
 		dernierOp = 0;
 
-		if ( bPrimi ) ligne = Util.traiterPrimi(ligne, interpret);
-		taille = ligne.length();
+		Util.ligneAInterprete = ligne;
+		taille = Util.ligneAInterprete.length();
 		
-		while ( (operateur = nextOperateur(ligne)) != null || ligneTmp.equals(operateur) )
+		while ( ((operateur = nextOperateur(interpret)) != null || ligneTmp.equals(operateur)) && Util.bInterpreter )
 		{
-			ligneTmp = ligne.substring(0, ligne.indexOf(operateur)).replaceAll("^ *\"|\" *$", "");
+			ligneTmp = Util.ligneAInterprete.substring(0, Util.ligneAInterprete.indexOf(operateur));
+
 			dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
 			if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
-			
-			file.add(ligneTmp);
-			
-			switch(operateur)
-			{
-				case "(" -> pile.add(operateur);
-				case ")" ->
-				{
-					while (  !pile.isEmpty() && !(pile.peek()).equals("(") )file.add(pile.pop());
-					pile.pop();
-				}
-				default  ->
-				{
-					while ( !pile.isEmpty() && Util.prioSupEgal(pile.peek(), operateur) )
-						file.add(pile.pop());
 
-					pile.add(operateur);
-				}
-			}
+			Util.file.add(ligneTmp);
+			
+			System.out.println(operateur);
+			Util.ajouterOperateurAPile(operateur);
 
-			ligne = ligne.substring(ligne.indexOf(operateur)+operateur.length());
+			Util.ligneAInterprete = Util.ligneAInterprete.substring(Util.ligneAInterprete.indexOf(operateur)+operateur.length());
 		}
 
-		dataTmp = interpret.getDonnee(ligne.replaceAll(" *", ""));
-		if ( dataTmp != null )ligne = String.valueOf(dataTmp.getValeur());
-		else                  ligne = ligne.replaceAll("^ *\"|\" *$", "");
+		dataTmp = interpret.getDonnee(Util.ligneAInterprete.replaceAll(" *", ""));
+		if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
+		else ligneTmp                  = Util.ligneAInterprete.replaceAll("^ *\"|\" *$", "");
 		
-		file.add(ligne);
+		Util.file.add(ligneTmp);
 
-        while ( !pile.isEmpty() )file.add(pile.pop());
+        while ( !Util.pile.isEmpty() )Util.file.add(Util.pile.pop());
 
-        for ( String val: file)if ( !val.equals(""))fileRet.add(val);
-		
+        for ( String val: Util.file)if ( !val.matches("^ *$"))fileRet.add(val);
+
+		Util.lstTypePourEnChaine.clear();
+		Util.ligneAInterprete = lastOperateur = "";
+		Util.bInterpreter     = true;
+
 		System.out.println(fileRet);
 
-		return Util.evaluerEPO(fileRet);
+		return Util.evaluerEPO(fileRet, interpret);
 	}
 
-    private static String evaluerEPO(Queue<String> file)
+	private static void ajouterOperateurAPile(String operateur)
+	{
+		Util.lastOperateur = operateur;
+		switch(operateur)
+		{
+			case "(" -> Util.pile.add(operateur);
+			case ")" ->
+			{
+				while (  !Util.pile.isEmpty() && !(Util.pile.peek()).equals("(") )Util.file.add(Util.pile.pop());
+				Util.pile.pop();
+			}
+			default  ->
+			{
+				while ( !Util.pile.isEmpty() && Util.prioSupEgal(Util.pile.peek(), operateur) )
+					Util.file.add(Util.pile.pop());
+
+					Util.pile.add(operateur);
+			}
+		}
+	}
+
+    private static String evaluerEPO(Queue<String> fileRet, Interpreteur interpret)
     {
-        Stack<String> pile = new Stack<String>();
+        Stack<String> pileArith = new Stack<String>();
         ArrayList<Boolean> pileLogique = new ArrayList<Boolean>();
         Stack<String> lstOpeLogique = new Stack<String>();
         String val1, val2;
+		Donnee dataTmp;
 
-        for ( String val : file )
+        for ( String val : fileRet )
         {
             if ( val.matches(Util.REGEX_OP) )
             {
-               
 			    if(val.matches("xou|ou|et|non"))
 			    {
 			    	lstOpeLogique.add(val);
 			    }
-			    else if(val.matches("(\\\\\\/¯|\\|-?\\d*\\|){1}"))
-			    {
-			    	switch(val) //
-		        	{
-		        	   	case "\\/¯" -> pile.add( String.valueOf( (Math.sqrt (Double.parseDouble(file.remove())) )) );
-		        	   	default ->
-		        	   	{
-		        	   		val=val.replace('|', ' ');
-		        	   		pile.add(String.valueOf( Math.abs(Double.parseDouble(val.trim())) ));
-		        	   	}
-					}
-			    }
 			    else
-			    {				
-					if(val.contains("-"))
+			    {
+					if ( val.matches(REGEX_PRIMI) ) // pour les primitives
 					{
-						String valPrc = val.substring(0, val.indexOf('-'));
-						pile.add( String.valueOf(Double.parseDouble(valPrc) - Double.parseDouble(pile.pop())) );
-					}
-					else if(val.contains("+"))
-					{
-						String valPrc = val.substring(0, val.indexOf('+'));
-						pile.add( String.valueOf(Double.parseDouble(valPrc) + Double.parseDouble(pile.pop())) );
+						if ( val.matches(REGEX_DATE) )
+						{
+							switch(val)
+							{
+								case "aujourdhui" -> pileArith.add(Util.aujourdhui                                      ());
+								case "annee"      -> pileArith.add(Util.annee                                           ());
+								case "mois"       -> pileArith.add(Util.mois                                            ());
+								case "jour"       -> pileArith.add(Util.jour                                            ());
+							}
+						}
+						else
+						{
+							val1 = pileArith.pop();
+							switch (val)
+							{
+								case "car" -> pileArith.add(String.valueOf(Util.car(Integer.parseInt(Util.retirerPoint(val1)))));
+								case "ord" -> 
+								{
+									if ( val1.contains("'") )val1 = val1.substring(val1.indexOf("'")+1, val1.lastIndexOf("'"));
+									pileArith.add(String.valueOf(Util.ord(val1.charAt(0))));
+								}
+								case "enChaine"   -> pileArith.add(Util.enChaine(Double.parseDouble(val1)));
+								case "enEntier"   -> pileArith.add(String.valueOf(Util.enEntier    (Util.retirerPoint(val1))));
+								case "enReel"     -> pileArith.add(String.valueOf(Util.enReel      (val1)));
+								case "plancher"   -> pileArith.add(String.valueOf(Util.plancher(Double.parseDouble(val1))));
+								case "plafond"    -> pileArith.add(String.valueOf(Util.plafond(Double.parseDouble(val1))));
+								case "arrondi"    -> pileArith.add(String.valueOf(Util.arrondi (Double.parseDouble(val1))));
+								case "estReel"    -> pileLogique.add(Util.estReel  (val1));
+								case "estEntier"  -> pileLogique.add(Util.estEntier(val1));
+							}
+						}
 					}
 					else
 					{
-					
-						val1 = pile.pop();
-						val2 = pile.pop();
-						
-						switch(val) // Traitement opérateur arithmétiques binaires + puissance
-				        {
-							case "×" -> pile.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
-							case "/" -> pile.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
-							case "^" -> System.out.println("Test:" + pile.add(String.valueOf(Math.pow(Double.parseDouble(val2),Double.parseDouble(val1)))) );
-							case "©" -> pile.add(String.valueOf(val2 + val1));
-							case ">"  -> pileLogique.add(Double.parseDouble(val2) >  Double.parseDouble(val1));
-							case "<"  -> pileLogique.add(Double.parseDouble(val2) <  Double.parseDouble(val1));
-							case ">=" -> pileLogique.add(Double.parseDouble(val2) >= Double.parseDouble(val1));
-							case "<=" -> pileLogique.add(Double.parseDouble(val2) <= Double.parseDouble(val1));
-							case "="  -> pileLogique.add(Double.parseDouble(val2) == Double.parseDouble(val1));
-							case "/=" -> pileLogique.add(Double.parseDouble(val2) != Double.parseDouble(val1));
+						if(val.matches("(|\\|-?\\w*\\|){1}"))
+						{
+							val=val.replace('|', ' ');
+							pileArith.add(String.valueOf( Math.abs(Double.parseDouble(Util.expression(val.trim(), interpret)))));
+						}
+						else
+						{
+							if ( val.equals("\\/¯"))pileArith.add( String.valueOf( (Math.sqrt (Double.parseDouble(pileArith.pop())) )) );
+							else
+							{
+								val1 = pileArith.pop();
+								val2 = pileArith.pop();
+								
+								switch(val) // Traitement opérateur arithmétiques binaires + puissance
+								{
+									case "+"   -> pileArith.add(String.valueOf(Double.parseDouble(val2) + Double.parseDouble(val1)));
+									case "-"   -> pileArith.add(String.valueOf(Double.parseDouble(val2) - Double.parseDouble(val1)));
+									case "×"   -> pileArith.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
+									case "/"   -> pileArith.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
+									case "mod" -> pileArith.add(String.valueOf(Double.parseDouble(val2) % Double.parseDouble(val1)));
+									case "^"   -> pileArith.add(String.valueOf(Math.pow(Double.parseDouble(val2),Double.parseDouble(val1))));
+									case "©"   -> pileArith.add(String.valueOf(val2 + val1));
+									case ">"  -> pileLogique.add(Double.parseDouble(val2) >  Double.parseDouble(val1));
+									case "<"  -> pileLogique.add(Double.parseDouble(val2) <  Double.parseDouble(val1));
+									case ">=" -> pileLogique.add(Double.parseDouble(val2) >= Double.parseDouble(val1));
+									case "<=" -> pileLogique.add(Double.parseDouble(val2) <= Double.parseDouble(val1));
+									case "="  -> pileLogique.add(Double.parseDouble(val2) == Double.parseDouble(val1));
+									case "/=" -> pileLogique.add(Double.parseDouble(val2) != Double.parseDouble(val1));
+								}
+							}
 						}
 					}
                 }
             }
             else
             {
-				pile.add(val);
+				pileArith.add(val.replaceAll("^ *\"|\" *$", ""));
             }
         }
         
@@ -272,7 +320,7 @@ public class Util
 					{
 						boolean valBool1 = pileLogique.remove(0);
 						boolean valBool2 = pileLogique.remove(0);
-																
+						
 						switch(val)
 						{
 							case "et"  -> pileLogique.add(valBool1 && valBool2);
@@ -285,8 +333,13 @@ public class Util
 		    	return String.valueOf(pileLogique.remove(0));
         	}
 		}
-		else return String.valueOf (pile.pop());
+		else return String.valueOf (pileArith.pop());
     }
+
+	private static String retirerPoint(String valeur)
+	{
+		return valeur.substring(0, (valeur.contains(".")?valeur.indexOf("."):valeur.length()));
+	}
 
 	private static boolean prioSupEgal(String st1, String st2)
 	{
@@ -297,7 +350,11 @@ public class Util
 		                         { "<", ">", "<=", ">=", "/=", "=" },
 		                         { "+", "-"                        },
 		                         { "×", "/"                        },
-		                         { "^", "non"                      }
+		                         { "^", "non", "\\/¯"              },
+								 { "ord", "car", "enChaine", "plancher",
+								   "enEntier", "enReel", "arrondi", "plafond",
+								   "aujourdhui", "jour", "mois", "annee"     ,
+								   "estReel", "estEntier", "hasard"          },								   
 						      };
 
 		for (int numPrio=0;numPrio<prio.length;numPrio++)
@@ -310,85 +367,87 @@ public class Util
 		return prioSt1>=prioSt2;
 	}
 
-	public static String nextOperateur(String ligne)
+	public static String nextOperateur(Interpreteur interpret)
 	{
+		Donnee dataTmp = null;
+		String typeData;
 		String nextOperateur = null;
-
-		CharSequence entreeLigne = ligne;
-		String patternStr = Util.REGEX_OP;
-		Pattern pattern   = Pattern.compile(patternStr);
-		Matcher matcher   = pattern.matcher(entreeLigne);
-
-		if ( matcher.find() )
-			return ligne.substring(matcher.start(), matcher.end());
-
-		return nextOperateur;
-	}
-
-	private static String traiterPrimi(String ligne, Interpreteur interpret)
-	{
-		System.out.println(ligne);
-		String res = "";
 		String tmp = "";
+		String cmp = "";
+		int cpt = 0;
 
-		String ligneNext = "";
-		String postLigne = "";
-
-		int posLastBracket   = 0;
-		int nbBracketWaiting = 1;
-
-		CharSequence entreeLigne = ligne;
-		String patternStr = REGEX_PRIMI;
-		Pattern pattern = Pattern.compile(patternStr) ;
-		Matcher matcher1 = pattern.matcher(entreeLigne);
+		CharSequence entreeLigne = Util.ligneAInterprete;
+		String patternStr = Util.REGEX_OP;
+		Matcher matcher1  = Util.pattern.matcher(entreeLigne);
 		Matcher matcher2;
 
-		if ( !matcher1.find() )return Util.expression(ligne, interpret, false);
-
-		for (int i=matcher1.start();i<ligne.length()&&nbBracketWaiting!=0;i++)
+		if ( matcher1.find() )
 		{
-			if ( ligne.charAt(i) == ')' ){ posLastBracket = i; nbBracketWaiting--; }
-			if ( ligne.charAt(i) == '(' )nbBracketWaiting++;
+			nextOperateur = Util.ligneAInterprete.substring(matcher1.start(), matcher1.end());
+			// si operateur unaire
+
+			if ( !Util.lastOperateur.equals(")") && (nextOperateur.equals("+") || nextOperateur.equals("-")) && Util.ligneAInterprete.charAt(0) == nextOperateur.charAt(0) )
+			{
+				tmp = Util.ligneAInterprete.substring(matcher1.end());
+				matcher2 = Util.pattern.matcher(tmp);
+				if ( matcher2.find() )
+				{
+					while ( cpt < matcher2.start()+matcher1.end() )
+					{
+						cmp += Util.ligneAInterprete.charAt(cpt);
+						cpt++;
+					}
+					
+					dataTmp = interpret.getDonnee(cmp.substring(1).replaceAll(" *", ""));
+					if ( dataTmp != null )cmp = cmp.charAt(0) + String.valueOf(dataTmp.getValeur());
+
+					Util.file.add(cmp);
+
+					Util.ligneAInterprete = Util.ligneAInterprete.substring(matcher2.start()+matcher1.end()+1);
+					Util.ajouterOperateurAPile(tmp.substring(matcher2.start(), matcher2.end()));
+
+					return Util.nextOperateur(interpret);
+				}
+				Util.bInterpreter = false;
+			}
+			dataTmp = interpret.getDonnee(Util.ligneAInterprete.substring(1).replaceAll(" *", ""));
+			if ( dataTmp != null )Util.ligneAInterprete = Util.ligneAInterprete.charAt(0) + String.valueOf(dataTmp.getValeur());
+
+			if ( Util.ligneAInterprete.length() >= 2 )
+			{
+				if ( Util.ligneAInterprete.substring(0, 2).equals("--") || Util.ligneAInterprete.substring(0, 2).equals("++") )
+					Util.ligneAInterprete = Util.ligneAInterprete.substring(2);
+
+				if ( Util.ligneAInterprete.length() >= 2 && Util.ligneAInterprete.substring(0, 2).equals("+-") || Util.ligneAInterprete.substring(0, 2).equals("-+") )
+					Util.ligneAInterprete = "-" +Util.ligneAInterprete.substring(2);
+			}
+
+			return Util.ligneAInterprete.substring(matcher1.start(), matcher1.end());
 		}
 
-		ligneNext = ligne.substring(matcher1.end(), posLastBracket);
-		/* postLigne = ligne.substring(posLastBracket+1);
-		System.out.print("[" + postLigne + "]");
-		System.out.println( "{"  + ((postLigne.equals(""))?"":Util.expression(postLigne, interpret, true)) + "}"); */
-
-		matcher2 = pattern.matcher(ligneNext);
-		if ( matcher2.find() ) tmp = Util.expression(ligneNext, interpret, true );
-		else                   tmp = Util.expression(ligneNext, interpret, false);
-
-		switch( ligne.substring(matcher1.start(), matcher1.end()-1 ) )
-		{
-			case "car" -> res = String.valueOf(Util.car(Integer.parseInt(tmp)));
-			case "ord" -> res = String.valueOf(Util.ord(tmp.charAt(1)));
-		}
-
-		System.out.println(res);
-		return res;
+		return nextOperateur;
 	}
 
 	private static Character car( int  value ){ return (char)value; }
 	private static Integer   ord( char value ){ return (int )value; }
 
 	private static String enChaine ( double value ){ return String.valueOf(value); }
-	private static String enChaine ( int    value ){ return String.valueOf(value); }
+	private static String enChaine ( int value    ){ return String.valueOf(value); }
 
 	private static Integer enEntier( String chaine ){ return Integer.parseInt   (chaine); }
 	private static Double  enReel  ( String chaine ){ return Double .parseDouble(chaine); }
 
 	private static Integer plancher ( double value ){ return (int)Math.floor(value); }
+	private static Integer plafond  ( double value ){ return (int)Math.ceil (value); }
 	private static Integer arrondi  ( double value ){ return (int)Math.round(value); }
-
+	
 	private static String aujourdhui(){ return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDateTime.now()); }
 	private static String jour      (){ return aujourdhui().substring(0, 2); }
 	private static String mois      (){ return aujourdhui().substring(3, 5); }
 	private static String annee     (){ return aujourdhui().substring(6)   ; }
 
 	private static Boolean estReel  ( String chaine ){ return chaine.matches("^\\d+.\\d+$"); }
-	private static Boolean estEntier( String chaine ){ return chaine.matches("^\\d$"      ); }
+	private static Boolean estEntier( String chaine ){ return chaine.matches("^\\d+$"      ); }
 
 	private static Integer hasard( int valeur ){ return (int)(Math.random()*valeur); }
 }
