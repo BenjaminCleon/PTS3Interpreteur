@@ -102,12 +102,12 @@ public class Controleur
 				{
 					switch(line.toUpperCase())
 					{
-						case "Q" ->{ System.exit(0);}
-						case ""  -> {this.standardAction();}
-						case "B" -> {this.setNumLigne(--this.numLigne);this.metier.goTo(this.numLigne);}
-						case "TRACE" -> {this.metier.trace();}
-						case "GO BK" -> {this.metier.goNextBk(this.numLigne);}
-						case "HELP" ->{this.ihm.afficherAide();}
+						case "Q"     -> { System.exit(0);                                                    }
+						case ""      -> { this.standardAction();                                             }
+						case "B"     -> { this.setNumLigne(--this.numLigne);this.metier.goTo(this.numLigne); }
+						case "TRACE" -> { this.metier.trace();                                               }
+						case "GO BK" -> { this.metier.goNextBk(this.numLigne);                               }
+						case "HELP"  -> { this.ihm.afficherAide();                                           }
 						default ->
 							{
 								switch((line.charAt(0) + "").toUpperCase())
