@@ -45,6 +45,10 @@ public class Controleur
 		return this.metier.getDonnees();
 	}
 
+	public int getNumLigne()
+	{
+		return this.numLigne;
+	}
 	public void setNumLigne(int n)
 	{
 		if ( this.numLigne >= 0 )this.numLigne = n;
@@ -79,7 +83,7 @@ public class Controleur
 				{
 					switch(line.toUpperCase())
 					{
-						case ""  -> {this.metier.interpreter(++this.numLigne);}
+						case ""  -> {this.standardAction();}
 						case "B" -> {this.setNumLigne(--this.numLigne);this.metier.goTo(this.numLigne);}
 						case "TRACE" -> {this.metier.trace();}
 						case "GO BK" -> {this.metier.goNextBk(this.numLigne);}
@@ -102,6 +106,11 @@ public class Controleur
 				
 			}
 		} catch (Exception e) {System.out.println("Erreur 002 : Deplacement ligne par ligne"); e.printStackTrace();}
+	}
+
+	public void standardAction()
+	{
+		this.metier.interpreter(++this.numLigne);
 	}
 
 	/**

@@ -50,6 +50,8 @@ public class Interpreteur
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
 	private boolean bw;
 	private boolean doitStop;
+
+	private boolean estDansBoucle;
 	
 	private Stack<Boolean> lstStructureConditionnelle;
 	private Stack<Boolean> lstStructureConditionnelleAlt;
@@ -107,6 +109,8 @@ public class Interpreteur
 		this.estDansLeCas               = false;
 		this.bSelon                     = false;
 		this.condition = true;
+
+		this.estDansBoucle = false;
 		
 		this.lstStructureConditionnelle    = new Stack<Boolean>();
 		this.lstStructureConditionnelleAlt = new Stack<Boolean>();
@@ -234,6 +238,7 @@ public class Interpreteur
 			
 			if ( ligneAInterpreter.matches("\\s*tq .* faire") )
 			{
+				this.estDansBoucle = true;
 				ligneAInterpreter = ligneAInterpreter.replace("tq"   , "");
 				ligneAInterpreter = ligneAInterpreter.replace("faire", "");
 				
@@ -243,7 +248,6 @@ public class Interpreteur
 					for(Integer i : this.lstLigneDebutBoucle)
 						if(i==n) present=true;
 					
-					
 					if(!present)
 					{
 						this.lstLigneDebutBoucle.add(n);
@@ -252,8 +256,6 @@ public class Interpreteur
 				}
 				else
 				{
-					System.out.println("la condition est fausse");
-
 					this.lstCondition.add(false);
 				}
 			}
@@ -262,21 +264,22 @@ public class Interpreteur
 			{
 				if(this.lstCondition.peek())
 				{
-					System.out.println("Dans ftq :" + this.lstLigneDebutBoucle.peek());
 					interpreter(this.lstLigneDebutBoucle.pop());
-					
+					System.out.println("la ca a interpreter le truc de luna");
 					if(this.lstCondition.pop())
 					{
-						this.controleur.changerLigne(this.lstLigneDebutBoucle.peek());
+						this.controleur.setNumLigne(this.lstLigneDebutBoucle.peek());
+						System.out.println("la ca set le num de la partie de luna, normalement ligne 19");
 					}
 				}
-				else
+				else//Fin de la boucle
 				{
+					this.estDansBoucle = false;
+					this.controleur.setNumLigne(n+1);
 					this.lstCondition.pop();
 				}
 			}
 		}
-		System.out.println("fin interpreter");
 		this.lignePrc = n;
 	}
 
@@ -358,26 +361,19 @@ public class Interpreteur
 	{
 		if ( n < 0 || n >= this.lstContenu.size() )return;
 
-		int courant = 1;
+		int courant     = 0;
 		if( this.lignePrc > n )//Si on recule
 			this.reset();
 		else
 			courant = this.lignePrc;
 		
-		while(courant <= n)
+		this.controleur.setNumLigne(courant);
+		while(this.controleur.getNumLigne() < n)
 		{
-			try
-			{
-				System.out.println("courant : " + courant);
-
-	
-					//this.controleur.setNumLigne(courant);
-					this.interpreter(courant++);
-				
-				// Thread.sleep(500);
-			} catch (Exception e) {}	
+			this.controleur.standardAction();
 		}
 		
+		this.controleur.actualiser();
 		this.resetHashMap(n);
 		this.bw = false;
 	}
@@ -406,7 +402,7 @@ public class Interpreteur
 
 	/**
 	 * Permet de lire le fichier et de récupérer son contenu
-	 */
+	 */	
 	public void lectureFichier()
 	{
 		String line = "";
