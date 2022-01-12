@@ -18,9 +18,6 @@ DEBUT
 
 	y <-- 5
 	x <-- 3
-	
-
-	
 
 	si 3<4 alors
 		ecrire ( "Test si" );
