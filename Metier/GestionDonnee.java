@@ -221,7 +221,7 @@ public class GestionDonnee
 			}
 			for(int i=0; i < 112; i++) sRet += "¨";
 			sRet += "\n";
-m
+
 		}
 		return sRet + "\n";
 	}

@@ -78,6 +78,7 @@ public class Controleur
 					{
 						case ""  -> {this.metier.interpreter(++this.numLigne);}
 						case "B" -> {this.setNumLigne(--this.numLigne);this.metier.goTo(this.numLigne);}
+						case "TRACE" -> {this.metier.trace();}
 						case "GO BK" -> {this.metier.goNextBk(this.numLigne);}
 						default ->
 							{
