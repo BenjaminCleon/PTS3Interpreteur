@@ -68,7 +68,6 @@ public class EntreeSortie
 				{
 					ArrayList<Object> alObj = new ArrayList<Object>(); 
 					alObj.add(saisie);
-					System.out.println("hashMap.put(" + numero + ", " + alObj + ");");
 					hashMap.put(numero, alObj);
 				}
 
@@ -102,7 +101,6 @@ public class EntreeSortie
 					saisie = (String)EntreeSortie.hashMap.get(numero).get(0);
 					Util.setValeurBySwitch(tmp, saisie);
 				}
-				System.out.println("hasmap" + EntreeSortie.hashMap.get(numero));
 			}
 		}
 		return saisie;

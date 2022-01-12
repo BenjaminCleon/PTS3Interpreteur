@@ -27,8 +27,8 @@ public class Controleur
 	 */
 	public Controleur(String nomFic)
 	{
-		this.metier = new Interpreteur(this, nomFic);
-		this.ihm    = new CUI         (this);
+		this.metier = new Interpreteur( this, nomFic );
+		this.ihm    = new CUI         ( this         );
 
 		this.numLigne = 0;
 
@@ -37,16 +37,17 @@ public class Controleur
 
 	public String getFichier(int n)
 	{
-		return this.metier.getFichier(n);
+		return this.metier.getFichier( n );
 	}
 
 	public String getDonnees()
 	{
 		return this.metier.getDonnees();
 	}
+
 	public void setNumLigne(int n)
 	{
-		if ( this.numLigne >= 0)this.numLigne = n;
+		if ( this.numLigne >= 0 )this.numLigne = n;
 	}
 	/*
 	 * Lecture de l'utilisateur pour se deplacer dans le code
@@ -134,11 +135,7 @@ public class Controleur
 	{
 		return this.metier.getTraceLire();
 	}
-	
-	public void changerLigne (int n)
-	{
-		this.numLigne = n;
-	}
+
 
 	/**
 	 * @param args

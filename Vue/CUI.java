@@ -117,14 +117,14 @@ public class CUI
 	}
 
 	/**
-	 * Affiche l'aide 
+	 * Affiche l'aide dans la console
 	 * 
 	 * L'aide est composée de la liste des instructions possible dans la console
 	 */
 	public void afficherAide()
 	{
 		String sRet = "";
-
+		Console.effacerEcran();
 		for ( int i=0;i<40;i++)sRet+="¨";
 		sRet += "\n\tListes des fonctionnalités \n\n";
 		sRet += String.format("%-38s", "Touche \"entrée\"") + "\t" + String.format("%-15s", "Avance ligne par ligne dans la console.\n");

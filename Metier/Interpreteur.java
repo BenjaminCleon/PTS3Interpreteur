@@ -41,9 +41,13 @@ public class Interpreteur
 	private int    lignePrc;
 	private int    cptVal;
 
+	private int cptIteration;
+	private int cptTest;
+
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
 	private boolean bw;
+	private boolean doitStop;
 	
 	private Stack<Boolean> lstStructureConditionnelle;
 	private Stack<Boolean> lstStructureConditionnelleAlt;
@@ -75,6 +79,8 @@ public class Interpreteur
 		this.move        = 0;
 		this.lignePrc    = 0;
 		this.cptVal      = 0;
+		this.cptIteration= 0;
+		this.cptTest= 0;
 
 		this.lstContenu      = new ArrayList<String> ();
 		this.lstDonnee       = new ArrayList<Donnee> ();
@@ -118,6 +124,7 @@ public class Interpreteur
 	 */
 	public void interpreter(int n)
 	{
+		System.out.println("\ncpt iteration = " + this.cptIteration + " num ligne = " + n);
 		String ligneAInterpreter;
 
 		int indexSimpleCom, indexDbGrosCom;
@@ -204,11 +211,18 @@ public class Interpreteur
 				ligneAInterpreter = ligneAInterpreter.replace("tq"   , "");
 				ligneAInterpreter = ligneAInterpreter.replace("faire", "");
 				
-				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.lstCondition.add(true);
+				System.out.println("nous sommes dans le tq");
+				if( Util.expression(ligneAInterpreter, this).matches("true") )
+				{
+					this.lstCondition.add(true);
+					System.out.println("la condition est vraie");
+				}
 				else
 				{
+					System.out.println("la condition est fausse");
+
 					this.lstCondition.add(false);
-					this.controleur.changerLigne(this.lstLigneFinBoucle.pop()+1);
+					this.controleur.setNumLigne(this.lstLigneFinBoucle.pop()+1);
 				}
 				
 				this.lstLigneDebutBoucle.add(n);
@@ -217,18 +231,35 @@ public class Interpreteur
 			if ( ligneAInterpreter.contains("ftq") )
 			{
 				this.lstLigneFinBoucle.add(n);
-				
-				interpreter(this.lstLigneDebutBoucle.peek());
-				if(this.lstCondition.pop()) this.controleur.changerLigne(this.lstLigneDebutBoucle.pop());
+				this.cptIteration++;
+				this.interpreter(this.lstLigneDebutBoucle.peek());
+				if(this.lstCondition.pop())//fait une nouvelle itération
+				{
+					//this.cptIteration++;
+					this.controleur.setNumLigne(this.lstLigneDebutBoucle.pop());
+					System.out.println("on recommence la boucle");
+				}
+					/*else//On quitte la boucle
+				{
+					//if ()
+				}*/
 			}
 		}
-
+		System.out.println("fin interpreter");
 		this.lignePrc = n;
 	}
 
 	public void arreterBoucle(int iteration, int numeroLigne)
 	{
+		System.out.println("pas dans boucle, cptIteration-iteration = " + (this.cptIteration-iteration));
 
+		int cpt = 0;
+		while(cpt<(8-iteration))
+		{
+			System.out.println("dans boucle. cpt=" + cpt + " cptIteration-iteration" + (this.cptIteration-iteration));
+			this.interpreter(numeroLigne+1);
+			cpt++;
+		}
 	}
 
 	public boolean getBw()
@@ -258,8 +289,15 @@ public class Interpreteur
 		
 		while(courant <= n)//Voir si <= ou pas
 		{
-			this.controleur.setNumLigne(courant);
-			this.interpreter(courant++);//++courant?
+			try {
+				System.out.println("courant : " + courant);
+				this.controleur.setNumLigne(courant);
+				this.interpreter(courant++);
+				this.controleur.actualiser();
+				Thread.sleep(500);
+			} catch (Exception e) {}
+			
+			
 		}
 		
 		this.resetHashMap(n);
