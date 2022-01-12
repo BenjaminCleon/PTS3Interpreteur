@@ -95,7 +95,7 @@ public class Controleur
 									case "L" -> {
 													this.metier.goTo(Integer.parseInt(line.substring(1)));
 												}
-									case "I" -> {this.metier.arreterBoucle(Integer.parseInt(line.substring(2)), numLigne);}
+									case "I" -> {this.metier.arreterBoucle(Integer.parseInt(line.substring(2)));}
 								}
 							}
 					}
@@ -114,12 +114,12 @@ public class Controleur
 	}
 
 	/**
-	 * 
-	 * @param args
+	 * Permet d'afficher le CUI dans la console
+	 *
 	 */
 	public void actualiser()
 	{
-		this.ihm.afficher(this.numLigne);
+		this.ihm.afficher( this.numLigne );
 	}
 
 	/**
