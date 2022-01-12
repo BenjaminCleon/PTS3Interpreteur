@@ -1,0 +1,25 @@
+ALGORITHME Test002
+variable:
+	x : entier
+	y : entier
+DEBUT
+
+	x <-- 5
+
+	ecrire ( "la valeur de x est ", x )
+
+	lire ( y )
+
+	x <-- x + 4
+
+	ecrire ( "la valeur de x est ", x )
+
+
+
+
+
+	y <-- y + x
+
+	ecrire ( y )
+
+FIN
