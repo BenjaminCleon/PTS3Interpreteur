@@ -13,6 +13,8 @@ import java.util.Collections  ;
 import java.util.ArrayList    ;
 import java.util.Scanner      ;
 
+import javax.lang.model.util.ElementScanner14;
+
 import iut.algo.Console;
 import iut.algo.CouleurConsole;
 
@@ -47,6 +49,8 @@ public class Interpreteur
 	private boolean structureConditionnelleAlt; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle alternative
 	private boolean condition; // permet de connaitre le résultat du test pour entrer dans la structure conditionnelle
 	
+	private boolean bSelon; // permet de savoir si nous sommes dans un selon
+
 	//booléens qui permettent de savoir si il y a des commentaires /* */
 	private boolean enComm;
 	private boolean commOk;
@@ -54,6 +58,9 @@ public class Interpreteur
 	private GestionDonnee gestionDonnee; // permet de gérer les données souhaitant être traiter
 
 	private boolean estDansCommentaire; // permet de savoir si nous sommes dans des commentaires
+
+	private String caseSelon; // element de comparaison pour les selons
+	private boolean estDansLeCas; // Si dans un selon nous sommes dans un cas
 
 	/**
 	 * Constructeur principale
@@ -76,8 +83,10 @@ public class Interpreteur
 		this.lectureVariable  = false;
 		this.lectureConstante = false;
 		this.bw               = false;
-		this.structureConditionnelle = false;
+		this.structureConditionnelle    = false;
 		this.structureConditionnelleAlt = false;
+		this.bSelon                     = false;
+		this.estDansLeCas               = false;
 		this.condition = true;
 		
 		this.enComm = false;
@@ -108,7 +117,7 @@ public class Interpreteur
 
 		if ( n < this.lstContenu.size() && n >= 0)
 		{
-			ligneAInterpreter = this.lstContenu.get(n);
+			if ( !this.estDansLeCas )ligneAInterpreter = this.lstContenu.get(n);
 			
 			this.commOk = true;
 			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
@@ -133,40 +142,64 @@ public class Interpreteur
 				if ( (this.lectureVariable || this.lectureConstante) && 
 					!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")) )
 				{
-					// Alan c'est ton moment
 					this.creerDonnee(ligneAInterpreter);
-					
 				}
 				else
 				{				
-					if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
-					if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-					if ( ligneAInterpreter.contains("lire"  ) )
+					this.interpreter(n, ligneAInterpreter);
+					if ( this.bSelon )
 					{
-						this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n,  this));
-						this.traceLire.add(n);
+						String newLine = "";
+
+						if ( Util.expression(ligneAInterpreter.substring(ligneAInterpreter.indexOf("cas")+4, ligneAInterpreter.indexOf(":")), this ).equals(this.caseSelon) )
+						{
+							this.estDansLeCas = true;
+							newLine           = ligneAInterpreter.substring(ligneAInterpreter.indexOf(":"));
+						}
+						else if ( ligneAInterpreter.matches("^ *cas") )
+							this.estDansLeCas = false;
+						else
+							newLine = ligneAInterpreter;
+
+						if ( this.estDansLeCas )
+						{
+							this.interpreter(n, ligneAInterpreter);
+						}
 					}
 				}
-			}
-			
-			if ( ligneAInterpreter.matches("\\s*si .* alors") )
-			{
-				ligneAInterpreter = ligneAInterpreter.replace("si", "");
-				ligneAInterpreter = ligneAInterpreter.replace("alors", "");
-				this.structureConditionnelle=true;
-				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.condition=true;
-				else this.condition=false;
-			}
-			if ( ligneAInterpreter.matches("\\s*sinon$") )
-			{
-				this.structureConditionnelleAlt=true;
-				this.structureConditionnelle   =false;
-			}
-
-			if ( ligneAInterpreter.contains("fsi"  ) ) this.structureConditionnelle=this.structureConditionnelleAlt=false;
+			}			
 		}
 
 		this.lignePrc = n;
+	}
+
+	private void interpreter(int n, String ligneAInterpreter)
+	{
+		if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
+		if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
+		if ( ligneAInterpreter.contains("lire"  ) )
+		{
+			this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n,  this));
+			this.traceLire.add(n);
+		}
+		if ( ligneAInterpreter.matches("\\s*si .* alors") )
+		{
+			ligneAInterpreter = ligneAInterpreter.replace("si", "");
+			ligneAInterpreter = ligneAInterpreter.replace("alors", "");
+			this.structureConditionnelle=true;
+			if( Util.expression(ligneAInterpreter, this).matches("true") ) this.condition=true;
+			else this.condition=false;
+		}
+		if ( ligneAInterpreter.matches("\\s*sinon$") )
+		{
+			this.structureConditionnelleAlt=true;
+			this.structureConditionnelle   =false;
+		}
+
+		if ( ligneAInterpreter.contains("fsi"  ) ) this.structureConditionnelle=this.structureConditionnelleAlt=false;
+		
+		if ( ligneAInterpreter.contains("selon") && !ligneAInterpreter.contains("fselon") )this.commencerSelon(ligneAInterpreter);
+		if ( ligneAInterpreter.contains("fselon")                                         )this.bSelon = this.estDansLeCas = false;
 	}
 
 	public boolean getBw()
@@ -177,9 +210,28 @@ public class Interpreteur
 	public void reset()
 	{
 		this.bw = true;
-		this.lectureConstante = this.lectureVariable = false;
+
+		this.lectureVariable  = false;
+		this.lectureConstante = false;
+		this.structureConditionnelle    = false;
+		this.structureConditionnelleAlt = false;
+		this.bSelon                     = false;
+		this.estDansLeCas               = false;
+		this.condition = true;
+		
+		this.enComm = false;
+		this.commOk = true ;
+
+		this.estDansCommentaire = false;
 		this.lstDonnee       = new ArrayList<Donnee> ();
 		this.traceDexecution = new ArrayList<String> ();
+	}
+
+	public void commencerSelon(String ligne)
+	{
+		this.bSelon = true;
+
+		this.caseSelon = Util.getValeur(ligne.substring(ligne.indexOf("selon")+6), false, this);
 	}
 
 	public void goTo(int n)
@@ -337,11 +389,11 @@ public class Interpreteur
 			
 		if(this.lstBk.contains(val))
 		{
-			sVal = CouleurConsole.ROUGE.getFont() + "" + String.format("%2d ", val) + CouleurConsole.NOIR.getFont();
+			sVal = CouleurConsole.ROUGE.getFont() + "" + String.format("%3d ", val) + CouleurConsole.NOIR.getFont();
 		}
 		else
 		{
-			sVal = CouleurConsole.NOIR.getFont() + String.format("%2d ", val) + "";
+			sVal = CouleurConsole.NOIR.getFont() + String.format("%3d ", val) + "";
 		}
 		sRet+= sVal + String.format("%-80s", this.lstContenu.get(val))+ CouleurConsole.BLANC.getFond() + "\n";
 		return sRet;
