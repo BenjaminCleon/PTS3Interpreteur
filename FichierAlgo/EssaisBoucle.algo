@@ -1,0 +1,19 @@
+ALGORITHME Essais
+variable:
+    cpt1, cpt2: entier
+    ch: chaine de caracteres
+DEBUT
+    ch <-- ""
+    cpt1 <-- 0
+    tq cpt1 < 5 faire
+        cpt2 <-- 0
+        tq cpt2 < 5 faire
+            ch <-- ch © cpt1
+            cpt2 <-- cpt2 + 1
+        ftq
+        cpt1 <-- cpt1 + 1
+        ch <-- ch © "\n"
+    ftq
+
+    ecrire ( ch )
+FIN

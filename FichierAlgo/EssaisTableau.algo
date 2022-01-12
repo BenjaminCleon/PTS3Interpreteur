@@ -1,9 +1,11 @@
 ALGORITHME EssaisTableau
+constante:
+	TAILLE <-- 8
 variable:
-    s: tableau[5][8] de caractères
+    s: tableau[TAILLE] de caractères
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
 
-	s[0][3] <-- 'T'
+	s[0] <-- 'T'
 
 FIN
