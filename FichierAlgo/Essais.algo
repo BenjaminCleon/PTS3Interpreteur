@@ -28,7 +28,11 @@ DEBUT
 		ecrire ( "Test sinon" );
 		ecrire ( "Test deux instructions 2" );
 	fsi	
-	
+
+	s[4] <-- aujourdhui()
+	x <-- -82
+	x <-- |x|
+	x <-- |-48|
 	t <-- estEntier(45)
 	x <-- 8 mod 3
 	t <-- estEntier(x)

@@ -14,6 +14,7 @@ public class Donnee
 	private String  type       ; // type de la donnée
 	private Object  valeur     ; // valeur de la donnée ou E représente sont type en objet
 	private boolean estConstant; // la donnée est-elle constante
+	private int     dimension  ; // si c'est un tableau alors dimensions >= 1
    
 	/**
 	 * Constructeur de la classe Donnee
@@ -36,7 +37,12 @@ public class Donnee
 		this.valeur      = valeur     ;
 		this.estConstant = estConstant;
 		
-		if(valeur instanceof List)this.creerDimension(args);
+		this.dimension = 0;
+		if(valeur instanceof List)
+		{
+			this.creerDimension(args);
+			this.dimension = args.length;
+		}
 		
 	}
 	public Donnee(String nom, String type, Object valeur, boolean estConstant)
@@ -53,6 +59,11 @@ public class Donnee
 	 * @return le type de donnée
 	 */
 	public String getType  () { return this.type  ; }
+
+	/**
+	 * @return deimension >= 1 si tableau, 0 sinon
+	 */
+	public int getDimension() { return this.dimension; }
 
 	/**
 	 * @return la valeur de la donnée
