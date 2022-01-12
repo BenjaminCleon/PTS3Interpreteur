@@ -16,12 +16,6 @@ variable:
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
 
-	x <-- 1
-	selon x
-		cas 1 : ecrire( x © "1" ) 
-		cas 3 : ecrire( x © "3" )
-		cas 4 : ecrire( x © "4" )
-	fselon
 
 	y <-- 5
 	tq y < 20 faire
