@@ -1,3 +1,7 @@
+/**
+ * @author LHEAD
+ */
+
 package AlgoPars.Metier;
 
 import java.security.AlgorithmConstraints;
@@ -123,11 +127,11 @@ public class EntreeSortie
 		return saisie;
 	}
 
-
 	/**
-	 * Reinitialise les données contenu dans la hashmap
+	 * Remet à 0 la liste des variables sauvegardées dans la HashMap
+	 * 
 	 * @param n
-	 *    le numéro à reset
+	 * 		Ligne jusqu'a laquelle nous souhaitons aller
 	 */
 	public static void resetHashMap(int n)
 	{

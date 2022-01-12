@@ -28,25 +28,26 @@ import iut.algo.CouleurConsole;
  */
 public class CUI
 {
-	private Controleur controleur; // controleur associé
-	private static ArrayList<String> lstMotsColoration;
-	private HashMap<String, ArrayList<String>> hashMap;
+	private Controleur                      controleur; // controleur associé
+	private static ArrayList<String> lstMotsColoration; // Liste des mots à colorier
+	private HashMap<String, ArrayList<String>> hashMap; // {@code HashMap} contenant les couleurs et les mots
 
 	/**
 	 * Constructeur principal
+	 * @param controleur
+	 * 		Controleur de l'application
 	 */
 	public CUI(Controleur controleur)
 	{
-		this.controleur = controleur;
-		this.lstMotsColoration = new ArrayList<String>();
-		this.hashMap = new HashMap<String, ArrayList<String>>();
+		this.controleur        =                               controleur;
+		this.lstMotsColoration = new                  ArrayList<String>();
+		this.hashMap           = new HashMap<String, ArrayList<String>>();
+		
 		Console.normal();
-
 		this.lectureXML();
 	}
 	/**
-	 * Permet la lecture du fichier coloration.xml
-	 * 
+	 * Permet la lecture du fichier coloration.xml.
 	 * Le fichier coloration.xml modifie les couleurs des mots des instructions dans le code du sous-programme
 	 */
 	public void lectureXML()
@@ -54,12 +55,7 @@ public class CUI
 		Element  racine;
 		Document document;
 
-		
 		SAXBuilder sxb = new SAXBuilder();
-
-		/*----------------------------*/
-		/*        Instructions         */
-		/*----------------------------*/
 
 		document = null;
 		try
@@ -67,10 +63,9 @@ public class CUI
 			document = sxb.build(new File("./coloration.xml"));	
 		}catch(Exception e){e.printStackTrace();}
 
-		//Balise france
 		racine = document.getRootElement();
 
-		List<Element> lst1 = racine.getChildren("categorie");//4 listes
+		List<Element> lst1 = racine.getChildren("categorie");
 
 		for (Element e: lst1)
 		{
@@ -86,6 +81,7 @@ public class CUI
 				else
 					this.hashMap.get(e.getAttributeValue("couleur"));
 		}
+
 		ArrayList<String> alReset = new ArrayList<String>();
 		alReset.add(lst1.get(lst1.size()-1).getAttributeValue("nom"));
 		this.hashMap.put(lst1.get(lst1.size()-1).getAttributeValue("couleur"),alReset);
@@ -95,7 +91,7 @@ public class CUI
 	}
 	
 	/**
-	 * Ajoute dans une {@code HashMap} des mots à colorier, la liste des variables
+	 * Ajoute dans une {@code HashMap} des mots à colorier la liste des variables
 	 * située dans le fichier .var 
 	 */
 	public void ajouterVariableHm()
@@ -117,8 +113,7 @@ public class CUI
 	}
 
 	/**
-	 * Affiche l'aide dans la console
-	 * 
+	 * Affiche l'aide dans la console. 
 	 * L'aide est composée de la liste des instructions possible dans la console
 	 */
 	public void afficherAide()
@@ -224,7 +219,7 @@ public class CUI
 				for(int cpt=0; cpt<tabSplit.length; cpt++)
 				{
 					if(this.estDansListe(tabSplit[cpt]))
-						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont() /*putColor("defaut")*/ + " ";
+						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont() + " ";
 					else
 					{
 						nouvelleLigne += tabSplit[cpt];
@@ -259,6 +254,11 @@ public class CUI
 		Console.println(res);
 	}
 
+	/**
+	 * Retourne la liste des mots à colorier
+	 * @return
+	 * 		liste des mots à colorier
+	 */
 	public ArrayList<String> getListeMot()
 	{
 		ArrayList<String> alRetour = new ArrayList<String>();
@@ -268,10 +268,16 @@ public class CUI
 			for(String s : alTemp)
 				alRetour.add(s);
 		}
-
 		return alRetour;
 	}
 
+	/**
+	 * Retourne vrai si le mot passé en paramètre est dans la liste des mots à colorier
+	 * @param mot
+	 * 		mot à vérifier
+	 * @return
+	 * 		vrai si le mot passé en paramètre est dans la liste des mots à colorier
+	 */
 	public boolean estDansListe(String mot)
 	{
 		for(String s : this.getListeMot())
@@ -279,6 +285,13 @@ public class CUI
 		return false;
 	}
 
+	/**
+	 *  Retourne la couleur à inserer au mot en paramètre
+	 * @param mot
+	 * 		mot à colorier
+	 * @return
+	 * 	la couleur à inserer au mot en paramètre
+	 */
 	public String putColor(String mot)
 	{
 		String sCoul = "";

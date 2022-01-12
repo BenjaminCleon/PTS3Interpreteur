@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import AlgoPars.Metier.Interpreteur;
 import AlgoPars.Vue.CUI;
 
-
 /**
  * Classe controleur de l'interpréteur
  * C'est à partir de cette classe que l'on peut lancer l'interpréteur
@@ -17,7 +16,7 @@ import AlgoPars.Vue.CUI;
  */
 public class Controleur
 {
-	private CUI          ihm   ; // Partie visuelle
+	private CUI             ihm; // Partie visuelle
 	private Interpreteur metier; // Partie métier
 
 	private int numLigne       ; // numéro de la ligne actuelle
@@ -35,6 +34,14 @@ public class Controleur
 		this.lectureUtilisateur();
 	}
 
+	/**
+	 * Retourne le contenu avec + ou - 40 lignes
+	 * 
+	 * @param n
+	 *          la ligne où se fait l'interprétation
+	 * @return
+	 *         le contenu du fichier sous forme de chaine de caractères
+	 */
 	public String getFichier(int n)
 	{
 		return this.metier.getFichier( n );
@@ -44,15 +51,27 @@ public class Controleur
 	{
 		return this.metier.getDonnees();
 	}
-
+	/**
+	 * Retourne le numéro de la ligne actuelle
+	 * @return
+	 * 		Retourne le numéro de la ligne actuelle
+	 */
 	public int getNumLigne()
 	{
 		return this.numLigne;
 	}
+
+	/**
+	 * Défini le numéro de la ligne actuelle
+	 * Le numéro doit être positif
+	 * @param n
+	 * 		Numéro de la ligne
+	 */
 	public void setNumLigne(int n)
 	{
 		if ( this.numLigne >= 0 )this.numLigne = n;
 	}
+	
 	/*
 	 * Lecture de l'utilisateur pour se deplacer dans le code
 	*/ 

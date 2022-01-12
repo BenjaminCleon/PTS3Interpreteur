@@ -7,6 +7,7 @@ import java.util.List;
  * Permet pour une donnee écrite en pseudo-code
  * d'être stockée ici avec son type ( en pseudo-code )
  * et sa valeur.
+ * @author LHEAD
  */
 public class Donnee
 {

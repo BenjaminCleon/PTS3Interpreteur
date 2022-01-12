@@ -127,7 +127,7 @@ public class Interpreteur
 	}
 
 	/**
-	 * Interprete la ligne n 
+	 * Interprete la ligne n.
 	 * Elle interprète la ligne en partant du principe que ce qui est au-dessus est interprété
 	 * 
 	 * @param n
@@ -289,7 +289,7 @@ public class Interpreteur
 	}
 
 	/**
-	 * Permet de s'arreter dans la boucle
+	 * Permet de s'arreter dans la boucle.
 	 * La fonctionne s'arrete dans la boucle à l'iteration nombreDIteration - iteration
 	 * @param iteration
 	 *                  itération où l'on souhaite aller en partant de la fin
@@ -346,7 +346,7 @@ public class Interpreteur
 	}
 
 	/**
-	 * Permet de se déplacer jusqu'a la ligne en paramètre
+	 * Permet de se déplacer jusqu'a la ligne en paramètre.
 	 * Elle réexecute le programme en partant de la première ligne du fichier
 	 * @param n
 	 * 		Ligne jusqu'a laquelle nous souhaitons aller
@@ -564,7 +564,7 @@ public class Interpreteur
 	}
 
 	/**
-	 * Ajoute un point d'arret
+	 * Ajoute un point d'arret.
 	 * Il réorganise la liste des points d'arret par ordre croissant
 	 * @param ligne
 	 *		Ligne du point d'arret
@@ -582,7 +582,7 @@ public class Interpreteur
 	}
 
 	/**
-	 * Enleve un point d'arret
+	 * Enleve un point d'arret.
 	 * Il réorganise la liste des points d'arret par ordre croissant des lignes
 	 * 
 	 * @param ligne
@@ -603,7 +603,7 @@ public class Interpreteur
 	}
 
 	/**
-	 * permet de creer une donnee
+	 * permet de creer une donnee.
 	 * constante ou variable
 	 * 
 	 * @param ligne
