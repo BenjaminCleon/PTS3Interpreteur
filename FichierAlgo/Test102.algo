@@ -1,0 +1,23 @@
+ALGORITHME TestExpression
+variable:
+    x : entier
+    y : réel
+    z : booléen
+DEBUT
+    // operateur unaire
+    x <--  5
+    x <-- -5
+    x <-- +5
+    x <-- -x
+    // operateur binaire + - 
+    x <-- 7 + 4
+    x <-- 7 + 4 - 3
+    x <-- 10 + x - 4
+    x <-- -10 - x + 4
+
+    // × / div mod
+    y <-- 5 × 0.4 div 4
+    y <-- 5 × 0.4 / 4
+    x <-- 12 × 3 mod 10
+    y <-- y × y × 4
+FIN

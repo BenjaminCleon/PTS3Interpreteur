@@ -1,14 +1,37 @@
-ALGORITHME
+ALGORITHME Test101
+constante:
+    MAX_ENTIER <-- 45
+    MAX_REEL   <-- 45.02
+    UNE_CHAINE <-- "Test reussi"
+    BOOL       <-- true
+    UN_CARA    <-- 'Y' 
 variable:
-    a: entier
-    b: réel
-    c: caractère
-    d: chaine de caractères
-    e: booléen
+    a,f,g: entier
+    b,h,i: réel
+    c,j,k: caractère
+    d,l,m: chaine de caractères
+    e,n,o: booléen
 DEBUT
     a <-- 25
     b <-- 25.42
     c <-- 'm'
-    d <-- "Une chaine normal"
+    d <-- "Une chaine normale"
     e <-- true
+    f <-- g <-- 90
+    f <-- g <-- a
+    i <-- h <-- 98.56
+    i <-- h <-- b
+    j <-- k <-- 'p'
+    k <-- j <-- c
+    m <-- l <-- "ça marche"
+    d <-- l <-- m
+    o <-- n <-- false
+    o <-- n <-- e
+    lire ( f )
+    lire ( a , b , j , l , e )
+    ecrire ( "Bonjour" )
+    ecrire ( "Bonjour " © " DI" )
+    ecrire ( d )
+    ecrire ( a+8×2 )
+    ecrire ( "Nous sommes " © enChaine((b-4)/2) © " étudiants")
 FIN
