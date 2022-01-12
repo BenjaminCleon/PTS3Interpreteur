@@ -23,6 +23,6 @@ class Test{
 			System.out.println(test.substring(matcher1.start(), matcher1.end()));
 		} */
 
-		System.out.println(Integer.parseInt("--4"));
+		System.out.println(Boolean.parseBoolean("true"));
 	}
 }

@@ -102,8 +102,8 @@ public class GestionDonnee
 					valVar = String.valueOf(tmp.getValeur());
 					if ( tmp.getType().equals(Type.BOOLEEN) )
 					{
-						if ( valVar.equals("true") )valVar = "vrai";
-						else                        valVar = "faux";
+						if ( valVar.contains("true") )valVar = "vrai";
+						else                          valVar = "faux";
 					}
 					if(valVar.length() > 10)
 					{
@@ -191,8 +191,8 @@ public class GestionDonnee
 			// actualise le type pour les booléens
 			if ( tmp.getType().equals(Type.BOOLEEN)) 
 			{
-				if ( val.equals("true"))val = "vrai";
-				else                    val = "faux";
+				if ( val.contains("true"))val = "vrai";
+				else                      val = "faux";
 			}
 
 			sRet += String.format ("|  %-50s  |\n", val);

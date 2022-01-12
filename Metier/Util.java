@@ -36,8 +36,6 @@ public class Util
 	private static final String REGEX_OP ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|\\bxou\\b|\\bou\\b|\\bet\\b|\\bnon\\b|\\+|-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\w*\\||\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
 	private static final String REGEX_PRIMI = "(\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
 	private static final String REGEX_DATE  = "(\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b){1}";
-	private static final String TRUE  = "true" ;
-	private static final String FALSE = "false";
 	private static Pattern  pattern = Pattern.compile(Util.REGEX_OP);
 
 	/**
@@ -131,9 +129,10 @@ public class Util
 			case Type.ENTIER  -> data.setValeur((int)(Double.parseDouble  (value)), args);
 			case Type.REEL    -> data.setValeur(Double.parseDouble  (value)       , args);
 			case Type.CHAR    -> data.setValeur(value.charAt(0)                   , args);
-			case Type.BOOLEEN -> data.setValeur(Boolean.parseBoolean(value)       , args);
+			case Type.BOOLEEN -> data.setValeur(Boolean.parseBoolean(value.replaceAll(" ", "")), args);
 			default           -> data.setValeur(                     value        , args);
 		}
+
 	}
 
 
