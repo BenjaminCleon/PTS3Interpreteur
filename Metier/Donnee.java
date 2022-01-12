@@ -70,7 +70,7 @@ public class Donnee
 	 */
 	public Object getValeur(Integer... args)
 	{
-		//if ( this.valeur instanceof List )return this.getValeurTableau(args);
+		if ( this.valeur instanceof List )return this.getValeurTableau(args);
 
 		return this.valeur;
 	}
@@ -144,21 +144,12 @@ public class Donnee
 	public boolean setValeur(Object valeur, Integer... args)
 	{
 		if ( this.estConstant )return false;
-		if(!(this.valeur instanceof List))
+		switch(this.dimension)
 		{
-			this.valeur = valeur;
-		}
-		else
-		{
-			if ( ((List)this.valeur).get(0) instanceof List )
-			{
-				if ( ((List)((List)this.valeur).get(0)) instanceof List )
-					((List)((List)((List)this.valeur).get(args[0])).get(args[1])).set(args[2], valeur);
-				else
-					((List)((List)this.valeur).get(args[0])).set(args[1], valeur);
-			}
-			else
-				((List)this.valeur).set(args[0], valeur);
+			case 1  -> ((List)this.valeur).set(args[0], valeur);
+			case 2  -> ((List)((List)this.valeur).get(args[0])).set(args[1], valeur);
+			case 3  -> ((List)((List)((List)this.valeur).get(args[0])).get(args[1])).set(args[2], valeur);
+			default -> this.valeur = valeur;
 		}
 		return true;
 	}

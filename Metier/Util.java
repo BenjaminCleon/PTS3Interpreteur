@@ -153,8 +153,12 @@ public class Util
 		while ( ((operateur = nextOperateur(interpret)) != null || ligneTmp.equals(operateur)) && Util.bInterpreter )
 		{
 			ligneTmp = Util.ligneAInterprete.substring(0, Util.ligneAInterprete.indexOf(operateur));
-
+			ArrayList<Integer> alInd = new ArrayList<Integer>();
 			dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
+			if(dataTmp.contains("\\["))
+			{
+				
+			}
 			if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
 
 			Util.file.add(ligneTmp);

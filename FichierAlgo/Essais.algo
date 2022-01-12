@@ -15,7 +15,14 @@ variable:
 	z: booléen
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
-		
+
+	x <-- 1
+	selon x
+		cas 1 : ecrire( x © "1" ) 
+		cas 3 : ecrire( x © "3" )
+		cas 4 : ecrire( x © "4" )
+	fselon
+
 	y <-- 5
 	tq y < 20 faire
 		si y div 3 = 3 alors
@@ -24,7 +31,9 @@ DEBUT
 			y <-- y + 2
 		fsi
 	ftq
+
 	
+
 	si 3<4 alors
 		ecrire ( "Test si" );
 		ecrire ( "Test deux insructions 1" );
