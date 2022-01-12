@@ -15,7 +15,20 @@ variable:
 	z: booléen
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
-
+	
+	y <-- 5
+	tq y < 20 faire
+		y <-- y + 2
+	ftq
+	
+	si 3<4 alors
+		ecrire ( "Test si" );
+		ecrire ( "Test deux insructions 1" );
+	sinon
+		ecrire ( "Test sinon" );
+		ecrire ( "Test deux instructions 2" );
+	fsi	
+	
 	t <-- estEntier(45)
 	x <-- 8 mod 3
 	t <-- estEntier(x)
@@ -50,14 +63,6 @@ DEBUT
 	x <-- arrondi(y)
 
 	lire ( x )
-	
-	si 3<4 alors
-		ecrire ( "Test si" );
-		ecrire ( "Test deux insructions 1" );
-	sinon
-		ecrire ( "Test sinon" );
-		ecrire ( "Test deux instructions 2" );
-	fsi
 
 	w <-- car(ord('A')+17)
 

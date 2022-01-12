@@ -125,6 +125,11 @@ public class Controleur
 	{
 		return this.metier.getTraceLire();
 	}
+	
+	public void changerLigne (int n)
+	{
+		this.numLigne = n;
+	}
 
 	/**
 	 * @param args
