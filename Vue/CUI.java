@@ -1,10 +1,17 @@
 package AlgoPars.Vue;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.ConsoleHandler;
 import java.util.HashMap;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.FileOutputStream;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -26,7 +33,7 @@ public class CUI
 	private HashMap<String, ArrayList<String>> hashMap;
 
 	/**
-	 * Constructeur principale
+	 * Constructeur principal
 	 */
 	public CUI(Controleur controleur)
 	{
@@ -34,13 +41,16 @@ public class CUI
 		this.lstMotsColoration = new ArrayList<String>();
 		this.hashMap = new HashMap<String, ArrayList<String>>();
 		Console.normal();
-		lectureXML();
-	}
 
+		this.lectureXML();
+	}
+	/**
+	 * Permet la lecture du fichier coloration.xml
+	 * 
+	 * Le fichier coloration.xml modifie les couleurs des mots des instructions dans le code du sous-programme
+	 */
 	public void lectureXML()
 	{
-		//CUI.lst = new ArrayList<String>();
-
 		Element  racine;
 		Document document;
 
@@ -79,13 +89,70 @@ public class CUI
 		ArrayList<String> alReset = new ArrayList<String>();
 		alReset.add(lst1.get(lst1.size()-1).getAttributeValue("nom"));
 		this.hashMap.put(lst1.get(lst1.size()-1).getAttributeValue("couleur"),alReset);
+		
+		this.ajouterVariableHm();
+
+	}
+	
+	/**
+	 * Ajoute dans une {@code HashMap} des mots à colorier, la liste des variables
+	 * située dans le fichier .var 
+	 */
+	public void ajouterVariableHm()
+	{
+		this.hashMap.put("MAUVE", this.controleur.getListeVariable());
+		System.out.println(this.hashMap);
+
 	}
 
+	/**
+	 * Remet la console en mode normal
+	 * @return
+	 * 		Retourne un caractère vide
+	 */
 	public String consoleReset()
 	{
 		Console.normal();
 		return "";
 	}
+
+	/**
+	 * Affiche l'aide 
+	 * 
+	 * L'aide est composée de la liste des instructions possible dans la console
+	 */
+	public void afficherAide()
+	{
+		String sRet = "";
+
+		Console.effacerEcran();
+		for ( int i=0;i<40;i++)sRet+="¨";
+		sRet += "\n\tListes des fonctionnalités \n\n";
+		sRet += String.format("%-38s", "Touche \"entrée\"") + "\t" + String.format("%-15s", "Avance ligne par ligne dans la console.\n");
+		sRet += String.format("%-38s", "Touche \"b\"") + "\t" + String.format("%-15s", "Recule ligne par ligne dans la console.\n");
+		sRet += String.format("%-38s", "Touche \"L\" + numero") + "\t" + String.format("%-30s", "Se rend à une ligne précise dans la console. (Exemple L41 -> Se déplace à la ligne 41)\n");
+		sRet += String.format("%-38s", "Touche \"+\" \"bk\" ligne") + "\t" + String.format("%-15s", "Ajoute un point d'arret à la ligne voulue. (Exemple + bk 10 -> Ajoute un point à la ligne 10)\n");
+		sRet += String.format("%-38s", "Touche \"-\" \"bk\" ligne") + "\t" + String.format("%-15s", "Retire un point d'arret à la ligne voulue. (Exemple - bk 10 -> Retire un point à la ligne 10)\n");
+		sRet += String.format("%-38s", "Touche \"GO BK\"") + "\t" + String.format("%-15s", "Avance au prochain point d'arret dans la console.\n");
+		sRet += String.format("%-38s", "Touche \"DET var\" +  nom variable") + "\t" + String.format("%-15s", "Affiche le détail d'une variable voulue. (Exemple DET var x -> Affiche le détail de la variable x)\n");
+		sRet += String.format("%-38s", "Touche \"TRACE\"") + "\t" + String.format("%-15s", "Génére la trace des variables sous forme tabulaire dans le presse-papier.\n");
+
+		sRet += String.format("%-38s", "\nTouche Q pour quitter l'aide.");
+		Console.println(sRet);
+		
+		char input = Console.lireChar();
+		while((input != 'q') && (input != 'Q'))
+			input = Console.lireChar();
+	}
+
+	public void afficherChaineMenu(String s)
+	{
+		Console.effacerEcran();
+		Console.println(s)    ;
+		Console.println( String.format("%-38s", "Touche \"PP\"") + "\t" + String.format("%-15s", "Ajoute le détail de la variable dans le presse papier."));
+		Console.println( String.format("%-38s", "Touche \"entree\"") + "\t" + String.format("%-15s", "Reviens à la normale."));
+	}
+
 	/**
 	 * Méthode ayant pour objectif l'affichage complet
 	 * @param n
@@ -216,10 +283,11 @@ public class CUI
 		
 		switch(sCoul)
 		{
-			case "CYAN" -> sCoul = CouleurConsole.CYAN .getFont();
-			case "ROUGE"-> sCoul = CouleurConsole.ROUGE.getFont();
-			case "BLEU" -> sCoul = CouleurConsole.BLEU .getFont();
-			default     -> sCoul = CouleurConsole.BLANC.getFont();
+			case "CYAN"  -> sCoul = CouleurConsole.CYAN .getFont();
+			case "MAUVE" -> sCoul = CouleurConsole.MAUVE.getFont();
+			case "ROUGE" -> sCoul = CouleurConsole.ROUGE.getFont();
+			case "BLEU"  -> sCoul = CouleurConsole.BLEU .getFont();
+			default      -> sCoul = CouleurConsole.BLANC.getFont();
 		}
 		return sCoul;
 	}

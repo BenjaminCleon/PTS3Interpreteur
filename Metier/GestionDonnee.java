@@ -12,7 +12,7 @@ import java.awt.Toolkit;
 
 public class GestionDonnee
 {
-	private List<String> lstVar      ;
+	private ArrayList<String> lstVar      ;
 	private Interpreteur interpreteur;
 	
 	public GestionDonnee (String nomFichier, Interpreteur interpreteur)
@@ -38,6 +38,10 @@ public class GestionDonnee
 		}
 	}
 	
+	public ArrayList<String> getListeVariable()
+	{
+		return this.lstVar;
+	}
 	/**
 	 * Retourne les données étant à tracer
 	 * @return

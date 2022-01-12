@@ -11,10 +11,27 @@ variable:
 	u,v: chaine de caractères
 	w: caractère
 	x: entier
-	y: réel
+	y: entier
 	z: booléen
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
+		
+	y <-- 5
+	tq y < 20 faire
+		si y div 3 = 3 alors
+			y <-- y + 4
+		sinon
+			y <-- y + 2
+		fsi
+	ftq
+	
+	si 3<4 alors
+		ecrire ( "Test si" );
+		ecrire ( "Test deux insructions 1" );
+	sinon
+		ecrire ( "Test sinon" );
+		ecrire ( "Test deux instructions 2" );
+	fsi	
 
 	s[4] <-- aujourdhui()
 	x <-- -82
@@ -54,14 +71,6 @@ DEBUT
 	x <-- arrondi(y)
 
 	lire ( x )
-	
-	si 3<4 alors
-		ecrire ( "Test si" );
-		ecrire ( "Test deux insructions 1" );
-	sinon
-		ecrire ( "Test sinon" );
-		ecrire ( "Test deux instructions 2" );
-	fsi
 
 	w <-- car(ord('A')+17)
 

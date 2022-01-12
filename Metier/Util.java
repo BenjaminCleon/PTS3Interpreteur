@@ -278,6 +278,7 @@ public class Util
 									case "-"   -> pileArith.add(String.valueOf(Double.parseDouble(val2) - Double.parseDouble(val1)));
 									case "×"   -> pileArith.add(String.valueOf(Double.parseDouble(val2) * Double.parseDouble(val1)));
 									case "/"   -> pileArith.add(String.valueOf(Double.parseDouble(val2) / Double.parseDouble(val1)));
+									case "div" -> pileArith.add(String.valueOf((int)Double.parseDouble(val2) / (int)Double.parseDouble(val1)));
 									case "mod" -> pileArith.add(String.valueOf(Double.parseDouble(val2) % Double.parseDouble(val1)));
 									case "^"   -> pileArith.add(String.valueOf(Math.pow(Double.parseDouble(val2),Double.parseDouble(val1))));
 									case "©"   -> pileArith.add(String.valueOf(val2 + val1));
@@ -349,7 +350,7 @@ public class Util
 		                      {  { "("                             },
 		                         { "<", ">", "<=", ">=", "/=", "=" },
 		                         { "+", "-"                        },
-		                         { "×", "/"                        },
+		                         { "×", "/", "mod", "div"          },
 		                         { "^", "non", "\\/¯"              },
 								 { "ord", "car", "enChaine", "plancher",
 								   "enEntier", "enReel", "arrondi", "plafond",

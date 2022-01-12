@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <coloration>
-	<categorie nom="ecrire" couleur="BLEU" poids="\u001b[1m">
+	<categorie nom="ecrire" couleur="BLEU" poids="0">
 		<mots>ecrire</mots>
 	</categorie>
 	<categorie nom="lire" couleur="ROUGE" poids="0">
@@ -17,5 +17,8 @@
 		<mots>faire</mots>
 	</categorie>
 	<categorie nom="defaut" couleur="BLANC" poids="0">
+	</categorie>
+	<categorie nom="variable" couleur="MAUVE" poids="0">
+		
 	</categorie>
 </coloration>

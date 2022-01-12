@@ -8,6 +8,7 @@ import AlgoPars.Metier.GestionDonnee;
 
 import java.io.FileInputStream;
 
+import java.util.Stack        ;
 import java.util.List         ;
 import java.util.Collections  ;
 import java.util.ArrayList    ;
@@ -45,7 +46,15 @@ public class Interpreteur
 	private boolean lectureVariable ; // permet de connaitre si nous sommes dans la déclaration des variables
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
 	private boolean bw;
-	private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
+	
+	private Stack<Boolean> lstStructureConditionnelle;
+	private Stack<Boolean> lstStructureConditionnelleAlt;
+	private Stack<Boolean> lstCondition;
+	
+	private Stack<Integer> lstLigneDebutBoucle;
+	private Stack<Integer> lstLigneFinBoucle;
+	
+	/*private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
 	private boolean structureConditionnelleAlt; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle alternative
 	private boolean condition; // permet de connaitre le résultat du test pour entrer dans la structure conditionnelle
 	
@@ -61,6 +70,11 @@ public class Interpreteur
 
 	private String caseSelon; // element de comparaison pour les selons
 	private boolean estDansLeCas; // Si dans un selon nous sommes dans un cas
+
+	private boolean condition;
+	private boolean structureConditionnelle   ;	
+	private boolean structureConditionnelleAlt;
+	private boolean bSelon                    ;
 
 	/**
 	 * Constructeur principale
@@ -85,9 +99,16 @@ public class Interpreteur
 		this.bw               = false;
 		this.structureConditionnelle    = false;
 		this.structureConditionnelleAlt = false;
-		this.bSelon                     = false;
 		this.estDansLeCas               = false;
+		this.bSelon                     = false;
 		this.condition = true;
+		
+		this.lstStructureConditionnelle    = new Stack<Boolean>();
+		this.lstStructureConditionnelleAlt = new Stack<Boolean>();
+		this.lstCondition                  = new Stack<Boolean>();
+		
+		this.lstLigneDebutBoucle = new Stack<Integer>();
+		this.lstLigneFinBoucle = new Stack<Integer>();
 		
 		this.enComm = false;
 		this.commOk = true ;
@@ -103,6 +124,10 @@ public class Interpreteur
 	 */
 	public void setNumeroLigne(int numeroLigne){this.numeroLigne = numeroLigne;}
 
+	public ArrayList<String> getListeVariable()
+	{
+		return this.gestionDonnee.getListeVariable();
+	}
 
 	/**
 	 * Interprete la ligne n en partant du principe que ce qui est au-dessus est interpréter
@@ -114,7 +139,8 @@ public class Interpreteur
 
 		int indexSimpleCom, indexDbGrosCom;
 		int indexComment;
-
+		boolean condition, structureConditionnelle, structureConditionnelleAlt;
+		
 		if ( n < this.lstContenu.size() && n >= 0)
 		{
 			if ( !this.estDansLeCas )ligneAInterpreter = this.lstContenu.get(n);
@@ -122,9 +148,15 @@ public class Interpreteur
 			this.commOk = true;
 			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
 			
-			if(this.condition && !this.structureConditionnelle &&
-			   !this.structureConditionnelleAlt||this.structureConditionnelle &&
-			    this.condition||this.structureConditionnelleAlt && !this.condition)
+			condition                 = true ;
+			structureConditionnelle   = false;
+			structureConditionnelleAlt= false;
+			
+			if(! this.lstCondition                 .isEmpty() ) condition                 = this.lstCondition                 .peek();
+			if(! this.lstStructureConditionnelle   .isEmpty() ) structureConditionnelle   = this.lstStructureConditionnelle   .peek();
+			if(! this.lstStructureConditionnelleAlt.isEmpty() )	structureConditionnelleAlt= this.lstStructureConditionnelleAlt.peek();
+			
+			if( condition && !structureConditionnelle && !structureConditionnelleAlt||structureConditionnelle && condition||structureConditionnelleAlt && !condition )
 			{				
 				indexComment = ligneAInterpreter.indexOf("//");
 				
@@ -147,7 +179,7 @@ public class Interpreteur
 				else
 				{				
 					this.interpreter(n, ligneAInterpreter);
-					if ( this.bSelon )
+					if ( this.lectureVariable )
 					{
 						String newLine = "";
 
@@ -167,7 +199,56 @@ public class Interpreteur
 						}
 					}
 				}
-			}			
+			}
+			
+			if ( ligneAInterpreter.matches("\\s*si .* alors") )
+			{		
+				ligneAInterpreter = ligneAInterpreter.replace("si"   , "");
+				ligneAInterpreter = ligneAInterpreter.replace("alors", "");
+				this.lstStructureConditionnelle   .add(true );
+				this.lstStructureConditionnelleAlt.add(false);
+				
+				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.lstCondition.add(true);
+				else this.lstCondition.add(false);
+			}
+			
+			if ( ligneAInterpreter.matches("\\s*sinon$") )
+			{
+				this.lstStructureConditionnelleAlt.pop(     );
+				this.lstStructureConditionnelleAlt.add(true );
+				this.lstStructureConditionnelle   .pop(     );
+				this.lstStructureConditionnelle   .add(false);
+			}
+			
+			if ( ligneAInterpreter.contains("fsi"  ) )
+			{
+				this.lstStructureConditionnelle   .pop();
+				this.lstStructureConditionnelleAlt.pop();
+				this.lstCondition                 .pop();
+			}
+			
+			if ( ligneAInterpreter.matches("\\s*tq .* faire") )
+			{
+				ligneAInterpreter = ligneAInterpreter.replace("tq"   , "");
+				ligneAInterpreter = ligneAInterpreter.replace("faire", "");
+				
+				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.lstCondition.add(true);
+				else
+				{
+					this.lstCondition.add(false);
+					this.controleur.changerLigne(this.lstLigneFinBoucle.pop()+1);
+				}
+				
+				this.lstLigneDebutBoucle.add(n);
+			}
+			
+			if ( ligneAInterpreter.contains("ftq") )
+			{
+				this.lstLigneFinBoucle.add(n);
+				
+				interpreter(this.lstLigneDebutBoucle.peek());
+				if(this.lstCondition.pop()) this.controleur.changerLigne(this.lstLigneDebutBoucle.pop());
+			}
 		}
 
 		this.lignePrc = n;
@@ -201,6 +282,11 @@ public class Interpreteur
 		if ( ligneAInterpreter.contains("selon") && !ligneAInterpreter.contains("fselon") )this.commencerSelon(ligneAInterpreter);
 		if ( ligneAInterpreter.contains("fselon")                                         )this.bSelon = this.estDansLeCas = false;
 	}
+	
+	public void arreterBoucle(int iteration, int numeroLigne)
+	{
+
+	}
 
 	public boolean getBw()
 	{
@@ -215,7 +301,7 @@ public class Interpreteur
 		this.lectureConstante = false;
 		this.structureConditionnelle    = false;
 		this.structureConditionnelleAlt = false;
-		this.bSelon                     = false;
+		this.lectureVariable                     = false;
 		this.estDansLeCas               = false;
 		this.condition = true;
 		
@@ -229,7 +315,7 @@ public class Interpreteur
 
 	public void commencerSelon(String ligne)
 	{
-		this.bSelon = true;
+		this.lectureVariable = true;
 
 		this.caseSelon = Util.getValeur(ligne.substring(ligne.indexOf("selon")+6), false, this);
 	}
@@ -382,8 +468,8 @@ public class Interpreteur
 		String sVal = "";
 		if (this.numeroLigne == val)
 		{
-			if( this.lstContenu.get(val).matches("\\s*si .* alors") && this.condition)      sRet = CouleurConsole. VERT.getFond() + "";
-			else if(this.lstContenu.get(val).matches("\\s*si .* alors") && !this.condition) sRet = CouleurConsole.ROUGE.getFond() + "";
+			if( this.lstContenu.get(val).matches("\\s*si .* alors") && ! this.lstCondition.isEmpty() && this.lstCondition.peek())      sRet = CouleurConsole. VERT.getFond() + "";
+			else if(this.lstContenu.get(val).matches("\\s*si .* alors") && ! this.lstCondition.isEmpty() && !this.lstCondition.peek()) sRet = CouleurConsole.ROUGE.getFond() + "";
 			else      sRet = CouleurConsole.JAUNE.getFond() + "";
 		}
 			
@@ -546,7 +632,6 @@ public class Interpreteur
 		String value  = Util.getValeur(ligne, false, this);
 		int ind =-1;
 		
-		//System.out.println(nomVar + " |" + value + "|");
 
 		Donnee tmp = null;
 		
