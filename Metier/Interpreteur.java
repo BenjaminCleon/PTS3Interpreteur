@@ -141,7 +141,7 @@ public class Interpreteur
 	 */
 	public void interpreter(int n)
 	{
-		System.out.println("\ncpt iteration = " + this.cptIteration + " num ligne = " + n);
+		// System.out.println("\ncpt iteration = " + this.cptIteration + " num ligne = " + n);
 		String ligneAInterpreter;
 
 		int indexSimpleCom, indexDbGrosCom;
@@ -263,9 +263,7 @@ public class Interpreteur
 				this.interpreter(this.lstLigneDebutBoucle.peek());
 				if(this.lstCondition.pop())//fait une nouvelle itération
 				{
-					//this.cptIteration++;
 					this.controleur.setNumLigne(this.lstLigneDebutBoucle.pop());
-					System.out.println("on recommence la boucle");
 				}
 					/*else//On quitte la boucle
 				{
@@ -354,8 +352,6 @@ public class Interpreteur
 	public void goTo(int n)
 	{
 		if ( n < 0 || n >= this.lstContenu.size() )return;
-		
-		
 
 		int courant = 1;
 		if( this.lignePrc > n )//Si on recule
@@ -363,17 +359,18 @@ public class Interpreteur
 		else
 			courant = this.lignePrc;
 		
-		while(courant <= n)//Voir si <= ou pas
+		while(courant <= n)
 		{
-			try {
+			try
+			{
 				System.out.println("courant : " + courant);
-				this.controleur.setNumLigne(courant);
-				this.interpreter(courant++);
-				this.controleur.actualiser();
-				Thread.sleep(500);
-			} catch (Exception e) {}
-			
-			
+
+	
+					//this.controleur.setNumLigne(courant);
+					this.interpreter(courant++);
+				
+				// Thread.sleep(500);
+			} catch (Exception e) {}	
 		}
 		
 		this.resetHashMap(n);
@@ -383,6 +380,7 @@ public class Interpreteur
 	{
 		EntreeSortie.resetHashMap(n);
 	}
+
 	/**
 	 * Retourne la trace d'execution actuelle
 	 * @return
