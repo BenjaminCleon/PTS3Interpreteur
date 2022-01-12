@@ -1,0 +1,121 @@
+ALGORITHME Test003
+constante:
+	STRING   <-- "ma chaine"
+	DOUBLE   <-- 25.01
+	ENTIER   <-- 456
+	BOOLEAN  <-- false
+	CHAR     <-- 'C'
+variable:
+    s : tableau[5] de chaines de caractères 
+    t : booléen
+	u,v: chaine de caractères
+	w: caractère
+	x: entier
+	y: entier
+	z: booléen
+DEBUT
+	ecrire ( "Salut", " Paul " © "comment ça va" )
+
+	x <-- 1
+
+	y <-- 5
+	tq y < 20 faire
+		si y div 3 = 3 alors
+			y <-- y + 4
+		sinon
+			y <-- y + 2
+		fsi
+	ftq
+
+	
+
+	si 3<4 alors
+		ecrire ( "Test si" );
+		ecrire ( "Test deux insructions 1" );
+	sinon
+		ecrire ( "Test sinon" );
+		ecrire ( "Test deux instructions 2" );
+	fsi	
+
+	s[4] <-- aujourdhui()
+	x <-- -82
+	x <-- |x|
+	x <-- |-48|
+	t <-- estEntier(45)
+	x <-- 8 mod 3
+	t <-- estEntier(x)
+	t <-- estEntier(45.02)
+	t <-- estReel(45.3)
+	t <-- estReel("tets")
+	x <-- 8mod5
+	t <-- 4 > (5+3) ou 4 > 2
+	x <-- -4 + 8 × 6 - 8 × - 9
+	u <-- "Aujourdhui nous sommes le " © aujourdhui()
+	ecrire ( u )
+	u <-- "Aujourdhui nous sommes le " © jour()  © mois() © annee()
+	ecrire ( u )
+	x <-- -98
+	x <-- -x
+	x <-- ord('A')+17
+	w <-- car(ord('A') + 3×4)
+
+	/*
+	"enChaine"
+	"enEntier"
+	"enReel"  
+	"plancher"
+	"arrondi" 
+	*/
+
+	u <-- enChaine(x) © "2"
+	x <-- enEntier("45")
+	x <-- enEntier(u)
+	y <-- enReel("45.8")
+	x <-- plancher(arrondi( y ) )
+	x <-- arrondi(y)
+
+	lire ( x )
+
+	w <-- car(ord('A')+17)
+
+	s[0] <-- 'e'
+	s[1] <-- 'd'
+	s[2] <-- 'c'
+	s[3] <-- 'b'
+	s[4] <-- 'a'
+	
+	u <-- "Yo" © " Alan" // test
+	
+	t <-- true
+
+	v <-- "Salut er"
+	w <-- 'C'
+	x <-- \/¯x+45
+	ecrire ( "Alan est un putain de boss" ) // super
+	ecrire ( "Alan est trop fort" )
+
+
+	z <-- false
+
+	ecrire ( STRING )
+	ecrire ( DOUBLE )
+	ecrire ( ENTIER )
+	ecrire ( BOOLEAN )
+	ecrire ( CHAR )
+
+	ecrire ( v )
+	ecrire ( w )
+	ecrire ( x )
+	ecrire ( u )
+	ecrire ( y )
+	ecrire ( z )
+
+
+	/*
+	Test
+	Test
+	Test
+	Test
+	Test
+	*/
+FIN

@@ -84,7 +84,7 @@ public class Controleur
 			while(this.numLigne<this.metier.getSizeContenu())
 			{
 				this.ihm.afficher(this.numLigne);
-				Console.print("Instruction ( \"help\" pour aide ) : ");
+				Console.print("Instruction ( \"help\" pour aide, q pour quitter ) : ");
 				line = Console.lireString();//input.nextLine();
 				if(line.matches("DET var \\w*"))
 				{
@@ -102,6 +102,7 @@ public class Controleur
 				{
 					switch(line.toUpperCase())
 					{
+						case "Q" ->{ System.exit(0);}
 						case ""  -> {this.standardAction();}
 						case "B" -> {this.setNumLigne(--this.numLigne);this.metier.goTo(this.numLigne);}
 						case "TRACE" -> {this.metier.trace();}
