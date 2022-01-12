@@ -14,6 +14,7 @@ import AlgoPars.Metier.Donnee      ;
 
 /**
  * Classe permettant de réaliser les entrées et les sorties en pseudo-code
+ * @author LHEAD
  */
 public class EntreeSortie
 {
@@ -104,12 +105,19 @@ public class EntreeSortie
 		}
 		return saisie;
 	}
+
+	/**
+	 * Remet à 0 la liste des variables sauvegardées dans la HashMap
+	 * 
+	 * @param n
+	 * 		Ligne jusqu'a laquelle nous souhaitons aller
+	 */
 	public static void resetHashMap(int n)
 	{
 		for(Integer i : EntreeSortie.hashMap.keySet())
 			if(i>n)EntreeSortie.hashMap.get(i).clear();
-		
 	}
+
 	/**
 	 * Permet de faire l'équivalent d'un écrire
 	 * @param ligne

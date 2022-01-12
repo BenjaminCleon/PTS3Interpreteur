@@ -20,6 +20,7 @@ import iut.algo.Console;
 
 /**
  * Classe Util avec des méthodes utiles dans diverses fichier
+ * @author LHEAD
  */
 public class Util
 {
