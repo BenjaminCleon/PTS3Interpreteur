@@ -23,14 +23,14 @@ import iut.algo.Console;
  */
 public class Util
 {
-	private static String ligneAInterprete = "";
-	private static String lastOperateur    = "";
-	private static boolean bInterpreter  = true;
+	private static String ligneAInterprete = ""; // ligne à interpréter en cours
+	private static String lastOperateur    = ""; // dernier opérateur utilise
+	private static boolean bInterpreter  = true; // savoir si la ligne doit-être interpreter
 
-	private static List<String> lstTypePourEnChaine = new ArrayList<String>();
+	private static List<String> lstTypePourEnChaine = new ArrayList<String>(); // contenu pour un enChaine
 
-	private static Queue<String> file;
-	private static Stack<String> pile;
+	private static Queue<String> file; // file pour les expressions
+	private static Stack<String> pile; // pile pour les expressions
 
 	private static final String REGEX_OP ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|\\bxou\\b|\\bou\\b|\\bet\\b|\\bnon\\b|\\+|-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\w*\\||\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
 	private static final String REGEX_PRIMI = "(\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
@@ -63,6 +63,10 @@ public class Util
 		return type;
 	}
 
+	/**
+	 * Retourne le type à partir de la valeur
+	 * @return le type
+	 */
 	public static String getTypeAfterValue(String val)
 	{
 		String type = "";
@@ -110,6 +114,15 @@ public class Util
 		return valeur[1];
 	}
 
+	/**
+	 * change la valeur d'une donnée
+	 * @param data
+	 *     la donnee à traiter
+	 * @param value
+	 *     la valeur à changer
+	 * @param args
+	 *     les dimensions si c'est un tableau
+	 */
 	public static void setValeurBySwitch(Donnee data, String value, Integer... args)
 	{
 		switch(data.getType())
@@ -122,13 +135,16 @@ public class Util
 		}
 	}
 
-	   
-	public static String expression(String ligne, Interpreteur interpret)
-	{
-		return Util.expression(ligne, interpret, true);
-	}
 
-	public static String expression(String ligne, Interpreteur interpret, boolean bPrimi)
+	/**
+	 * Retourne la valeur d'une expression
+	 * Convertit l'expression en expression postfixée
+	 * @param la ligne à interpreterù
+	 * @param l'interpreteur responsable
+	 * @return
+	 *      la valeur d'une expression
+	 */
+	public static String expression(String ligne, Interpreteur interpret)
 	{
 		int taille   ;
 		int dernierOp;
@@ -143,27 +159,29 @@ public class Util
 		Util.pile = new Stack     <String>();
 		Util.file = new LinkedList<String>();
 
-        Queue<String> fileRet = new LinkedList<String>();
+		Queue<String> fileRet = new LinkedList<String>();
 
 		dernierOp = 0;
 
 		Util.ligneAInterprete = ligne;
 		taille = Util.ligneAInterprete.length();
 		
+		// tant que la chaine contient encore des operateur alors on repete l'opération
 		while ( ((operateur = nextOperateur(interpret)) != null || ligneTmp.equals(operateur)) && Util.bInterpreter )
 		{
+			// la valeur correspond à la partie avant l'operateur
 			ligneTmp = Util.ligneAInterprete.substring(0, Util.ligneAInterprete.indexOf(operateur));
 
-			ligneTmp = Util.getLigneTmp(ligneTmp, interpret);
+			ligneTmp = Util.getLigneTmp(ligneTmp, interpret); // si c'est une donnee
 
 			Util.file.add(ligneTmp);
-			
-			System.out.println(operateur);
 			Util.ajouterOperateurAPile(operateur);
 
+			// actualise la ligne à interpréter
 			Util.ligneAInterprete = Util.ligneAInterprete.substring(Util.ligneAInterprete.indexOf(operateur)+operateur.length());
 		}
 
+		// recupère la potentiel donnée
 		dataTmp = interpret.getDonnee(Util.ligneAInterprete.replaceAll(" *", ""));
 
 		if ( dataTmp != null )ligneTmp = Util.getLigneTmp(Util.ligneAInterprete.replaceAll(" *", ""), interpret);
@@ -171,9 +189,10 @@ public class Util
 		
 		Util.file.add(ligneTmp);
 
-        while ( !Util.pile.isEmpty() )Util.file.add(Util.pile.pop());
+		while ( !Util.pile.isEmpty() )Util.file.add(Util.pile.pop());
 
-        for ( String val: Util.file)if ( !val.matches("^ *$"))fileRet.add(val);
+		// retire de la file ce qui est vide
+		for ( String val: Util.file)if ( !val.matches("^ *$"))fileRet.add(val);
 
 		Util.lstTypePourEnChaine.clear();
 		Util.ligneAInterprete = lastOperateur = "";
@@ -184,6 +203,17 @@ public class Util
 		return Util.evaluerEPO(fileRet, interpret);
 	}
 
+	/**
+	 * retourne la valeur de la ligne en paramètre
+	 * si elle ne représente pas une donnée alors retourne la ligne en temps que telle
+	 * sinon retourne la valeur de la donnée
+	 * @return
+	 *    la nouvelle chaine
+	 * @param ligneTmp
+	 *    la ligne à recuperer
+	 * @param interpret
+	 *    l'interpreteur associé
+	 */
 	private static String getLigneTmp(String ligneTmp, Interpreteur interpret)
 	{
 		Donnee dataTmp = null;
@@ -214,12 +244,18 @@ public class Util
 		return ligneTmp;
 	}
 
+	/**
+	 * traitement spécifique pour ajouter un operateur selon certaines conditions
+	 * @param operatuer
+	 */
 	private static void ajouterOperateurAPile(String operateur)
 	{
 		Util.lastOperateur = operateur;
 		switch(operateur)
 		{
+			// si c'est une parenthèse ouvrante on ajoute l'op à la pile
 			case "(" -> Util.pile.add(operateur);
+			// si c'est une parenthèse fermante on depile puis ajoute les operateurs jusqu'à la prochaine paren ouvrante
 			case ")" ->
 			{
 				while (  !Util.pile.isEmpty() && !(Util.pile.peek()).equals("(") )Util.file.add(Util.pile.pop());
@@ -227,6 +263,7 @@ public class Util
 			}
 			default  ->
 			{
+				// depile les operateur de prio sup ou egal et les jaoute dans la file puis empile l'operateur
 				while ( !Util.pile.isEmpty() && Util.prioSupEgal(Util.pile.peek(), operateur) )
 					Util.file.add(Util.pile.pop());
 
@@ -235,24 +272,31 @@ public class Util
 		}
 	}
 
-    private static String evaluerEPO(Queue<String> fileRet, Interpreteur interpret)
-    {
-        Stack<String> pileArith = new Stack<String>();
-        ArrayList<Boolean> pileLogique = new ArrayList<Boolean>();
-        Stack<String> lstOpeLogique = new Stack<String>();
-        String val1, val2;
+	/**
+	 * permet d'évaluer l'expression postfixée
+	 * @param fileRet
+	 *      la file contenant EPO
+	 * @param interpret 
+	 *     l'interpreteur courant
+	 */
+	private static String evaluerEPO(Queue<String> fileRet, Interpreteur interpret)
+	{
+		Stack<String> pileArith = new Stack<String>();
+		ArrayList<Boolean> pileLogique = new ArrayList<Boolean>();
+		Stack<String> lstOpeLogique = new Stack<String>();
+		String val1, val2;
 		Donnee dataTmp;
 
-        for ( String val : fileRet )
-        {
-            if ( val.matches(Util.REGEX_OP) )
-            {
-			    if(val.matches("xou|ou|et|non"))
-			    {
-			    	lstOpeLogique.add(val);
-			    }
-			    else
-			    {
+		for ( String val : fileRet )
+		{
+			if ( val.matches(Util.REGEX_OP) )
+			{
+				if(val.matches("xou|ou|et|non"))
+				{
+					lstOpeLogique.add(val);
+				}
+				else
+				{
 					if ( val.matches(REGEX_PRIMI) ) // pour les primitives
 					{
 						if ( val.matches(REGEX_DATE) )
@@ -322,32 +366,32 @@ public class Util
 							}
 						}
 					}
-                }
-            }
-            else
-            {
+				}
+			}
+			else
+			{
 				pileArith.add(val.replaceAll("^ *\"|\" *$", ""));
-            }
-        }
-        
-        if (! pileLogique.isEmpty())
-        {
-        	if(lstOpeLogique.isEmpty())
-        	{
-        		boolean allTrue = true;
-        	
-		    	for(Boolean b : pileLogique)
-		    		if(b==false)allTrue=false;
-        	
-        		return String.valueOf(allTrue);
-        	}
-        	else
-        	{        				
-        		for(String val : lstOpeLogique)
-        		{		    				    		
-		    		if(val.matches("non"))
-		    			pileLogique.add(!(pileLogique.remove(0)));
-		    		else
+			}
+		}
+		
+		if (! pileLogique.isEmpty())
+		{
+			if(lstOpeLogique.isEmpty())
+			{
+				boolean allTrue = true;
+			
+				for(Boolean b : pileLogique)
+					if(b==false)allTrue=false;
+			
+				return String.valueOf(allTrue);
+			}
+			else
+			{        				
+				for(String val : lstOpeLogique)
+				{		    				    		
+					if(val.matches("non"))
+						pileLogique.add(!(pileLogique.remove(0)));
+					else
 					{
 						boolean valBool1 = pileLogique.remove(0);
 						boolean valBool2 = pileLogique.remove(0);
@@ -359,34 +403,45 @@ public class Util
 							default    -> pileLogique.add( (valBool1 && !valBool2)||(!valBool1 && valBool2) );
 						}
 					}
-		    	}
-		    	
-		    	return String.valueOf(pileLogique.remove(0));
-        	}
+				}
+				
+				return String.valueOf(pileLogique.remove(0));
+			}
 		}
 		else return String.valueOf (pileArith.pop());
-    }
+	}
 
+	/**
+	 * retire les points contenu dans la chaine
+	 * pratique pour les réels
+	 * @return la chaine sans points
+	 * @param valeur
+	 *    la valeur à modifier
+	 */
 	private static String retirerPoint(String valeur)
 	{
 		return valeur.substring(0, (valeur.contains(".")?valeur.indexOf("."):valeur.length()));
 	}
 
+	/**
+	 * @return
+	 * vrai si st1 est prio sur st2
+	 */
 	private static boolean prioSupEgal(String st1, String st2)
 	{
 		int prioSt1 = 0, prioSt2 = 0;
 
 		final String[][] prio =
-		                      {  { "("                             },
-		                         { "<", ">", "<=", ">=", "/=", "=" },
-		                         { "+", "-"                        },
-		                         { "×", "/", "mod", "div"          },
-		                         { "^", "non", "\\/¯"              },
+							  {  { "("                             },
+								 { "<", ">", "<=", ">=", "/=", "=" },
+								 { "+", "-"                        },
+								 { "×", "/", "mod", "div"          },
+								 { "^", "non", "\\/¯"              },
 								 { "ord", "car", "enChaine", "plancher",
 								   "enEntier", "enReel", "arrondi", "plafond",
 								   "aujourdhui", "jour", "mois", "annee"     ,
 								   "estReel", "estEntier", "hasard"          },								   
-						      };
+							  };
 
 		for (int numPrio=0;numPrio<prio.length;numPrio++)
 			for (int i=0;i<prio[numPrio].length;i++)
@@ -398,6 +453,13 @@ public class Util
 		return prioSt1>=prioSt2;
 	}
 
+	/**
+	 * Retourne le prochain operateur
+	 * la gestion des operateurs unaires et faites automatiquement dans cette méthode
+	 * @return l'operateur
+	 * @param interpret
+	 *    l'interpreteur courant
+	 */
 	public static String nextOperateur(Interpreteur interpret)
 	{
 		Donnee dataTmp = null;
@@ -446,6 +508,7 @@ public class Util
 
 			if ( dataTmp != null )Util.ligneAInterprete = Util.ligneAInterprete.charAt(0) + Util.getLigneTmp(Util.ligneAInterprete.substring(1).replaceAll(" *", ""), interpret);
 
+			// gestion des opérations du genre --4 = 4 ou +-4 = -4
 			if ( Util.ligneAInterprete.length() >= 2 )
 			{
 				if ( Util.ligneAInterprete.substring(0, 2).equals("--") || Util.ligneAInterprete.substring(0, 2).equals("++") )
@@ -460,6 +523,11 @@ public class Util
 
 		return nextOperateur;
 	}
+
+	/*-------------------------------------------*/
+	/*   Méthode associé aux primitives          */
+	/*   Même nom et même effet qu'en pseudo-code*/
+	/*-------------------------------------------*/
 
 	private static Character car( int  value ){ return (char)value; }
 	private static Integer   ord( char value ){ return (int )value; }

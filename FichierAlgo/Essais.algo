@@ -6,7 +6,7 @@ constante:
 	BOOLEAN  <-- false
 	CHAR     <-- 'C'
 variable:
-    s : tableau[5] de chaines de caractères 
+    s : tableau[5][4] de chaines de caractères 
     t : booléen
 	u,v: chaine de caractères
 	w: caractère
@@ -16,7 +16,7 @@ variable:
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
 
-
+	lire ( s[0][1] )
 	y <-- 5
 	tq y < 20 faire
 		si y div 3 = 3 alors

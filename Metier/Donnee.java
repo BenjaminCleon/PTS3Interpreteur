@@ -38,13 +38,25 @@ public class Donnee
 		this.estConstant = estConstant;
 		
 		this.dimension = 0;
-		if(valeur instanceof List)
+		if(valeur instanceof List) // si de type tableau 
 		{
 			this.creerDimension(args);
 			this.dimension = args.length;
 		}
 		
 	}
+
+	/**
+	 * Constructeur par recopie 
+	 * @param nom
+	 *     nom de la variable
+	 * @param type
+	 *     type de la variable
+	 * @param valeur
+	 *     valeur de la variable
+	 * @param estConstant
+	 *     la variable est-elle constante
+	 */
 	public Donnee(String nom, String type, Object valeur, boolean estConstant)
 	{
 		this(nom, type, valeur, estConstant, 0);
@@ -94,6 +106,7 @@ public class Donnee
 
 	/**
 	 * Permet la création de tableau jusqu'à trois dimensions
+	 * Chaque valeur est initialisé à null
 	 * @param dimen
 	 *     nombre de dimensions du tableau
 	 * @param args
@@ -102,16 +115,16 @@ public class Donnee
 	public void creerDimension(Integer... args)
 	{
 		List<Object> l = ((List)this.valeur);
-		int dimen = args.length;
+		int dimen = args.length;                  // la dimension du tableau
 		for ( int i=0;i<args[0];i++)
 		{
-			if ( dimen >= 2 )
+			if ( dimen >= 2 )  // au moins deux dimensions
 			{
 				l.add(new ArrayList<Object>());
 
 				for ( int j=0;j<args[1];j++)
 				{
-					if ( dimen == 3 )
+					if ( dimen == 3 ) // trois dimensions
 					{
 						((List<Object>)l.get(i)).add(new ArrayList<Object>());
 
