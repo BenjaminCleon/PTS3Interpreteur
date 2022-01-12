@@ -56,7 +56,6 @@ public class Interpreteur
 	private Stack<Boolean> lstCondition;
 	
 	private Stack<Integer> lstLigneDebutBoucle;
-	private Stack<Integer> lstLigneFinBoucle;
 	
 	/*private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
 	private boolean structureConditionnelleAlt; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle alternative
@@ -114,7 +113,6 @@ public class Interpreteur
 		this.lstCondition                  = new Stack<Boolean>();
 		
 		this.lstLigneDebutBoucle = new Stack<Integer>();
-		this.lstLigneFinBoucle = new Stack<Integer>();
 		
 		this.enComm = false;
 		this.commOk = true ;
@@ -239,36 +237,43 @@ public class Interpreteur
 				ligneAInterpreter = ligneAInterpreter.replace("tq"   , "");
 				ligneAInterpreter = ligneAInterpreter.replace("faire", "");
 				
-				System.out.println("nous sommes dans le tq");
 				if( Util.expression(ligneAInterpreter, this).matches("true") )
-				{
-					this.lstCondition.add(true);
-					System.out.println("la condition est vraie");
+				{					
+					boolean present=false;
+					for(Integer i : this.lstLigneDebutBoucle)
+						if(i==n) present=true;
+					
+					
+					if(!present)
+					{
+						this.lstLigneDebutBoucle.add(n);
+						this.lstCondition.add(true);
+					}
 				}
 				else
 				{
 					System.out.println("la condition est fausse");
 
 					this.lstCondition.add(false);
-					this.controleur.setNumLigne(this.lstLigneFinBoucle.pop()+1);
 				}
-				
-				this.lstLigneDebutBoucle.add(n);
 			}
 			
 			if ( ligneAInterpreter.contains("ftq") )
 			{
-				this.lstLigneFinBoucle.add(n);
-				this.cptIteration++;
-				this.interpreter(this.lstLigneDebutBoucle.peek());
-				if(this.lstCondition.pop())//fait une nouvelle itération
+				if(this.lstCondition.peek())
 				{
-					this.controleur.setNumLigne(this.lstLigneDebutBoucle.pop());
+					System.out.println("Dans ftq :" + this.lstLigneDebutBoucle.peek());
+					interpreter(this.lstLigneDebutBoucle.pop());
+					
+					if(this.lstCondition.pop())
+					{
+						this.controleur.changerLigne(this.lstLigneDebutBoucle.peek());
+					}
 				}
-					/*else//On quitte la boucle
+				else
 				{
-					//if ()
-				}*/
+					this.lstCondition.pop();
+				}
 			}
 		}
 		System.out.println("fin interpreter");
