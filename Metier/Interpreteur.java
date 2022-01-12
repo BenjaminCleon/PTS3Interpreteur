@@ -52,7 +52,6 @@ public class Interpreteur
 	private Stack<Boolean> lstCondition;
 	
 	private Stack<Integer> lstLigneDebutBoucle;
-	private Stack<Integer> lstLigneFinBoucle;
 	
 	private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
 	private boolean structureConditionnelleAlt; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle alternative
@@ -96,7 +95,6 @@ public class Interpreteur
 		this.lstCondition                  = new Stack<Boolean>();
 		
 		this.lstLigneDebutBoucle = new Stack<Integer>();
-		this.lstLigneFinBoucle = new Stack<Integer>();
 		
 		this.enComm = false;
 		this.commOk = true ;
@@ -205,22 +203,41 @@ public class Interpreteur
 				ligneAInterpreter = ligneAInterpreter.replace("tq"   , "");
 				ligneAInterpreter = ligneAInterpreter.replace("faire", "");
 				
-				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.lstCondition.add(true);
+				if( Util.expression(ligneAInterpreter, this).matches("true") )
+				{					
+					boolean present=false;
+					for(Integer i : this.lstLigneDebutBoucle)
+						if(i==n) present=true;
+					
+					
+					if(!present)
+					{
+						this.lstLigneDebutBoucle.add(n);
+						this.lstCondition.add(true);
+					}
+				}
 				else
 				{
 					this.lstCondition.add(false);
-					this.controleur.changerLigne(this.lstLigneFinBoucle.pop()+1);
 				}
-				
-				this.lstLigneDebutBoucle.add(n);
 			}
 			
 			if ( ligneAInterpreter.contains("ftq") )
 			{
-				this.lstLigneFinBoucle.add(n);
-				
-				interpreter(this.lstLigneDebutBoucle.peek());
-				if(this.lstCondition.pop()) this.controleur.changerLigne(this.lstLigneDebutBoucle.pop());
+				if(this.lstCondition.peek())
+				{
+					System.out.println("Dans ftq :" + this.lstLigneDebutBoucle.peek());
+					interpreter(this.lstLigneDebutBoucle.pop());
+					
+					if(this.lstCondition.pop())
+					{
+						this.controleur.changerLigne(this.lstLigneDebutBoucle.peek());
+					}
+				}
+				else
+				{
+					this.lstCondition.pop();
+				}
 			}
 		}
 
