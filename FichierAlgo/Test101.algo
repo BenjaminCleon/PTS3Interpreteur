@@ -1,0 +1,14 @@
+ALGORITHME
+variable:
+    a: entier
+    b: réel
+    c: caractère
+    d: chaine de caractères
+    e: booléen
+DEBUT
+    a <-- 25
+    b <-- 25.42
+    c <-- 'm'
+    d <-- "Une chaine normal"
+    e <-- true
+FIN
