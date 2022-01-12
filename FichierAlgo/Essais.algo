@@ -16,6 +16,7 @@ variable:
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
 
+	s[4] <-- aujourdhui()
 	x <-- -82
 	x <-- |x|
 	x <-- |-48|
