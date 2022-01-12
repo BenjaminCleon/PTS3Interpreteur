@@ -199,8 +199,6 @@ public class Util
 		Util.ligneAInterprete = lastOperateur = "";
 		Util.bInterpreter     = true;
 
-		System.out.println(fileRet);
-
 		return Util.evaluerEPO(fileRet, interpret);
 	}
 

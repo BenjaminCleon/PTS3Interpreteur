@@ -622,7 +622,6 @@ public class Interpreteur
 
 			for (int i = 0; i < lSplit.length; i++)
 			{
-				// System.out.println("l1" + l[1]); //l[1] est le probleme car il prend le l[1]
 				// de la ligne ou on est
 				nom = lSplit[i].replaceAll(" |\t", "");
 

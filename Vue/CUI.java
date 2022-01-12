@@ -97,8 +97,6 @@ public class CUI
 	public void ajouterVariableHm()
 	{
 		this.hashMap.put("MAUVE", this.controleur.getListeVariable());
-		System.out.println(this.hashMap);
-
 	}
 
 	/**
