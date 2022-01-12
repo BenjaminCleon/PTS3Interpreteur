@@ -36,7 +36,6 @@ public class EntreeSortie
 		
 		interpreteur.actualiser();
 
-		System.out.println("la on est dans lire a la ligne " + numero);
 		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.lastIndexOf(")")).replaceAll(" ", "");
 
 		if(!interpreteur.getBw())
@@ -58,7 +57,7 @@ public class EntreeSortie
 				}
 
 				tmp = interpreteur.getDonnee(nomVar);
-				Console.print("Ecrivez : ");
+				Console.print("Ecrivez une valeur pour " + nomVar + " : ");
 				saisie = Console.lireString();//sc.next(); 
 				Util.setValeurBySwitch(tmp, saisie);
 
