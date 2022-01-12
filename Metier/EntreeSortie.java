@@ -1,3 +1,7 @@
+/**
+ * @author LHEAD
+ */
+
 package AlgoPars.Metier;
 
 import java.security.AlgorithmConstraints;
@@ -14,7 +18,7 @@ import AlgoPars.Metier.Donnee      ;
 
 /**
  * Classe permettant de réaliser les entrées et les sorties en pseudo-code
- * @author LHEAD
+ * Avec lire et ecrire
  */
 public class EntreeSortie
 {
@@ -32,25 +36,41 @@ public class EntreeSortie
 		String var   ;
 		String nomVar;
 		Donnee tmp   ;
+		Integer[] dims = null;
 		
 		int ind = -1;
 		
-		interpreteur.actualiser();
+		interpreteur.actualiser(); // actualise le terminal car usage recursif
 
+		// recupération de ce qui est entre parenthèse
 		if ( ligne.contains("(") )ligne = ligne.substring(ligne.indexOf("(")+1, ligne.lastIndexOf(")")).replaceAll(" ", "");
 
+		// si la saisie n'est pas lié à un retour en arrièrer
+		// si retour en arrière on ne refait pas les lire qui sont encore dans la zone 
 		if(!interpreteur.getBw())
 		{
 			saisie = "";
 			try
 			{
+				// si un lire contient des virgules, c'est qu'il possède plusieurs variables
 				if ( ligne.contains(",") )var = ligne.substring(0, ligne.indexOf(",") );
 				else                      var = ligne.substring(0);
 
+				// si c'est un tableau 
 				if ( var.contains("[") )
 				{
 					nomVar = var.substring(0, var.indexOf("["));
-					ind    = Integer.parseInt(var.substring(var.indexOf("[")+1, var.indexOf("]")));
+					
+					String indices = ligne;
+					indices = indices.substring(indices.indexOf("[") + 1, indices.lastIndexOf("]"));
+					indices = indices.replaceAll("\\[|\\]$", ""); 
+
+					String[] taille = indices.split("\\]"); // récupères les indices
+
+					// passe d'un tableau de String à Integer
+					dims = new Integer[taille.length];
+					for (int cpt = 0; cpt < taille.length; cpt++)
+						dims[cpt] = Integer.parseInt(taille[cpt]);
 				}
 				else
 				{
@@ -60,8 +80,10 @@ public class EntreeSortie
 				tmp = interpreteur.getDonnee(nomVar);
 				Console.print("Ecrivez une valeur pour " + nomVar + " : ");
 				saisie = Console.lireString();//sc.next(); 
-				Util.setValeurBySwitch(tmp, saisie);
+				if ( dims == null)Util.setValeurBySwitch(tmp, saisie);
+				else              Util.setValeurBySwitch(tmp, saisie, dims);
 
+				// Gestion pour connaitre ce qui provient d'un lire
 				if(EntreeSortie.hashMap.containsKey(numero))
 					hashMap.get(numero).add(saisie);
 				else
@@ -74,7 +96,6 @@ public class EntreeSortie
 				if ( ligne.contains(",") )return saisie + " " + EntreeSortie.lire(ligne.substring(ligne.indexOf(",")+1), numero, interpreteur);
 			}catch(Exception e)
 			{
-				System.out.println("Erreur 101");
 				e.printStackTrace();
 			}
 		}
@@ -115,7 +136,7 @@ public class EntreeSortie
 	public static void resetHashMap(int n)
 	{
 		for(Integer i : EntreeSortie.hashMap.keySet())
-			if(i>n)EntreeSortie.hashMap.get(i).clear();
+			if(i>n)EntreeSortie.hashMap.get(i).clear();	
 	}
 
 	/**

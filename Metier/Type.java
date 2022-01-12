@@ -1,5 +1,8 @@
 package AlgoPars.Metier;
 
+/**
+ * Classe contenant les chaines static pour uniformer les types
+ */
 public class Type
 {
 	public static final String ENTIER  = "entier"              ; 

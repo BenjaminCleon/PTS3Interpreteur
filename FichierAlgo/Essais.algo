@@ -6,19 +6,19 @@ constante:
 	BOOLEAN  <-- false
 	CHAR     <-- 'C'
 variable:
-    s : tableau[5] de chaines de caractères 
+    s : tableau[5][4] de chaines de caractères 
     t : booléen
 	u,v: chaine de caractères
 	w: caractère
 	x: entier
 	y: entier
+	a: entier
 	z: booléen
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
 
-	x <-- 1
-
-	y <-- 5
+	lire ( s[0][1] )
+	y <-- s[4][1] <-- s[0][2] <-- 5
 	tq y < 20 faire
 		si y div 3 = 3 alors
 			y <-- y + 4
@@ -37,7 +37,7 @@ DEBUT
 		ecrire ( "Test deux instructions 2" );
 	fsi	
 
-	s[4] <-- aujourdhui()
+	s[4][0] <-- aujourdhui()
 	x <-- -82
 	x <-- |x|
 	x <-- |-48|
@@ -78,11 +78,10 @@ DEBUT
 
 	w <-- car(ord('A')+17)
 
-	s[0] <-- 'e'
-	s[1] <-- 'd'
-	s[2] <-- 'c'
-	s[3] <-- 'b'
-	s[4] <-- 'a'
+	s[0][0] <-- "e"
+	s[1][1] <-- "d"
+	s[2][2] <-- "c"
+	s[3][3] <-- "b"
 	
 	u <-- "Yo" © " Alan" // test
 	

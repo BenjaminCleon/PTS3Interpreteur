@@ -1,3 +1,7 @@
+/**
+ * @author 
+ */
+
 package AlgoPars.Metier;
 
 import java.io.File;
@@ -10,11 +14,19 @@ import java.util.Scanner  ;
 import java.awt.datatransfer.StringSelection;
 import java.awt.Toolkit;
 
+/**
+ * Classe permettant de gérer les données devant être suivies
+ */
 public class GestionDonnee
 {
-	private ArrayList<String> lstVar ;
-	private Interpreteur interpreteur;
+	private ArrayList<String> lstVar ; // Liste des variables à suivre
+	private Interpreteur interpreteur; // L'interpreteur qui possède l'instance en cours
 	
+	/**
+	 * Lit le fichier .var au même nom que le fichier algo, s'il existe
+	 * @param nomFichier
+	 * @param interpreteur
+	 */
 	public GestionDonnee (String nomFichier, Interpreteur interpreteur)
 	{
 		this.lstVar       = new ArrayList<String>();
@@ -22,7 +34,7 @@ public class GestionDonnee
 
 		File fichier = new File (nomFichier + ".var" );
 		
-		if (fichier.exists())
+		if (fichier.exists()) // si le fichier existe
 		{
 			try
 			{
@@ -38,10 +50,16 @@ public class GestionDonnee
 		}
 	}
 	
+	/**
+	 * Retourne la liste des variables devant être traitées
+	 * @return
+	 * 		variables devant être traitées
+	 */
 	public ArrayList<String> getListeVariable()
 	{
 		return this.lstVar;
 	}
+
 	/**
 	 * Retourne les données étant à tracer
 	 * @return
@@ -58,6 +76,11 @@ public class GestionDonnee
 		return sRet;
 	}
 	
+	/**
+	 * Pour récupèrer les détails de la trace des variables
+	 * @return
+	 *    la trace des variables
+	 */
 	public String getDonneesTab () 
 	{
 		String sRet = "";
@@ -97,6 +120,9 @@ public class GestionDonnee
 		return sRet;
 	}
 	
+	/**
+	 * Pour obtenir une copie de la trace dans le presse  papier
+	 */
 	public void traceCopie ()
 	{
 		String sRet = "";
@@ -119,6 +145,11 @@ public class GestionDonnee
 		copiePressePapier(sRet);
 	}
 	
+	/**
+	 * Retourne la trace des variables
+	 * @return 
+	 * 			la trace des variables
+	 */
 	public String traceVar(String var)
 	{
 		String sRet = "";
@@ -135,7 +166,7 @@ public class GestionDonnee
 		Donnee tmp = this.interpreteur.getDonnee(var);
 		dimension = tmp.getDimension();
 
-		if ( dimension >= 1 )
+		if ( dimension >= 1 ) // si c'est un tableau
 		{
 			type = "Tableau d";
 			switch ( tmp.getType() )
@@ -156,6 +187,8 @@ public class GestionDonnee
 		if ( dimension == 0 )
 		{
 			String val = String.valueOf(tmp.getValeur());
+
+			// actualise le type pour les booléens
 			if ( tmp.getType().equals(Type.BOOLEEN)) 
 			{
 				if ( val.equals("true"))val = "vrai";
@@ -166,7 +199,7 @@ public class GestionDonnee
 			for(int i=0; i < 56; i++) sRet += "¨";	
 		}
 		else
-		{
+		{ // cas ou c'est un tableau 
 			String ligneTab   = "";
 			String ligneIndice= "";
 			int dim1, dim2, dim3;
@@ -230,11 +263,23 @@ public class GestionDonnee
 		return sRet + "\n";
 	}
 	
+	/**
+	 * Recupère le détail d'une variable en particulier
+	 * @param var
+	 *    détail de var
+	 */
 	public void traceVariableCopie(String var)
 	{
 		copiePressePapier(traceVar(var));
 	}
 	
+	/**
+	 * Ajour d'une ligne pour le terminal
+	 * @param ligneTab
+	 * @param ligneIndice
+	 * @return
+	 *    la nouvelle ligne avec l'affichage à jour
+	 */
 	public String ajoutLigne (String ligneTab, String ligneIndice)
 	{
 		String sRet = "";
@@ -246,7 +291,12 @@ public class GestionDonnee
 		
 		return sRet;
 	}
-		
+	
+	/**
+	 * Passe la chaine en paramètre dans le presse papier
+	 * @param s
+	 *    chaine à passer dans le presse papier
+	 */
 	public void copiePressePapier (String s)
 	{
 		try 

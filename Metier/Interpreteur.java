@@ -53,10 +53,10 @@ public class Interpreteur
 	private boolean enComm;
 	private boolean commOk;
 
-	private Stack<Boolean>    lstStructureConditionnelle;
-	private Stack<Boolean> lstStructureConditionnelleAlt;
-	private Stack<Boolean>                  lstCondition;
-	private Stack<Integer>           lstLigneDebutBoucle;
+	private Stack<Boolean>    lstStructureConditionnelle; // Liste des booléens pour la structure conditionnelle
+	private Stack<Boolean> lstStructureConditionnelleAlt; // Pour la structure conditionnelle alternative
+	private Stack<Boolean>                  lstCondition; // Liste des conditions valides ou non
+	private Stack<Integer>           lstLigneDebutBoucle; // Numéro de la ligne ou il y a un début de boucle
 
 	private GestionDonnee gestionDonnee; // permet de gérer les données souhaitant être traiter
 
@@ -116,6 +116,11 @@ public class Interpreteur
 		this.numeroLigne = numeroLigne;
 	}
 
+	/**
+	 * retourne la liste des variables
+	 * @return
+	 *   liste des variables
+	 */
 	public ArrayList<String> getListeVariable()
 	{
 		return this.gestionDonnee.getListeVariable();
@@ -136,13 +141,14 @@ public class Interpreteur
 		int indexComment;
 		boolean condition, structureConditionnelle, structureConditionnelleAlt;
 
-		if (n < this.lstContenu.size() && n >= 0)
+		if (n < this.lstContenu.size() && n >= 0) // si nous sommes bien dans un intervalle valide
 		{
 			ligneAInterpreter = this.lstContenu.get(n);
 
 			this.commOk = true;
-			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
+			ligneAInterpreter = this.commenter(this.lstContenu.get(n)); // gestion des commentaires pour la ligne
 
+			// mise à jour pour les structures conditionnelles
 			condition                  =  true;
 			structureConditionnelle    = false;
 			structureConditionnelleAlt = false;
@@ -156,44 +162,51 @@ public class Interpreteur
 			if (!this.lstStructureConditionnelleAlt.isEmpty())
 				structureConditionnelleAlt = this.lstStructureConditionnelleAlt.peek();
 
+			// si la ligne peut-être interprété normalement
 			if (condition && !structureConditionnelle && !structureConditionnelleAlt
 					|| structureConditionnelle && condition || structureConditionnelleAlt && !condition)
 			{
 				indexComment = ligneAInterpreter.indexOf("//");
 
+				// commentaire sur une ligne
 				if (indexComment != -1)
 					ligneAInterpreter = ligneAInterpreter.substring(0, indexComment);
 
-				if (ligneAInterpreter.equals("DEBUT"))
+				if (ligneAInterpreter.equals("DEBUT")) // mot clé DEBUT
 					this.lectureConstante = this.lectureVariable = false;
 
+				// prend connaissance que l'on commence la déclaration de variable
 				if (ligneAInterpreter.equals("variable:"))
 				{
 					this.lectureConstante = false;
 					this.lectureVariable = true;
 				}
+
+				// prend connaisssance que l'on commence la déclaration de constante
 				if (ligneAInterpreter.equals("constante:"))
 					this.lectureConstante = true;
 
+				// dans le cas ou nous devons créer une donnée
 				if ((this.lectureVariable || this.lectureConstante) &&
 						!(ligneAInterpreter.equals("constante:") || ligneAInterpreter.equals("variable:")))
 				{
 					this.creerDonnee( ligneAInterpreter );
 				}
 
-				if (ligneAInterpreter.contains("ecrire"))
+				if (ligneAInterpreter.contains("ecrire")) // ecrire à l'ecran
 					this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
 
-				if (ligneAInterpreter.contains("<--"))
+				if (ligneAInterpreter.contains("<--")) // affectation
 					this.affecter(ligneAInterpreter);
 
-				if (ligneAInterpreter.contains("lire"))
+				if (ligneAInterpreter.contains("lire")) // lire une valeur pour lui affecter
 				{
 					this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n, this));
 					this.traceLire.add(n);
 				}
 			}
 
+			// getsion du si alors
 			if (ligneAInterpreter.matches("\\s*si .* alors"))
 			{
 				ligneAInterpreter = ligneAInterpreter.replace("si", "");
@@ -207,6 +220,7 @@ public class Interpreteur
 					this.lstCondition.add(false);
 			}
 
+			// gestion du sinon
 			if (ligneAInterpreter.matches("\\s*sinon$"))
 			{
 				this.lstStructureConditionnelleAlt.pop();
@@ -222,6 +236,7 @@ public class Interpreteur
 				this.lstCondition.pop();
 			}
 
+			// cas d'une boucle de type tq faire
 			if (ligneAInterpreter.matches("\\s*tq .* faire"))
 			{
 				this.estDansBoucle = true;
@@ -249,6 +264,7 @@ public class Interpreteur
 				}
 			}
 
+			// fin d'une boucle
 			if (ligneAInterpreter.contains("ftq"))
 			{
 				this.cptIteration++;
@@ -606,7 +622,6 @@ public class Interpreteur
 
 			for (int i = 0; i < lSplit.length; i++)
 			{
-				// System.out.println("l1" + l[1]); //l[1] est le probleme car il prend le l[1]
 				// de la ligne ou on est
 				nom = lSplit[i].replaceAll(" |\t", "");
 
@@ -630,44 +645,43 @@ public class Interpreteur
 					for (int cpt = 0; cpt < taille.length; cpt++)
 						dims[cpt] = Integer.parseInt(taille[cpt]);
 
+					// création de tableau
 					switch (this.getType(ligne))
 					{
-						case Type.ENTIER -> tmp = new Donnee(nom, type, new ArrayList<Integer>(), this.lectureConstante,
-								dims);
-						case Type.REEL -> tmp = new Donnee(nom, type, new ArrayList<Double>(), this.lectureConstante,
-								dims);
-						case Type.BOOLEEN -> tmp = new Donnee(nom, type, new ArrayList<Boolean>(),
-								this.lectureConstante, dims);
-						case Type.CHAR -> tmp = new Donnee(nom, type, new ArrayList<Character>(), this.lectureConstante,
-								dims);
-						default -> tmp = new Donnee(nom, type, new ArrayList<String>(), this.lectureConstante, dims);
+						case Type.ENTIER  -> tmp = new Donnee(nom, type, new ArrayList<Integer>  (), this.lectureConstante,dims);
+						case Type.REEL    -> tmp = new Donnee(nom, type, new ArrayList<Double>   (), this.lectureConstante,dims);
+						case Type.BOOLEEN -> tmp = new Donnee(nom, type, new ArrayList<Boolean>  (), this.lectureConstante,dims);
+						case Type.CHAR    -> tmp = new Donnee(nom, type, new ArrayList<Character>(), this.lectureConstante,dims);
+						default           -> tmp = new Donnee(nom, type, new ArrayList<String>   (), this.lectureConstante,dims);
 					}
 					this.lstDonnee.add(tmp);
 				}
 				else
-				{
+				{ // cas classique
 					switch (this.getType(ligne))
 					{
-						case Type.ENTIER -> tmp = new Donnee(nom, Type.ENTIER, null, false);
-						case Type.REEL -> tmp = new Donnee(nom, Type.REEL, null, false);
-						case Type.CHAR -> tmp = new Donnee(nom, Type.CHAR, null, false);
+						case Type.ENTIER  -> tmp = new Donnee(nom, Type.ENTIER , null, false);
+						case Type.REEL    -> tmp = new Donnee(nom, Type.REEL   , null, false);
+						case Type.CHAR    -> tmp = new Donnee(nom, Type.CHAR   , null, false);
 						case Type.BOOLEEN -> tmp = new Donnee(nom, Type.BOOLEEN, null, false);
-						default -> tmp = new Donnee(nom, Type.CHAINE, null, false);
+						default           -> tmp = new Donnee(nom, Type.CHAINE , null, false);
 					}
 				}
 				this.lstDonnee.add(tmp);
 			}
 		}
-		if (this.lectureConstante) {
+		if (this.lectureConstante) // si ajout de constante
+		{
 			String[] l = ligne.split("<--");
 			nom = l[0].replaceAll(" |\t", "");
 			String val = Util.getValeur(ligne, true, null);
-			switch (this.getType(ligne)) {
-				case Type.ENTIER -> tmp = new Donnee(nom, Type.ENTIER, Integer.parseInt(val), true);
-				case Type.REEL -> tmp = new Donnee(nom, Type.REEL, Double.parseDouble(val), true);
-				case Type.CHAR -> tmp = new Donnee(nom, Type.CHAR, val.charAt(0), true);
+			switch (this.getType(ligne))
+			{
+				case Type.ENTIER  -> tmp = new Donnee(nom, Type.ENTIER , Integer.parseInt(val), true);
+				case Type.REEL    -> tmp = new Donnee(nom, Type.REEL   , Double.parseDouble(val), true);
+				case Type.CHAR    -> tmp = new Donnee(nom, Type.CHAR   , val.charAt(0), true);
 				case Type.BOOLEEN -> tmp = new Donnee(nom, Type.BOOLEEN, Boolean.parseBoolean(val), true);
-				default -> tmp = new Donnee(nom, Type.CHAINE, val, true);
+				default           -> tmp = new Donnee(nom, Type.CHAINE , val, true);
 			}
 			this.lstDonnee.add(tmp);
 		}
@@ -681,35 +695,48 @@ public class Interpreteur
 	private void affecter(String ligne)
 	{
 		Integer[] taille;
-		String indices = ligne;
+		String indices;
 		String[] t;
+		String[] nomSplit;
 
-		String nomVar = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
+		String nomVar;
 		String value = Util.getValeur(ligne, false, this);
-		int ind = -1;
+		// = ligne.substring(0, ligne.indexOf("<--")).replaceAll(" |\t", "");
+		nomSplit = ligne.split("<--");
+		for ( int i=0;i<nomSplit.length-1;i++)
+		{
+			nomVar = nomSplit[i].replaceAll(" |\t", "");
 
-		Donnee tmp = null;
+			Donnee tmp = null;
+			taille     = null;
 
-		taille = null;
+			// si dans un tableau
+			if (nomVar.contains("["))
+			{
+				nomVar = nomVar.substring(0, nomVar.indexOf("["));
 
-		if (nomVar.contains("[")) {
-			nomVar = nomVar.substring(0, nomVar.indexOf("["));
+				indices = ligne.substring(0, ligne.indexOf("<--") );
+				indices = indices.substring(indices.indexOf("[") + 1, indices.lastIndexOf("]")).replaceAll("\\[|\\]$", "");
+				t = indices.split("\\]");
+				taille = new Integer[t.length];
+				for (int cpt = 0; cpt < t.length; cpt++)
+					taille[cpt] = Integer.parseInt(t[cpt]);
+			}
 
-			indices = indices.substring(indices.indexOf("[") + 1, indices.lastIndexOf("]")).replaceAll("\\[|\\]$", "");
-			t = indices.split("\\]");
-			taille = new Integer[t.length];
-			for (int cpt = 0; cpt < t.length; cpt++)
-				taille[cpt] = Integer.parseInt(t[cpt]);
+			tmp = this.getDonnee(nomVar);
+
+			if (taille != null)
+				Util.setValeurBySwitch(tmp, value, taille);
+			else
+				Util.setValeurBySwitch(tmp, value);
+
+			ligne = ligne.substring(ligne.indexOf("<--") + 3);
 		}
-
-		tmp = this.getDonnee(nomVar);
-
-		if (taille != null)
-			Util.setValeurBySwitch(tmp, value, taille);
-		else
-			Util.setValeurBySwitch(tmp, value);
 	}
 
+	/**
+	 * Permet la gestion de commentaire
+	 */
 	public String commenter(String ligne)
 	{
 		if (ligne.contains("/*") && ligne.contains("*/")) // si ça contient des commentaires et qu'il y a l'ouverture et la fermeture
@@ -812,16 +839,26 @@ public class Interpreteur
 		this.controleur.actualiser();
 	}
 
+	/**
+	 * trace des variables dans le presse papier
+	 */
 	public void trace()
 	{
 		this.gestionDonnee.traceCopie();
 	}
 
+	/**
+	 * Retourne le detail d'une variable
+	 * @return le detail d'une variables
+	 */
 	public String getTraceVariable(String var)
 	{
 		return this.gestionDonnee.traceVar( var );
 	}
 
+    /**
+	 * met le detail d'une variable dans le presse papier
+	 */
 	public void traceVariableCopie(String var)
 	{
 		this.gestionDonnee.traceVariableCopie( var );
