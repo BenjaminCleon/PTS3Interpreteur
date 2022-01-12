@@ -44,7 +44,7 @@ public class Controleur
 	}
 	public void setNumLigne(int n)
 	{
-		this.numLigne = n;
+		if ( this.numLigne >= 0)this.numLigne = n;
 	}
 	/*
 	 * Lecture de l'utilisateur pour se deplacer dans le code
@@ -60,9 +60,9 @@ public class Controleur
 				this.ihm.afficher(this.numLigne);
 				
 				line = Console.lireString();//input.nextLine();
-				if(line.matches("DET var <\\w*>"))
+				if(line.matches("DET var \\w*"))
 				{
-					String var=line.substring(9,(line.length()-1));
+					String var=line.substring(8,(line.length()));
 					System.out.println (this.metier.getTraceVariable(var));
 					
 					line = Console.lireString();//input.nextLine();
@@ -77,7 +77,7 @@ public class Controleur
 					switch(line.toUpperCase())
 					{
 						case ""  -> {this.metier.interpreter(++this.numLigne);}
-						case "B" -> {this.metier.goTo(--this.numLigne);}
+						case "B" -> {this.setNumLigne(--this.numLigne);this.metier.goTo(this.numLigne);}
 						case "GO BK" -> {this.metier.goNextBk(this.numLigne);}
 						default ->
 							{

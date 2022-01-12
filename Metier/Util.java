@@ -32,7 +32,7 @@ public class Util
 	private static Queue<String> file;
 	private static Stack<String> pile;
 
-	private static final String REGEX_OP ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|\\bxou\\b|\\bou\\b|\\bet\\b|\\bnon\\b|\\+|-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\d*\\||\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
+	private static final String REGEX_OP ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|\\bxou\\b|\\bou\\b|\\bet\\b|\\bnon\\b|\\+|-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\w*\\||\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
 	private static final String REGEX_PRIMI = "(\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
 	private static final String REGEX_DATE  = "(\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b){1}";
 	private static final String TRUE  = "true" ;
@@ -181,7 +181,7 @@ public class Util
 
 		System.out.println(fileRet);
 
-		return Util.evaluerEPO(fileRet);
+		return Util.evaluerEPO(fileRet, interpret);
 	}
 
 	private static void ajouterOperateurAPile(String operateur)
@@ -205,12 +205,13 @@ public class Util
 		}
 	}
 
-    private static String evaluerEPO(Queue<String> fileRet)
+    private static String evaluerEPO(Queue<String> fileRet, Interpreteur interpret)
     {
         Stack<String> pileArith = new Stack<String>();
         ArrayList<Boolean> pileLogique = new ArrayList<Boolean>();
         Stack<String> lstOpeLogique = new Stack<String>();
         String val1, val2;
+		Donnee dataTmp;
 
         for ( String val : fileRet )
         {
@@ -258,10 +259,10 @@ public class Util
 					}
 					else
 					{
-						if(val.matches("(|\\|-?\\d*\\|){1}"))
+						if(val.matches("(|\\|-?\\w*\\|){1}"))
 						{
 							val=val.replace('|', ' ');
-							pileArith.add(String.valueOf( Math.abs(Double.parseDouble(val.trim())) ));
+							pileArith.add(String.valueOf( Math.abs(Double.parseDouble(Util.expression(val.trim(), interpret)))));
 						}
 						else
 						{

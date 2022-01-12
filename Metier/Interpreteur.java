@@ -78,7 +78,7 @@ public class Interpreteur
 		this.bw               = false;
 		this.structureConditionnelle = false;
 		this.structureConditionnelleAlt = false;
-		this.condition = false;
+		this.condition = true;
 		
 		this.enComm = false;
 		this.commOk = true ;
@@ -113,7 +113,9 @@ public class Interpreteur
 			this.commOk = true;
 			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
 			
-			if(!this.structureConditionnelle||this.structureConditionnelle && this.condition||this.structureConditionnelleAlt && ! this.condition)
+			if(this.condition && !this.structureConditionnelle &&
+			   !this.structureConditionnelleAlt||this.structureConditionnelle &&
+			    this.condition||this.structureConditionnelleAlt && !this.condition)
 			{				
 				indexComment = ligneAInterpreter.indexOf("//");
 				
@@ -149,21 +151,18 @@ public class Interpreteur
 			
 			if ( ligneAInterpreter.matches("\\s*si .* alors") )
 			{
-				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
-				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-				
-				if ( ligneAInterpreter.contains("lire"  ) )
-				{ 
-					this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n, this));
-					this.traceLire.add(n); 
-				}
 				ligneAInterpreter = ligneAInterpreter.replace("si", "");
 				ligneAInterpreter = ligneAInterpreter.replace("alors", "");
 				this.structureConditionnelle=true;
 				if( Util.expression(ligneAInterpreter, this).matches("true") ) this.condition=true;
 				else this.condition=false;
 			}
-			if ( ligneAInterpreter.matches("\\s*sinon$") ) this.structureConditionnelleAlt=true;
+			if ( ligneAInterpreter.matches("\\s*sinon$") )
+			{
+				this.structureConditionnelleAlt=true;
+				this.structureConditionnelle   =false;
+			}
+
 			if ( ligneAInterpreter.contains("fsi"  ) ) this.structureConditionnelle=this.structureConditionnelleAlt=false;
 		}
 
@@ -178,6 +177,7 @@ public class Interpreteur
 	public void reset()
 	{
 		this.bw = true;
+		this.lectureConstante = this.lectureVariable = false;
 		this.lstDonnee       = new ArrayList<Donnee> ();
 		this.traceDexecution = new ArrayList<String> ();
 	}

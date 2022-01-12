@@ -117,74 +117,89 @@ public class GestionDonnee
 	
 	public String traceVar(String var)
 	{
-		System.out.println();
-		
 		String sRet = "";
+		String type = "";
 		
 		for(int i=0; i < 11; i++) sRet += "¨";
-		sRet += "\n| DONNEES |\n";
+		sRet +=  "\n| DONNEES |\n";
 			
-		for(int i=0; i < 85; i++) sRet += "¨";
-		sRet += "\n|     NOM         |                           VALEUR                                |\n";
+		for(int i=0; i < 56; i++) sRet += "¨";
+		sRet += "\n|     NOM         |                 TYPE               |\n";
 		
 		Donnee tmp = this.interpreteur.getDonnee(var);
-		sRet += "| " + String.format("%-15s", var) + " | " /*+ String.format("%63s", "") + " |\n" */;
-		
-		System.out.println(tmp.getType());
-		
-		switch(tmp.getType())
+
+		if ( tmp.getValeur() instanceof List<?> )
 		{
-			case "chaine de caractères" ->
+			type = "Tableau d";
+			switch ( tmp.getType() )
 			{
-				String val = String.valueOf(tmp.getValeur());
-				sRet += String.format ("%63s", val) + " |\n";	
-			}
-			default ->
-			{
-				if(tmp.getValeur() instanceof List)
-				{
-					String ligneTab= "";
-					String ligneIndice= "";
-					
-					List<Object> tab = (List<Object>)(tmp.getValeur());
-					for(int n=0; n < tab.size(); n++)
-					{
-						String sCase = "";
-						
-						if(tmp.getType().equals("caractère")) sCase = "['" + tmp.getValeurTableau(n) + "']";
-						else sCase = "[" + tmp.getValeurTableau(n) + "]";
-						
-						if((ligneTab.length() + sCase.length()) < 61) 
-						{
-							ligneTab += sCase;
-							int milieu = (int)(sCase.length() / 2);
-							
-							for(int i=0; i < milieu; i++) ligneIndice += " ";
-							ligneIndice += tab.indexOf(tmp.getValeurTableau(n));
-							
-							if(tab.indexOf(tmp.getValeurTableau(n)) > 9 || milieu % 2 !=0 && milieu > 1) milieu--;
-							for(int i=0; i < milieu; i++) ligneIndice += " ";
-						}
-						else
-						{
-							sRet += ajoutLigne(ligneTab, ligneIndice);
-							ligneTab = ligneIndice = "";
-						}
-					}
-					
-					if(! ligneTab.isEmpty())
-					{
-						sRet += ajoutLigne(ligneTab, ligneIndice);
-						ligneTab = ligneIndice = "";
-					}
-					
-					String s = " | " + String.format("%-15s", "") + " | ";
-					sRet = sRet.replace(s, " ");
-				}
+				case Type.ENTIER -> type += "'entiers";
+				default          -> type += "e " + tmp.getType();
 			}
 		}
+		else
+			type = (String)tmp.getValeur();
 
-		for(int i=0; i < 85; i++) sRet += "¨";
+		sRet += "| " + String.format("%-15s", var) + " | " + String.format("%35s", type) + "|\n";
+		for(int i=0; i < 56; i++) sRet += "¨";
+		sRet += "\n¨¨¨¨¨¨¨¨\n|Valeur|\n¨¨¨¨¨¨¨¨\n";
+		for(int i=0; i < 56; i++) sRet += "¨";
+		sRet += "\n";
+
+		if ( !(tmp.getValeur() instanceof List<?>) )
+		{
+			String val = String.valueOf(tmp.getValeur());
+			if ( tmp.getType().equals(Type.BOOLEEN)) 
+			{
+				if ( val.equals("true"))val = "vrai";
+				else                    val = "faux";
+			}
+
+			sRet += String.format ("|  %-50s  |\n", val);
+		}
+		else
+		{
+			String ligneTab= "";
+			String ligneIndice= "";
+			
+			List<Object> tab = (List<Object>)(tmp.getValeur());
+			for(int n=0; n < tab.size(); n++)
+			{
+				String sCase = "";
+				
+				if(tmp.getType().equals(Type.CHAR)) sCase = "['" + tmp.getValeurTableau(n) + "']";
+				else sCase = "[" + tmp.getValeurTableau(n) + "]";
+				
+				if((ligneTab.length() + sCase.length()) < 61) 
+				{
+					ligneTab += sCase;
+					int milieu = (int)(sCase.length() / 2);
+					
+					for(int i=0; i < milieu; i++) ligneIndice += " ";
+					ligneIndice += tab.indexOf(tmp.getValeurTableau(n));
+					
+					if(tab.indexOf(tmp.getValeurTableau(n)) > 9 || milieu % 2 !=0 && milieu > 1) milieu--;
+					for(int i=0; i < milieu; i++) ligneIndice += " ";
+				}
+				else
+				{
+					sRet += ajoutLigne(ligneTab, ligneIndice);
+					ligneTab = ligneIndice = "";
+				}
+			}
+			
+			if(! ligneTab.isEmpty())
+			{
+				sRet += ajoutLigne(ligneTab, ligneIndice);
+				ligneTab = ligneIndice = "";
+			}
+			
+			String s = " | " + String.format("%-15s", "") + " | ";
+			sRet = sRet.replace(s, " ");
+		}
+
+		for(int i=0; i < 56; i++) sRet += "¨";
+
 		sRet += "\n";
 		
 		return sRet;

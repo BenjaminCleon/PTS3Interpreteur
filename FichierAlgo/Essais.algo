@@ -6,7 +6,7 @@ constante:
 	BOOLEAN  <-- false
 	CHAR     <-- 'C'
 variable:
-    s : tableau[5] de caractères
+    s : tableau[5] de chaines de caractères 
     t : booléen
 	u,v: chaine de caractères
 	w: caractère
@@ -15,7 +15,7 @@ variable:
 	z: booléen
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
-	
+		
 	y <-- 5
 	tq y < 20 faire
 		y <-- y + 2
