@@ -145,6 +145,11 @@ public class CUI
 			input = Console.lireChar();
 	}
 
+	/**
+	 * Permet d'afficher la chaine en paramètre avec le menu associé
+	 * @param s
+	 * 	la chaine à afficher
+	 */
 	public void afficherChaineMenu(String s)
 	{
 		Console.effacerEcran();

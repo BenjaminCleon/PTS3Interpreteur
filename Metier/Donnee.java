@@ -70,7 +70,7 @@ public class Donnee
 	 */
 	public Object getValeur(Integer... args)
 	{
-		if ( this.valeur instanceof List )return this.getValeurTableau(args);
+		if ( this.valeur instanceof List && args.length > 0 )return this.getValeurTableau(args);
 
 		return this.valeur;
 	}
@@ -82,15 +82,14 @@ public class Donnee
 	 */
 	public Object getValeurTableau(Integer... args)
 	{
-		if ( ((List)this.valeur).get(0) instanceof List )
+		Object valeur = null;
+		switch(this.dimension)
 		{
-			if ( ((List)((List)this.valeur).get(0)) instanceof List )
-				return ((List)((List)((List)this.valeur).get(args[0])).get(args[1])).get(args[2]);
-			else
-				return ((List)((List)this.valeur).get(args[0])).get(args[1]);
+			case 1  -> valeur = ((List)this.valeur).set(args[0], valeur);
+			case 2  -> valeur = ((List)((List)this.valeur).get(args[0])).set(args[1], valeur);
+			case 3  -> valeur = ((List)((List)((List)this.valeur).get(args[0])).get(args[1])).set(args[2], valeur);
 		}
-		else
-			return ((List)this.valeur).get(args[0]);
+		return valeur;
 	}
 
 	/**

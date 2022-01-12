@@ -53,33 +53,23 @@ public class Interpreteur
 
 	private boolean estDansBoucle;
 	
-	private Stack<Boolean> lstStructureConditionnelle;
+	private Stack<Boolean> lstStructureConditionnelle   ;
 	private Stack<Boolean> lstStructureConditionnelleAlt;
 	private Stack<Boolean> lstCondition;
 	
 	private Stack<Integer> lstLigneDebutBoucle;
 	
-	/*private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
+	private boolean structureConditionnelle; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle
 	private boolean structureConditionnelleAlt; // permet de connaitre si nous sommes à l'intérieur d'une structure conditionnelle alternative
 	private boolean condition; // permet de connaitre le résultat du test pour entrer dans la structure conditionnelle
 	
-	private boolean bSelon; // permet de savoir si nous sommes dans un selon
-
-	//booléens qui permettent de savoir si il y a des commentaires /* */
+	//booléens qui permettent de savoir si il y a des commentaires 
 	private boolean enComm;
 	private boolean commOk;
 
 	private GestionDonnee gestionDonnee; // permet de gérer les données souhaitant être traiter
 
 	private boolean estDansCommentaire; // permet de savoir si nous sommes dans des commentaires
-
-	private String caseSelon; // element de comparaison pour les selons
-	private boolean estDansLeCas; // Si dans un selon nous sommes dans un cas
-
-	private boolean condition;
-	private boolean structureConditionnelle   ;	
-	private boolean structureConditionnelleAlt;
-	private boolean bSelon                    ;
 
 	/**
 	 * Constructeur principale
@@ -106,8 +96,6 @@ public class Interpreteur
 		this.bw               = false;
 		this.structureConditionnelle    = false;
 		this.structureConditionnelleAlt = false;
-		this.estDansLeCas               = false;
-		this.bSelon                     = false;
 		this.condition = true;
 
 		this.estDansBoucle = false;
@@ -152,7 +140,7 @@ public class Interpreteur
 		
 		if ( n < this.lstContenu.size() && n >= 0)
 		{
-			if ( !this.estDansLeCas )ligneAInterpreter = this.lstContenu.get(n);
+			ligneAInterpreter = this.lstContenu.get(n);
 			
 			this.commOk = true;
 			ligneAInterpreter = this.commenter(this.lstContenu.get(n));
@@ -185,28 +173,13 @@ public class Interpreteur
 				{
 					this.creerDonnee(ligneAInterpreter);
 				}
-				else
-				{				
-					this.interpreter(n, ligneAInterpreter);
-					if ( this.lectureVariable )
-					{
-						String newLine = "";
 
-						if ( Util.expression(ligneAInterpreter.substring(ligneAInterpreter.indexOf("cas")+4, ligneAInterpreter.indexOf(":")), this ).equals(this.caseSelon) )
-						{
-							this.estDansLeCas = true;
-							newLine           = ligneAInterpreter.substring(ligneAInterpreter.indexOf(":"));
-						}
-						else if ( ligneAInterpreter.matches("^ *cas") )
-							this.estDansLeCas = false;
-						else
-							newLine = ligneAInterpreter;
-
-						if ( this.estDansLeCas )
-						{
-							this.interpreter(n, ligneAInterpreter);
-						}
-					}
+				if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
+				if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
+				if ( ligneAInterpreter.contains("lire"  ) )
+				{
+					this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n,  this));
+					this.traceLire.add(n);
 				}
 			}
 			
@@ -283,35 +256,6 @@ public class Interpreteur
 		this.lignePrc = n;
 	}
 
-	private void interpreter(int n, String ligneAInterpreter)
-	{
-		if ( ligneAInterpreter.contains("ecrire") )this.traceDexecution.add(EntreeSortie.ecrire(ligneAInterpreter, this));
-		if ( ligneAInterpreter.contains("<--"   ) )this.affecter(ligneAInterpreter);
-		if ( ligneAInterpreter.contains("lire"  ) )
-		{
-			this.traceDexecution.add(EntreeSortie.lire(ligneAInterpreter, n,  this));
-			this.traceLire.add(n);
-		}
-		if ( ligneAInterpreter.matches("\\s*si .* alors") )
-		{
-			ligneAInterpreter = ligneAInterpreter.replace("si", "");
-			ligneAInterpreter = ligneAInterpreter.replace("alors", "");
-			this.structureConditionnelle=true;
-			if( Util.expression(ligneAInterpreter, this).matches("true") ) this.condition=true;
-			else this.condition=false;
-		}
-		if ( ligneAInterpreter.matches("\\s*sinon$") )
-		{
-			this.structureConditionnelleAlt=true;
-			this.structureConditionnelle   =false;
-		}
-
-		if ( ligneAInterpreter.contains("fsi"  ) ) this.structureConditionnelle=this.structureConditionnelleAlt=false;
-		
-		if ( ligneAInterpreter.contains("selon") && !ligneAInterpreter.contains("fselon") )this.commencerSelon(ligneAInterpreter);
-		if ( ligneAInterpreter.contains("fselon")                                         )this.bSelon = this.estDansLeCas = false;
-	}
-	
 	public void arreterBoucle(int iteration, int numeroLigne)
 	{
 		System.out.println("pas dans boucle, cptIteration-iteration = " + (this.cptIteration-iteration));
@@ -338,23 +282,15 @@ public class Interpreteur
 		this.lectureConstante = false;
 		this.structureConditionnelle    = false;
 		this.structureConditionnelleAlt = false;
-		this.lectureVariable                     = false;
-		this.estDansLeCas               = false;
 		this.condition = true;
 		
 		this.enComm = false;
 		this.commOk = true ;
 
-		this.estDansCommentaire = false;
-		this.lstDonnee       = new ArrayList<Donnee> ();
-		this.traceDexecution = new ArrayList<String> ();
-	}
-
-	public void commencerSelon(String ligne)
-	{
-		this.lectureVariable = true;
-
-		this.caseSelon = Util.getValeur(ligne.substring(ligne.indexOf("selon")+6), false, this);
+		this.estDansCommentaire  = false;
+		this.lstDonnee           = new ArrayList<Donnee> ();
+		this.traceDexecution     = new ArrayList<String> ();
+		this.lstLigneDebutBoucle = new Stack<Integer>    ();
 	}
 
 	public void goTo(int n)
@@ -607,22 +543,26 @@ public class Interpreteur
 					
 					
 					String indices = ligne;
-					String[] t;
 					indices = indices.substring(indices.indexOf("[")+1, indices.lastIndexOf("]"));
 					indices = indices.replaceAll("\\[|\\]$", "");
-					t = indices.split("\\]");
-					Integer[] taille = new Integer[t.length];
-					for(int cpt=0; cpt<t.length; cpt++)taille[cpt] = Integer.parseInt(t[cpt]);
+
+					String[] taille = indices.split("\\]");
+					for(int cpt=0; cpt<taille.length; cpt++)
+						if ( this.getDonnee(taille[cpt]) != null )taille[cpt] = (this.getDonnee(taille[cpt]).getValeur()) + "";
+
+					Integer[] dims = new Integer[taille.length];
+					for(int cpt=0; cpt<taille.length; cpt++)
+						dims[cpt] = Integer.parseInt(taille[cpt]);
+
 					switch(this.getType(ligne))
 					{
-						case Type.ENTIER  -> tmp = new Donnee(nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
-						case Type.REEL    -> tmp = new Donnee(nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
-						case Type.BOOLEEN -> tmp = new Donnee(nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
-						case Type.CHAR    -> tmp = new Donnee(nom, type, new ArrayList<Character>(), this.lectureConstante, taille);
-						default           -> tmp = new Donnee(nom, type, new ArrayList<String>   (), this.lectureConstante, taille);
+						case Type.ENTIER  -> tmp = new Donnee(nom, type, new ArrayList<Integer>  (), this.lectureConstante, dims);
+						case Type.REEL    -> tmp = new Donnee(nom, type, new ArrayList<Double>   (), this.lectureConstante, dims);
+						case Type.BOOLEEN -> tmp = new Donnee(nom, type, new ArrayList<Boolean>  (), this.lectureConstante, dims);
+						case Type.CHAR    -> tmp = new Donnee(nom, type, new ArrayList<Character>(), this.lectureConstante, dims);
+						default           -> tmp = new Donnee(nom, type, new ArrayList<String>   (), this.lectureConstante, dims);
 					}
 					this.lstDonnee.add(tmp);
-					
 				}
 				else
 				{
@@ -669,6 +609,7 @@ public class Interpreteur
 		String value  = Util.getValeur(ligne, false, this);
 		int ind =-1;
 		
+		//System.out.println(nomVar + " |" + value + "|");
 
 		Donnee tmp = null;
 		
