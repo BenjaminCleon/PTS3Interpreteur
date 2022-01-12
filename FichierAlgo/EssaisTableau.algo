@@ -2,15 +2,11 @@ ALGORITHME EssaisTableau
 constante:
 	TAILLE <-- 8
 variable:
-    s: tableau[TAILLE] de caractères
+    s: tableau[9][2] de caractères
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
 
-<<<<<<< HEAD
-	s[0] <-- 'T'
-=======
-	s[0][3] <-- 'T'
-	ecrire ( s[0][3] )
->>>>>>> e7695f150173b4669af7fbf508d2503967539abb
+	s[0][1] <-- 'T'
 
+	ecrire ( s[0][1] )
 FIN

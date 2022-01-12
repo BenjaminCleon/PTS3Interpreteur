@@ -47,7 +47,7 @@ public class Interpreteur
 	private boolean lectureConstante; // permet de connaitre si nous sommes dans la déclaration des constantes
 	private boolean bw;
 	
-	private Stack<Boolean> lstStructureConditionnelle;
+	private Stack<Boolean> lstStructureConditionnelle   ;
 	private Stack<Boolean> lstStructureConditionnelleAlt;
 	private Stack<Boolean> lstCondition;
 	
@@ -209,7 +209,6 @@ public class Interpreteur
 					for(Integer i : this.lstLigneDebutBoucle)
 						if(i==n) present=true;
 					
-					
 					if(!present)
 					{
 						this.lstLigneDebutBoucle.add(n);
@@ -226,7 +225,6 @@ public class Interpreteur
 			{
 				if(this.lstCondition.peek())
 				{
-					System.out.println("Dans ftq :" + this.lstLigneDebutBoucle.peek());
 					interpreter(this.lstLigneDebutBoucle.pop());
 					
 					if(this.lstCondition.pop())
@@ -267,17 +265,16 @@ public class Interpreteur
 		this.enComm = false;
 		this.commOk = true ;
 
-		this.estDansCommentaire = false;
-		this.lstDonnee       = new ArrayList<Donnee> ();
-		this.traceDexecution = new ArrayList<String> ();
+		this.estDansCommentaire  = false;
+		this.lstDonnee           = new ArrayList<Donnee> ();
+		this.traceDexecution     = new ArrayList<String> ();
+		this.lstLigneDebutBoucle = new Stack<Integer>    ();
 	}
 
 	public void goTo(int n)
 	{
 		if ( n < 0 || n >= this.lstContenu.size() )return;
 		
-		
-
 		int courant = 1;
 		if( this.lignePrc > n )//Si on recule
 			this.reset();
@@ -287,7 +284,7 @@ public class Interpreteur
 		while(courant <= n)//Voir si <= ou pas
 		{
 			this.controleur.setNumLigne(courant);
-			this.interpreter(courant++);//++courant?
+			this.interpreter(courant++);
 		}
 		
 		this.resetHashMap(n);
@@ -522,22 +519,26 @@ public class Interpreteur
 					
 					
 					String indices = ligne;
-					String[] t;
 					indices = indices.substring(indices.indexOf("[")+1, indices.lastIndexOf("]"));
 					indices = indices.replaceAll("\\[|\\]$", "");
-					t = indices.split("\\]");
-					Integer[] taille = new Integer[t.length];
-					for(int cpt=0; cpt<t.length; cpt++)taille[cpt] = Integer.parseInt(t[cpt]);
+
+					String[] taille = indices.split("\\]");
+					for(int cpt=0; cpt<taille.length; cpt++)
+						if ( this.getDonnee(taille[cpt]) != null )taille[cpt] = (this.getDonnee(taille[cpt]).getValeur()) + "";
+
+					Integer[] dims = new Integer[taille.length];
+					for(int cpt=0; cpt<taille.length; cpt++)
+						dims[cpt] = Integer.parseInt(taille[cpt]);
+
 					switch(this.getType(ligne))
 					{
-						case Type.ENTIER  -> tmp = new Donnee(nom, type, new ArrayList<Integer>  (), this.lectureConstante, taille);
-						case Type.REEL    -> tmp = new Donnee(nom, type, new ArrayList<Double>   (), this.lectureConstante, taille);
-						case Type.BOOLEEN -> tmp = new Donnee(nom, type, new ArrayList<Boolean>  (), this.lectureConstante, taille);
-						case Type.CHAR    -> tmp = new Donnee(nom, type, new ArrayList<Character>(), this.lectureConstante, taille);
-						default           -> tmp = new Donnee(nom, type, new ArrayList<String>   (), this.lectureConstante, taille);
+						case Type.ENTIER  -> tmp = new Donnee(nom, type, new ArrayList<Integer>  (), this.lectureConstante, dims);
+						case Type.REEL    -> tmp = new Donnee(nom, type, new ArrayList<Double>   (), this.lectureConstante, dims);
+						case Type.BOOLEEN -> tmp = new Donnee(nom, type, new ArrayList<Boolean>  (), this.lectureConstante, dims);
+						case Type.CHAR    -> tmp = new Donnee(nom, type, new ArrayList<Character>(), this.lectureConstante, dims);
+						default           -> tmp = new Donnee(nom, type, new ArrayList<String>   (), this.lectureConstante, dims);
 					}
 					this.lstDonnee.add(tmp);
-					
 				}
 				else
 				{

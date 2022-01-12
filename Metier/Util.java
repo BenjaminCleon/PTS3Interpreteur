@@ -153,13 +153,8 @@ public class Util
 		while ( ((operateur = nextOperateur(interpret)) != null || ligneTmp.equals(operateur)) && Util.bInterpreter )
 		{
 			ligneTmp = Util.ligneAInterprete.substring(0, Util.ligneAInterprete.indexOf(operateur));
-			ArrayList<Integer> alInd = new ArrayList<Integer>();
-			dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
-			if(dataTmp.contains("\\["))
-			{
-				
-			}
-			if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
+
+			ligneTmp = Util.getLigneTmp(ligneTmp, interpret);
 
 			Util.file.add(ligneTmp);
 			
@@ -170,7 +165,8 @@ public class Util
 		}
 
 		dataTmp = interpret.getDonnee(Util.ligneAInterprete.replaceAll(" *", ""));
-		if ( dataTmp != null )ligneTmp = String.valueOf(dataTmp.getValeur());
+
+		if ( dataTmp != null )ligneTmp = Util.getLigneTmp(Util.ligneAInterprete.replaceAll(" *", ""), interpret);
 		else ligneTmp                  = Util.ligneAInterprete.replaceAll("^ *\"|\" *$", "");
 		
 		Util.file.add(ligneTmp);
@@ -186,6 +182,36 @@ public class Util
 		System.out.println(fileRet);
 
 		return Util.evaluerEPO(fileRet, interpret);
+	}
+
+	private static String getLigneTmp(String ligneTmp, Interpreteur interpret)
+	{
+		Donnee dataTmp = null;
+		String indices = ligneTmp	;
+
+		dataTmp = interpret.getDonnee(ligneTmp.replaceAll(" *", ""));
+		if ( dataTmp != null )
+		{
+			if ( dataTmp.getDimension() > 0 )
+			{
+				indices = indices.substring(indices.indexOf("[")+1, indices.lastIndexOf("]"));
+				indices = indices.replaceAll("\\[|\\]$", "");
+
+				String[] taille = indices.split("\\]");
+				for(int cpt=0; cpt<taille.length; cpt++)
+					if ( interpret.getDonnee(taille[cpt]) != null )taille[cpt] = (interpret.getDonnee(taille[cpt]).getValeur()) + "";
+
+				Integer[] args = new Integer[taille.length];
+				for(int cpt=0; cpt<taille.length; cpt++)
+					args[cpt] = Integer.parseInt(taille[cpt]);
+
+				ligneTmp = dataTmp.getValeur(args) + "";
+			}
+			else
+				ligneTmp = dataTmp.getValeur() + "";
+		}
+
+		return ligneTmp;
 	}
 
 	private static void ajouterOperateurAPile(String operateur)
@@ -404,7 +430,8 @@ public class Util
 					}
 					
 					dataTmp = interpret.getDonnee(cmp.substring(1).replaceAll(" *", ""));
-					if ( dataTmp != null )cmp = cmp.charAt(0) + String.valueOf(dataTmp.getValeur());
+					if ( dataTmp != null )
+						cmp = cmp.charAt(0) + Util.getLigneTmp(cmp.substring(1).replaceAll(" *", ""), interpret);
 
 					Util.file.add(cmp);
 
@@ -416,7 +443,8 @@ public class Util
 				Util.bInterpreter = false;
 			}
 			dataTmp = interpret.getDonnee(Util.ligneAInterprete.substring(1).replaceAll(" *", ""));
-			if ( dataTmp != null )Util.ligneAInterprete = Util.ligneAInterprete.charAt(0) + String.valueOf(dataTmp.getValeur());
+
+			if ( dataTmp != null )Util.ligneAInterprete = Util.ligneAInterprete.charAt(0) + Util.getLigneTmp(Util.ligneAInterprete.substring(1).replaceAll(" *", ""), interpret);
 
 			if ( Util.ligneAInterprete.length() >= 2 )
 			{
