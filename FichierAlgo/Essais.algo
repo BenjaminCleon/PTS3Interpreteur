@@ -11,14 +11,18 @@ variable:
 	u,v: chaine de caractères
 	w: caractère
 	x: entier
-	y: réel
+	y: entier
 	z: booléen
 DEBUT
 	ecrire ( "Salut", " Paul " © "comment ça va" )
 		
 	y <-- 5
 	tq y < 20 faire
-		y <-- y + 2
+		si y div 3 = 3 alors
+			y <-- y + 4
+		sinon
+			y <-- y + 2
+		fsi
 	ftq
 	
 	si 3<4 alors
@@ -101,4 +105,13 @@ DEBUT
 	ecrire ( u )
 	ecrire ( y )
 	ecrire ( z )
+
+
+	/*
+	Test
+	Test
+	Test
+	Test
+	Test
+	*/
 FIN

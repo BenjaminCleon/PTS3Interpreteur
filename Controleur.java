@@ -66,7 +66,7 @@ public class Controleur
 				if(line.matches("DET var \\w*"))
 				{
 					String var=line.substring(8,(line.length()));
-					System.out.println (this.metier.getTraceVariable(var));
+					this.ihm.afficherChaineMenu (this.metier.getTraceVariable(var));
 					
 					line = Console.lireString();//input.nextLine();
 					while(! line.isEmpty() ) 

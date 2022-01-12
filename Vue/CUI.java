@@ -124,6 +124,7 @@ public class CUI
 	public void afficherAide()
 	{
 		String sRet = "";
+
 		Console.effacerEcran();
 		for ( int i=0;i<40;i++)sRet+="¨";
 		sRet += "\n\tListes des fonctionnalités \n\n";
@@ -134,7 +135,6 @@ public class CUI
 		sRet += String.format("%-38s", "Touche \"-\" \"bk\" ligne") + "\t" + String.format("%-15s", "Retire un point d'arret à la ligne voulue. (Exemple - bk 10 -> Retire un point à la ligne 10)\n");
 		sRet += String.format("%-38s", "Touche \"GO BK\"") + "\t" + String.format("%-15s", "Avance au prochain point d'arret dans la console.\n");
 		sRet += String.format("%-38s", "Touche \"DET var\" +  nom variable") + "\t" + String.format("%-15s", "Affiche le détail d'une variable voulue. (Exemple DET var x -> Affiche le détail de la variable x)\n");
-		sRet += String.format("%-38s", "Touche \"PP\"") + "\t" + String.format("%-15s", "Ajoute le détail de la variable dans le presse papier.\n");
 		sRet += String.format("%-38s", "Touche \"TRACE\"") + "\t" + String.format("%-15s", "Génére la trace des variables sous forme tabulaire dans le presse-papier.\n");
 
 		sRet += String.format("%-38s", "\nTouche Q pour quitter l'aide.");
@@ -143,6 +143,14 @@ public class CUI
 		char input = Console.lireChar();
 		while((input != 'q') && (input != 'Q'))
 			input = Console.lireChar();
+	}
+
+	public void afficherChaineMenu(String s)
+	{
+		Console.effacerEcran();
+		Console.println(s)    ;
+		Console.println( String.format("%-38s", "Touche \"PP\"") + "\t" + String.format("%-15s", "Ajoute le détail de la variable dans le presse papier."));
+		Console.println( String.format("%-38s", "Touche \"entree\"") + "\t" + String.format("%-15s", "Reviens à la normale."));
 	}
 
 	/**
@@ -170,16 +178,17 @@ public class CUI
 		res = "\n";
 
 		Console.effacerEcran();
-		res += CouleurConsole.BLANC.getFond() + "" + CouleurConsole.NOIR.getFont() +"¨¨¨¨¨¨¨¨¨¨" + String.format("%-74s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-36s", "") + this.consoleReset() + "\n";
-		res += CouleurConsole.BLANC.getFond() + "" +"|  CODE  |" + String.format("%-74s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|EXECUTION|" + String.format( "%-36s", "") + this.consoleReset() + "\n";
-		for ( int i=0;i<84;i++)res+="¨";
+		res += CouleurConsole.BLANC.getFond() + "" + CouleurConsole.NOIR.getFont() +"¨¨¨¨¨¨¨¨¨¨" + String.format("%-75s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-31s", "") + "¨¨¨¨¨¨¨¨¨¨¨" + String.format( "%-35s", "") + this.consoleReset() + "\n";
+		res += CouleurConsole.BLANC.getFond() + "" +"|  CODE  |" + String.format("%-75s", "") + "| DONNEES |" + String.format( "%-31s", "") + "|EXECUTION|" + String.format( "%-35s", "") + this.consoleReset() + "\n";
+		for ( int i=0;i<85;i++)res+="¨";
 		res += " ";
 		for ( int i=0;i<41;i++)res+="¨";
 		res += " ";
-		for ( int i=0;i<46;i++)res+="¨";
+		for ( int i=0;i<45;i++)res+="¨";
 		res +=  this.consoleReset() + "\n";
 
-		res += "| " + String.format("%-83s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
+		res += "|" + String.format("%-84s", tabFichier[0]) + "|     NOM         |          VALEUR       |";
+		
 		this.afficher(res, -1);
 		this.afficher(String.format(" %-42s |",this.getValueInExec(execution, 0)), 0);
 		Console.println("");
@@ -210,14 +219,16 @@ public class CUI
 				for(int cpt=0; cpt<tabSplit.length; cpt++)
 				{
 					if(this.estDansListe(tabSplit[cpt]))
-						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont()  + " ";
+						nouvelleLigne += putColor(tabSplit[cpt]) + tabSplit[cpt] + CouleurConsole.NOIR.getFont() /*putColor("defaut")*/ + " ";
 					else
-						nouvelleLigne += tabSplit[cpt] + " ";
-
+					{
+						nouvelleLigne += tabSplit[cpt];
+						if ( cpt < tabSplit.length -1)nouvelleLigne+= " ";
+					}
 				}
 				String tmp = this.getValueInExec(execution, i);
-
-				Console.print("|" + String.format("%-83s", nouvelleLigne) + "|" + tabData[i-1] + "|");
+				
+				Console.print("|" + String.format("%-84s", nouvelleLigne) + "|" + tabData[i-1] + "|");
 				delta = String.valueOf(42-tmp.length());
 				this.afficher(" ", -1);
 				this.afficher(tmp, i);
@@ -227,7 +238,7 @@ public class CUI
 			{
 				String tmp = this.getValueInExec(execution, i);
 
-				Console.print("|" + String.format("%-83s", tabFichier[i]) + "|" + tabData[i-1] + "|");
+				Console.print("|" + String.format("%-84s", tabFichier[i]) + "|" + tabData[i-1] + "|");
 				delta = String.valueOf(42-tmp.length());
 				this.afficher(" ", -1);
 				this.afficher(tmp, i);
