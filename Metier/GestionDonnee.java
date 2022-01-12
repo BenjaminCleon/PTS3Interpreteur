@@ -12,7 +12,7 @@ import java.awt.Toolkit;
 
 public class GestionDonnee
 {
-	private ArrayList<String> lstVar      ;
+	private ArrayList<String> lstVar ;
 	private Interpreteur interpreteur;
 	
 	public GestionDonnee (String nomFichier, Interpreteur interpreteur)
