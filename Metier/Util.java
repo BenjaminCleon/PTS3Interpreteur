@@ -33,7 +33,7 @@ public class Util
 	private static Queue<String> file; // file pour les expressions
 	private static Stack<String> pile; // pile pour les expressions
 
-	private static final String REGEX_OP ="(\\(|\\)|<=|>=|!=|\\^|<|>|=|div|mod|\\bxou\\b|\\bou\\b|\\bet\\b|\\bnon\\b|\\+|-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\w*\\||\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
+	private static final String REGEX_OP ="(\\(|\\)|<=|>=|\\/=|\\^|<|>|=|div|mod|\\bxou\\b|\\bou\\b|\\bet\\b|\\bnon\\b|\\+|-|×|©|\\/\\^|\\/|\\\\\\/¯|\\|-?\\w*\\||\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
 	private static final String REGEX_PRIMI = "(\\bord\\b|\\bcar\\b|\\benChaine\\b|\\benEntier\\b|\\benReel\\b|\\bplancher\\b|\\barrondi\\b|\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b|\\bestReel\\b|\\bestEntier\\b|\\bhasard\\b){1}";
 	private static final String REGEX_DATE  = "(\\baujourdhui\\b|\\bjour\\b|\\bmois\\b|\\bannee\\b){1}";
 	private static Pattern  pattern = Pattern.compile(Util.REGEX_OP);
