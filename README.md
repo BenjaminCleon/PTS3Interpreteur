@@ -12,6 +12,10 @@ Après avoir décompresser l'archive récupérer sur ce dépot
 Placer vous dans PTS3Interpreteur-main\PTS3Interpreteur-main
 
 ----------------------------------------------------------------------------------------------------
+
+Nos fichiers de tests sont dans le répertoire FichierAlgo
+
+----------------------------------------------------------------------------------------------------
 pour compiler
 	installer les paquetages de l'iut comme expliquer sur l'intranet
 	sous windows
@@ -24,7 +28,7 @@ pour compiler
 pour exécuter
 	prenez note que dans le nom du fichier que vous saisirez dans le terminal, ne doit pas figurer l'extension
 	Si vous ne lancez pas depuis le repértoire courant
-	java AlgoPars.Controleur <cheminabsolu/nomdufichier> 
+		java AlgoPars.Controleur <cheminabsolu/nomdufichier> 
 	par exemple java AlgoPars.Controleur C:\Users\Benjamin\OneDrive\Bureau\IUT\S3\ProjetTut\Dev\PTS3Interpreteur\FichierAlgo\Test1
 	
 	Si vous lancez depuis le répertoire courant
