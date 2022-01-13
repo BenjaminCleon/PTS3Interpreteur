@@ -31,7 +31,7 @@ DEBUT
 
 	// expressions booléennes simples
 	z <-- x < 20     // faux
-	z <-- x < y      // vrai
+	z <-- x > y      // vrai
 	z <-- y <= 20    // faux
 	z <-- y >= x     // vrai
 	z <-- x = 248    // vrai
