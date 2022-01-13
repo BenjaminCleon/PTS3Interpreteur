@@ -2,13 +2,13 @@ ALGORITHME TestTableau
 variable:
 	tab1D : tableau[8] d'entiers           /*tableau à 1 dimension */
 	tab2D : tableau[6][15] de réels        /*tableau à 2 dimensions*/
-	tab3D : tableau[9][4][7] de caractères /*tableau à 3 dimensions*/
+	tab3D : tableau[3][2][5] de caractères /*tableau à 3 dimensions*/
 	cpt1 : /*compteur pour la boucle*/ entier
 	cpt2 : entier //autre compteur pour double boucle
 DEBUT
 	tab3D[2][1][4] <-- 'A'
-	/*entrez DET var tab1D*/
-	
+	//entrer DET var tab3D
+	/*entrer DET var tab1D*/
 	cpt1 <-- 0
 	tq cpt1 < 8 faire
 		tab1D[ cpt1 ] <-- cpt1 + 2067
@@ -24,7 +24,7 @@ DEBUT
 			si cpt1 = cpt2 alors
 				tab2D[ cpt1 ][ cpt2 ] <-- 5.5
 			sinon
-				tab2D[ cpt1 ][ cpt2 ] <-- 4.78
+				tab2D[ cpt1 ][ cpt2 ] <-- 4.68
 			fsi
 			cpt2 <-- cpt2 + 1
 		ftq
