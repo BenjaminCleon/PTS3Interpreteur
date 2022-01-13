@@ -19,7 +19,6 @@ DEBUT
     d <-- "Une chaine normale"
     e <-- true
     f <-- g <-- 90
-    f <-- g <-- a + 5
     i <-- h <-- 98.56
     i <-- h <-- b
     j <-- k <-- 'p'
@@ -28,6 +27,9 @@ DEBUT
     d <-- l <-- m
     o <-- n <-- false
     o <-- n <-- e
+	a <-- 25 + 5
+	f <-- g <-- a + 5
+	d <-- d © " concaténée"
     lire ( f )
     lire ( a , b , j , l , e )
     ecrire ( "Bonjour" )
