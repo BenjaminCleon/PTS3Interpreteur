@@ -107,9 +107,12 @@ public class GestionDonnee
 					}
 					if(valVar.length() > 10)
 					{
-						String debut = valVar.substring(0,5);
-						String fin   = valVar.substring((valVar.length()-3), valVar.length());
-						valVar = debut + ".." + fin;
+						if ( tmp.getType().equals(Type.CHAINE))
+						{
+							String debut = valVar.substring(0,5);
+							String fin   = valVar.substring((valVar.length()-3), valVar.length());
+							valVar = debut + ".." + fin;
+						}
 					}
 				}
 			}

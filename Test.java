@@ -23,6 +23,5 @@ class Test{
 			System.out.println(test.substring(matcher1.start(), matcher1.end()));
 		} */
 
-		System.out.println(Boolean.parseBoolean("true"));
 	}
 }
