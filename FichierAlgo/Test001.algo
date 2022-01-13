@@ -1,40 +1,6 @@
 ALGORITHME Test001
 DEBUT
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    ecrire ( jour(aujourdhui() ))
+    ecrire ( mois(aujourdhui() ))
+    ecrire ( annee(aujourdhui() ))
 FIN

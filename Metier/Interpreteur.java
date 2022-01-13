@@ -718,10 +718,10 @@ public class Interpreteur
 				indices = ligne.substring(0, ligne.indexOf("<--") );
 				indices = indices.substring(indices.indexOf("[") + 1, indices.lastIndexOf("]")).replaceAll("\\[|\\]$", "");
 				t = indices.split("\\]");
-					for(int cpt=0; cpt<taille.length; cpt++)
+					for(int cpt=0; cpt<t.length; cpt++)
 						if ( this.getDonnee(t[cpt]) != null )t[cpt] = (this.getDonnee(t[cpt]).getValeur()) + "";
 
-				taille = new Integer[taille.length];
+				taille = new Integer[t.length];
 				for(int cpt=0; cpt<taille.length; cpt++)
 					taille[cpt] = Integer.parseInt(t[cpt]);
 			}

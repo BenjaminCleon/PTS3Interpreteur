@@ -301,10 +301,10 @@ public class Util
 						{
 							switch(val)
 							{
-								case "aujourdhui" -> pileArith.add(Util.aujourdhui                                      ());
-								case "annee"      -> pileArith.add(Util.annee                                           ());
-								case "mois"       -> pileArith.add(Util.mois                                            ());
-								case "jour"       -> pileArith.add(Util.jour                                            ());
+								case "aujourdhui" -> pileArith.add(Util.aujourdhui());
+								case "annee"      -> pileArith.add(Util.annee     (pileArith.pop()));
+								case "mois"       -> pileArith.add(Util.mois      (pileArith.pop()));
+								case "jour"       -> pileArith.add(Util.jour      (pileArith.pop()));
 							}
 						}
 						else
@@ -541,9 +541,9 @@ public class Util
 	private static Integer arrondi  ( double value ){ return (int)Math.round(value); }
 	
 	private static String aujourdhui(){ return DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDateTime.now()); }
-	private static String jour      (){ return aujourdhui().substring(0, 2); }
-	private static String mois      (){ return aujourdhui().substring(3, 5); }
-	private static String annee     (){ return aujourdhui().substring(6)   ; }
+	private static String jour      (String chaine){ return chaine.substring(0, 2); }
+	private static String mois      (String chaine){ return chaine.substring(3, 5); }
+	private static String annee     (String chaine){ return chaine.substring(6)   ; }
 
 	private static Boolean estReel  ( String chaine ){ return chaine.matches("^\\d+.\\d+$"); }
 	private static Boolean estEntier( String chaine ){ return chaine.matches("^\\d+$"      ); }
