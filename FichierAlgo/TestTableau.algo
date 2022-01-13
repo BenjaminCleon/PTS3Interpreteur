@@ -4,10 +4,12 @@ variable:
 	tab2D : tableau[6][15] de réels        /*tableau à 2 dimensions*/
 	tab3D : tableau[9][4][7] de caractères /*tableau à 3 dimensions*/
 	cpt1 : /*compteur pour la boucle*/ entier
-	cpt2 : entier
+	cpt2 : entier //autre compteur pour double boucle
 DEBUT
 	tab3D[2][1][4] <-- 'A'
+	
 	/*entrez DET var tab1D*/
+	
 	cpt1 <-- 0
 	tq cpt1 < 8 faire
 		tab1D[ cpt1 ] <-- cpt1 + 2067
@@ -15,6 +17,7 @@ DEBUT
 	ftq
 	/*entrez DET var tab1D
 	  puis entrez PP pour copier le contenu dans le presse papier*/
+	  
 	cpt1 <-- 0
 	tq cpt1 < 6 faire
 		cpt2 <-- 0
@@ -22,13 +25,15 @@ DEBUT
 			si cpt1 = cpt2 alors
 				tab2D[ cpt1 ][ cpt2 ] <-- 5.5
 			sinon
-				tab2D[ cpt1 ][ cpt2 ] <-- 2.5
+				tab2D[ cpt1 ][ cpt2 ] <-- 4.78
 			fsi
-			/*DET var tab2D*/
 			cpt2 <-- cpt2 + 1
 		ftq
 		cpt1 <-- cpt1 + 1
 	ftq
+	
+	/*DET var tab2D*/
+	
 	lire ( tab2D[3][5] )
 	tab2D[5][12] <-- tab2D[3][5] + 8.7
 	ecrire ( tab2D[5][12] )
