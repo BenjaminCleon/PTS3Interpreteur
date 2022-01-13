@@ -7,7 +7,6 @@ variable:
 	cpt2 : entier //autre compteur pour double boucle
 DEBUT
 	tab3D[2][1][4] <-- 'A'
-	
 	/*entrez DET var tab1D*/
 	
 	cpt1 <-- 0
@@ -31,7 +30,6 @@ DEBUT
 		ftq
 		cpt1 <-- cpt1 + 1
 	ftq
-	
 	/*DET var tab2D*/
 	
 	lire ( tab2D[3][5] )
