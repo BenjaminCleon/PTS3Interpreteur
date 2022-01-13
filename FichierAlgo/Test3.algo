@@ -1,4 +1,4 @@
-ALGORITHME TestExpression
+ALGORITHME Test3
 variable:
 	v : caractère  
 	w : chaîne de caractères
@@ -84,5 +84,14 @@ DEBUT
 	v <-- car(ord('A')+2×5)               // K
 	w <-- enChaine(enReel("15")+ord('A')) // 80.0
 
+	// x <-- 9
+	ecrire ( x )
+
+	/* 
+		x <-- 10
+		y <-- 2.5
+	*/
+
+	ecrire ( x © " " © y )
 
 FIN

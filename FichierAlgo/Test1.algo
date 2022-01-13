@@ -1,4 +1,4 @@
-ALGORITHME TestTableau
+ALGORITHME Test1
 variable:
 	tab1D : tableau[8] d'entiers           /*tableau à 1 dimension */
 	tab2D : tableau[6][15] de réels        /*tableau à 2 dimensions*/

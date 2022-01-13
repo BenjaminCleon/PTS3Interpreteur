@@ -1,4 +1,4 @@
-ALGORITHME Test101
+ALGORITHME Test2
 constante:
     MAX_ENTIER <-- 45
     MAX_REEL   <-- 45.02
