@@ -719,7 +719,7 @@ public class Interpreteur
 				indices = indices.substring(indices.indexOf("[") + 1, indices.lastIndexOf("]")).replaceAll("\\[|\\]$", "");
 				t = indices.split("\\]");
 					for(int cpt=0; cpt<t.length; cpt++)
-						if ( this.getDonnee(t[cpt]) != null )t[cpt] = (this.getDonnee(t[cpt]).getValeur()) + "";
+						if ( this.getDonnee(t[cpt].replaceAll(" ", "")) != null )t[cpt] = (this.getDonnee(t[cpt].replaceAll(" ", "")).getValeur()) + "";
 
 				taille = new Integer[t.length];
 				for(int cpt=0; cpt<taille.length; cpt++)
