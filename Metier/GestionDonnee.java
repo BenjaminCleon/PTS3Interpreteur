@@ -109,7 +109,7 @@ public class GestionDonnee
 					{
 						String debut = valVar.substring(0,5);
 						String fin   = valVar.substring((valVar.length()-3), valVar.length());
-						valVar = debut + fin;
+						valVar = debut + ".." + fin;
 					}
 				}
 			}
