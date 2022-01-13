@@ -21,17 +21,15 @@ pour compiler
 	sous windows
 		installer jansi-2.1.0.jar que vous trouverez dans jar et l'ajouter au CLASSPATH
 		
-	javac @compile.list -d <chemin d'accès au classpath> -encoding UTF8
-	par exemple javac @compile.list -d C:\iut\TP\java\paquetage_class -encoding UTF8
+	javac @compile.list -d ./ -encoding UTF8
 ----------------------------------------------------------------------------------------------------
 
 pour exécuter
 	prenez note que dans le nom du fichier que vous saisirez dans le terminal, ne doit pas figurer l'extension
-	Si vous ne lancez pas depuis le repértoire courant
-		java AlgoPars.Controleur <cheminabsolu/nomdufichier> 
-	par exemple java AlgoPars.Controleur C:\Users\Benjamin\OneDrive\Bureau\IUT\S3\ProjetTut\Dev\PTS3Interpreteur\FichierAlgo\Test1
 	
-	Si vous lancez depuis le répertoire courant
-	java AlgoPars.Controleur <cheminabsolu/nomdufichier> ou java AlgoPars.Controleur <cheminrelatif/nomdufichier>
-	par exemple java AlgoPars.Controleur FichierAlgo/Test1
+	Placeez vous à la racine du répertoire PTS3Interpreteur
+	java AlgoPars.Controleur <chemindacces>
+	exemple
+	java AlgoPars.Controleur FichierAlgo/Test1
 	
+3
