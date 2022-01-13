@@ -7,7 +7,11 @@ Permet d'interpreter un algorithme écris en pseudo-code et de montrer la trace 
 choisies par l'utilisateur, ainsi que la trace d'exécution.
 
 ----------------------------------------------------------------------------------------------------
-se placer dans PS3Interpreteur
+
+Après avoir décompresser l'archive récupérer sur ce dépot
+Placer vous dans PTS3Interpreteur-main\PTS3Interpreteur-main
+
+----------------------------------------------------------------------------------------------------
 pour compiler
 	installer les paquetages de l'iut comme expliquer sur l'intranet
 	sous windows
