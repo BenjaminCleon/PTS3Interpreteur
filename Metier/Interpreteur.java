@@ -312,6 +312,7 @@ public class Interpreteur
 				cpt++;
 		}
 
+		this.cptIteration = 0;
 	}
 	/**
 	 * Retourne vrai si nous reculons dans le programme

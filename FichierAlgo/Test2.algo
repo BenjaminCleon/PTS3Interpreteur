@@ -6,11 +6,12 @@ constante:
     BOOL       <-- true
     UN_CARA    <-- 'Y' 
 variable:
-    a,f,g: entier
-    b,h,i: réel
-    c,j,k: caractère
-    d,l,m: chaine de caractères
-    e,n,o: booléen
+    a         : entier
+	f , g     : entier
+    b , h , i : réel
+    c , j , k : caractère
+    d , l , m : chaine de caractères
+    e , n , o : booléen
 DEBUT
     a <-- 25
     b <-- 25.42
@@ -18,7 +19,7 @@ DEBUT
     d <-- "Une chaine normale"
     e <-- true
     f <-- g <-- 90
-    f <-- g <-- a
+    f <-- g <-- a + 5
     i <-- h <-- 98.56
     i <-- h <-- b
     j <-- k <-- 'p'
@@ -32,6 +33,6 @@ DEBUT
     ecrire ( "Bonjour" )
     ecrire ( "Bonjour " © " DI" )
     ecrire ( d )
-    ecrire ( a+8×2 )
-    ecrire ( "Nous sommes " © enChaine((b-4)/2) © " étudiants")
+    ecrire ( a +8×2 )
+    ecrire ( "Nous sommes " © enChaine(( b -4)/2) © " étudiants")
 FIN
